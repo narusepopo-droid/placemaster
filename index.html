@@ -1,0 +1,1554 @@
+<title>플레이스 마스터 PRO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Noto+Sans+KR:wght@400;500;600;700;900&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --ground: #0B1120;
+  --surface: #131C2E;
+  --surface-hover: #1A2540;
+  --border: #1E3A5F;
+  --accent: #22D3EE;
+  --accent-hover: #06B6D4;
+  --accent-glow: rgba(34, 211, 238, 0.15);
+  --text: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --success: #10B981;
+  --warning: #F59E0B;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --ground: #F8FAFC;
+    --surface: #FFFFFF;
+    --surface-hover: #F1F5F9;
+    --border: #E2E8F0;
+    --accent: #0891B2;
+    --accent-hover: #0E7490;
+    --accent-glow: rgba(8, 145, 178, 0.1);
+    --text: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground: #0B1120;
+  --surface: #131C2E;
+  --surface-hover: #1A2540;
+  --border: #1E3A5F;
+  --accent: #22D3EE;
+  --accent-hover: #06B6D4;
+  --accent-glow: rgba(34, 211, 238, 0.15);
+  --text: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--ground);
+  color: var(--text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Header */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(11, 17, 32, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) header {
+    background: rgba(248, 250, 252, 0.85);
+  }
+}
+
+:root[data-theme="dark"] header {
+  background: rgba(11, 17, 32, 0.85);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent) 0%, #0EA5E9 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-links a:hover {
+  color: var(--accent);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #0B1120;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-hover);
+  border-color: var(--accent);
+}
+
+/* Hero */
+.hero {
+  padding: 160px 0 100px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150%;
+  height: 100%;
+  background: radial-gradient(ellipse at center top, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+  position: relative;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  border-radius: 100px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+.hero h1 {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  text-wrap: balance;
+}
+
+.hero h1 .accent {
+  color: var(--accent);
+}
+
+.hero-desc {
+  font-size: 1.15rem;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  max-width: 480px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.btn-large {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+}
+
+/* Live Ranking Preview */
+.ranking-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+}
+
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.preview-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.preview-live {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--success);
+}
+
+.preview-live::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: var(--success);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.ranking-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ranking-item:last-child {
+  border-bottom: none;
+}
+
+.rank-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  width: 48px;
+  text-align: center;
+  color: var(--accent);
+}
+
+.rank-info {
+  flex: 1;
+}
+
+.rank-keyword {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.rank-store {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.rank-change {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rank-change.up {
+  color: var(--success);
+}
+
+.rank-change.down {
+  color: #EF4444;
+}
+
+/* Problem Section */
+.problem {
+  padding: 100px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.problem h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.problem-list {
+  list-style: none;
+}
+
+.problem-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+}
+
+.problem-list .icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.solution-box {
+  background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 100%);
+  border: 1px solid var(--accent);
+  border-radius: 16px;
+  padding: 32px;
+}
+
+.solution-box h3 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--accent);
+}
+
+.solution-box p {
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+/* How It Works */
+.how-it-works {
+  padding: 100px 0;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.section-header h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-wrap: balance;
+}
+
+.section-header p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 60px;
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 180px;
+}
+
+.flow-icon {
+  width: 100px;
+  height: 100px;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  transition: all 0.3s;
+}
+
+.flow-step:hover .flow-icon {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px -10px var(--accent-glow);
+}
+
+.flow-step h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.flow-step p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.flow-arrow {
+  font-size: 1.5rem;
+  color: var(--accent);
+}
+
+/* Architecture Diagram */
+.architecture {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.arch-title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 32px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.arch-diagram {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.arch-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.arch-box {
+  background: var(--ground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 28px;
+  text-align: center;
+  min-width: 160px;
+}
+
+.arch-box.highlight {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.arch-box .icon {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.arch-box .label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.arch-box .desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.arch-connector {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.arch-connector .line {
+  width: 2px;
+  height: 30px;
+  background: var(--border);
+}
+
+.arch-connector .arrow {
+  color: var(--accent);
+  font-size: 1rem;
+}
+
+.arch-connector-h {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+}
+
+.arch-connector-h .line {
+  width: 30px;
+  height: 2px;
+  background: var(--border);
+}
+
+/* Features */
+.features {
+  padding: 100px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.feature-card {
+  background: var(--ground);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  transition: all 0.3s;
+}
+
+.feature-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--accent-glow);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.feature-card h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Use Cases */
+.use-cases {
+  padding: 100px 0;
+}
+
+.use-case-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.use-case-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  gap: 20px;
+}
+
+.use-case-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.use-case-card h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.use-case-card p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Stats */
+.stats {
+  padding: 80px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+
+.stat-number {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* Screenshot */
+.screenshot {
+  padding: 100px 0;
+}
+
+.screenshot-wrapper {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+.screenshot-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--ground);
+  border-radius: 12px 12px 0 0;
+}
+
+.screenshot-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.screenshot-dot:nth-child(1) { background: #EF4444; }
+.screenshot-dot:nth-child(2) { background: #F59E0B; }
+.screenshot-dot:nth-child(3) { background: #10B981; }
+
+.screenshot-title {
+  flex: 1;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.screenshot-content {
+  background: linear-gradient(135deg, #0D1B2A 0%, #1B263B 100%);
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.screenshot-mockup {
+  width: 100%;
+  height: 100%;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 24px;
+}
+
+.mockup-sidebar {
+  background: rgba(0,0,0,0.3);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.mockup-main {
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.mockup-label {
+  font-size: 0.75rem;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.mockup-item {
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.mockup-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mockup-tab {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.mockup-tab.active {
+  background: var(--accent);
+  color: #0B1120;
+}
+
+.mockup-result {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.mockup-rank-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-size: 0.8rem;
+}
+
+.mockup-rank-num {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--accent);
+  font-weight: 700;
+  width: 32px;
+}
+
+/* Requirements */
+.requirements {
+  padding: 100px 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+}
+
+.req-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.req-card {
+  background: var(--ground);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.req-card .icon {
+  font-size: 2rem;
+  margin-bottom: 12px;
+}
+
+.req-card h4 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.req-card p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+/* CTA */
+.cta {
+  padding: 100px 0;
+  text-align: center;
+}
+
+.cta-box {
+  background: linear-gradient(135deg, var(--surface) 0%, rgba(34, 211, 238, 0.05) 100%);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 60px;
+}
+
+.cta h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.cta p {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 32px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.download-info {
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.install-steps {
+  display: flex;
+  justify-content: center;
+  gap: 48px;
+  margin-top: 40px;
+  padding-top: 40px;
+  border-top: 1px solid var(--border);
+}
+
+.install-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.install-step .num {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: #0B1120;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+/* Footer */
+footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.footer-text a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .problem-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .use-case-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+
+  .screenshot-mockup {
+    grid-template-columns: 1fr;
+  }
+
+  .mockup-sidebar {
+    display: none;
+  }
+
+  .flow-diagram {
+    flex-direction: column;
+  }
+
+  .flow-arrow {
+    transform: rotate(90deg);
+  }
+
+  .arch-row {
+    flex-wrap: wrap;
+  }
+
+  .req-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .install-steps {
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .nav-links {
+    display: none;
+  }
+
+  .hero {
+    padding: 120px 0 60px;
+  }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-box {
+    padding: 40px 24px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+  }
+
+  .btn-large {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .architecture {
+    padding: 24px;
+  }
+
+  .arch-box {
+    min-width: 120px;
+    padding: 16px;
+  }
+}
+</style>
+
+<header>
+  <div class="container header-inner">
+    <a href="#" class="logo">
+      <div class="logo-icon">📍</div>
+      플레이스 마스터
+    </a>
+    <nav class="nav-links">
+      <a href="#problem">소개</a>
+      <a href="#how-it-works">구동방식</a>
+      <a href="#features">기능</a>
+      <a href="#download">다운로드</a>
+    </nav>
+    <a href="#download" class="btn btn-primary">무료 다운로드</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <div>
+          <div class="hero-badge">
+            <span>v8.44</span>
+            최신 버전 배포중
+          </div>
+          <h1>
+            네이버 플레이스<br>
+            <span class="accent">실시간 순위 추적</span>
+          </h1>
+          <p class="hero-desc">
+            광고주 매장의 플레이스 순위와 블로그 포스팅 순위를
+            자동으로 추적하고, 카카오톡 보고서까지 한 번에.
+            광고대행사를 위한 올인원 순위 관리 솔루션.
+          </p>
+          <div class="hero-buttons">
+            <a href="#download" class="btn btn-primary btn-large">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+              무료 다운로드
+            </a>
+            <a href="#how-it-works" class="btn btn-secondary btn-large">
+              구동방식 보기
+            </a>
+          </div>
+        </div>
+
+        <div class="ranking-preview">
+          <div class="preview-header">
+            <span class="preview-title">📊 백세돼지국밥 순위 현황</span>
+            <span class="preview-live">실시간</span>
+          </div>
+          <div class="ranking-item">
+            <div class="rank-number" id="rank1">1</div>
+            <div class="rank-info">
+              <div class="rank-keyword">진주 호탄동 국밥</div>
+              <div class="rank-store">백세돼지국밥</div>
+            </div>
+            <div class="rank-change up">▲ 2</div>
+          </div>
+          <div class="ranking-item">
+            <div class="rank-number">3</div>
+            <div class="rank-info">
+              <div class="rank-keyword">진주 돼지국밥 맛집</div>
+              <div class="rank-store">백세돼지국밥</div>
+            </div>
+            <div class="rank-change up">▲ 5</div>
+          </div>
+          <div class="ranking-item">
+            <div class="rank-number">7</div>
+            <div class="rank-info">
+              <div class="rank-keyword">호탄동 맛집</div>
+              <div class="rank-store">백세돼지국밥</div>
+            </div>
+            <div class="rank-change down">▼ 1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem/Solution -->
+  <section class="problem" id="problem">
+    <div class="container">
+      <div class="problem-grid">
+        <div>
+          <h2>광고대행사의 순위 관리,<br>이런 고민 있으셨죠?</h2>
+          <ul class="problem-list">
+            <li>
+              <span class="icon">😰</span>
+              <span>광고주마다 키워드 검색해서 순위 확인하는 데 하루 종일 걸림</span>
+            </li>
+            <li>
+              <span class="icon">📱</span>
+              <span>블로그 포스팅 순위 변화를 일일이 체크하기 어려움</span>
+            </li>
+            <li>
+              <span class="icon">📊</span>
+              <span>광고주에게 보고서 만들 때마다 엑셀 정리하느라 시간 낭비</span>
+            </li>
+            <li>
+              <span class="icon">🔄</span>
+              <span>어떤 키워드가 중요한지 일일이 찾아봐야 함</span>
+            </li>
+          </ul>
+        </div>
+        <div class="solution-box">
+          <h3>플레이스 마스터로 해결하세요</h3>
+          <p>
+            플레이스 URL만 등록하면 <strong>최적 키워드를 자동 생성</strong>하고,
+            <strong>100개 키워드의 순위를 2분 안에</strong> 분석합니다.<br><br>
+            분석 결과는 <strong>카톡으로 바로 전송</strong>할 수 있는 형태로 정리되어
+            광고주 보고가 간편해집니다. 이전 순위와 비교해
+            <strong>상승/하락/신규진입</strong>까지 자동 표시됩니다.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <h2>구동 방식</h2>
+        <p>프로그램이 어떻게 순위를 분석하는지 한눈에 확인하세요</p>
+      </div>
+
+      <!-- Flow Diagram -->
+      <div class="flow-diagram">
+        <div class="flow-step">
+          <div class="flow-icon">🏪</div>
+          <h4>매장 등록</h4>
+          <p>네이버 플레이스 URL만 입력하면 자동으로 정보 추출</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon">🎯</div>
+          <h4>키워드 생성</h4>
+          <p>업종×지역 조합으로 최적의 검색 키워드 100개 자동 생성</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon">🔍</div>
+          <h4>순위 분석</h4>
+          <p>네이버 플레이스 & 블로그 검색결과에서 순위 추출</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step">
+          <div class="flow-icon">📋</div>
+          <h4>보고서 생성</h4>
+          <p>카톡/엑셀로 바로 전송 가능한 형태로 자동 정리</p>
+        </div>
+      </div>
+
+      <!-- Architecture Diagram -->
+      <div class="architecture">
+        <div class="arch-title">시스템 구조도</div>
+        <div class="arch-diagram">
+          <div class="arch-row">
+            <div class="arch-box highlight">
+              <div class="icon">💻</div>
+              <div class="label">플레이스 마스터 PRO</div>
+              <div class="desc">사용자 PC에서 실행</div>
+            </div>
+          </div>
+
+          <div class="arch-connector">
+            <div class="arrow">↓</div>
+            <div class="line"></div>
+          </div>
+
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="icon">🌐</div>
+              <div class="label">Playwright 브라우저</div>
+              <div class="desc">백그라운드 크롤링</div>
+            </div>
+            <div class="arch-connector-h">
+              <div class="line"></div>
+              <span>→</span>
+            </div>
+            <div class="arch-box">
+              <div class="icon">🗺️</div>
+              <div class="label">네이버 지도/블로그</div>
+              <div class="desc">실시간 순위 데이터</div>
+            </div>
+          </div>
+
+          <div class="arch-connector">
+            <div class="line"></div>
+            <div class="arrow">↓</div>
+          </div>
+
+          <div class="arch-row">
+            <div class="arch-box">
+              <div class="icon">🔥</div>
+              <div class="label">Firebase</div>
+              <div class="desc">계정 관리 & 자동 업데이트</div>
+            </div>
+            <div class="arch-connector-h">
+              <div class="line"></div>
+              <span>←→</span>
+            </div>
+            <div class="arch-box">
+              <div class="icon">💾</div>
+              <div class="label">로컬 저장소</div>
+              <div class="desc">분석 기록 보관</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <h2>핵심 기능</h2>
+        <p>광고대행사 업무에 필요한 모든 기능을 담았습니다</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">📍</div>
+          <h3>플레이스 순위 분석</h3>
+          <p>키워드별 네이버 플레이스 순위를 실시간으로 추적합니다.
+             최대 100개 키워드까지 동시에 분석하고, <strong>광고 제외 순수 순위</strong>만 표시합니다.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>블로그 포스팅 순위</h3>
+          <p>매장 <strong>장소태그가 달린</strong> 블로그 포스팅의 순위를 추적합니다.
+             어떤 포스팅이 상위에 노출되는지 한눈에 파악하세요.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🎯</div>
+          <h3>스마트 키워드 생성</h3>
+          <p>업종과 지역을 분석해 최적의 검색 키워드를 <strong>자동 생성</strong>합니다.
+             역, 동, 구 단위 지역명과 업종 의도를 조합해 놓치는 키워드 없이.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>카톡 보고서 자동 생성</h3>
+          <p>분석 결과를 <strong>카카오톡으로 바로 복사</strong>할 수 있는 형태로 변환합니다.
+             광고주에게 전달하기 딱 좋은 깔끔한 보고서 형식.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>순위 변화 추적</h3>
+          <p>분석 기록을 저장하고 <strong>이전 순위와 비교</strong>합니다.
+             신규 진입, 순위 상승/하락을 한눈에 확인하세요.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">🔄</div>
+          <h3>자동 업데이트</h3>
+          <p>새 버전이 나오면 <strong>자동으로 다운로드</strong>하고 업데이트합니다.
+             항상 최신 기능을 별도 설치 없이 사용하세요.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Use Cases -->
+  <section class="use-cases">
+    <div class="container">
+      <div class="section-header">
+        <h2>이런 업종에서 사용하세요</h2>
+        <p>다양한 업종의 광고주를 한 프로그램으로 관리</p>
+      </div>
+
+      <div class="use-case-grid">
+        <div class="use-case-card">
+          <div class="use-case-icon">🍖</div>
+          <div>
+            <h3>음식점 / 카페</h3>
+            <p>국밥집, 고기집, 카페, 베이커리 등 F&B 업종의 "OO역 맛집", "OO동 카페" 키워드 순위 추적</p>
+          </div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">💪</div>
+          <div>
+            <h3>헬스 / PT / 필라테스</h3>
+            <p>헬스장, PT샵, 필라테스, 요가 등 피트니스 업종의 지역별 순위 관리</p>
+          </div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">💅</div>
+          <div>
+            <h3>뷰티 / 에스테틱</h3>
+            <p>피부관리, 네일샵, 헤어샵, 성형외과, 피부과 등 뷰티/의료 업종 순위 추적</p>
+          </div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">📚</div>
+          <div>
+            <h3>학원 / 교육</h3>
+            <p>영어학원, 수학학원, 코딩학원, 입시학원 등 교육 업종의 학군별 순위 분석</p>
+          </div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">🏕️</div>
+          <div>
+            <h3>캠핑 / 펜션</h3>
+            <p>캠핑장, 글램핑, 펜션, 풀빌라 등 숙박/야외 업종의 관광지별 순위 추적</p>
+          </div>
+        </div>
+        <div class="use-case-card">
+          <div class="use-case-icon">🐱</div>
+          <div>
+            <h3>반려동물</h3>
+            <p>동물병원, 펫호텔, 펫샵, 애견카페 등 반려동물 업종 순위 관리</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div>
+          <div class="stat-number">100+</div>
+          <div class="stat-label">키워드 동시 분석</div>
+        </div>
+        <div>
+          <div class="stat-number">30위</div>
+          <div class="stat-label">순위 검출 범위</div>
+        </div>
+        <div>
+          <div class="stat-number">10+</div>
+          <div class="stat-label">지원 업종</div>
+        </div>
+        <div>
+          <div class="stat-number">~2분</div>
+          <div class="stat-label">평균 분석 시간</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Screenshot -->
+  <section class="screenshot" id="screenshot">
+    <div class="container">
+      <div class="section-header">
+        <h2>직관적인 인터페이스</h2>
+        <p>복잡한 설정 없이 바로 사용할 수 있는 깔끔한 UI</p>
+      </div>
+
+      <div class="screenshot-wrapper">
+        <div class="screenshot-bar">
+          <div class="screenshot-dot"></div>
+          <div class="screenshot-dot"></div>
+          <div class="screenshot-dot"></div>
+          <div class="screenshot-title">플레이스 마스터 PRO (v8.44)</div>
+        </div>
+        <div class="screenshot-content">
+          <div class="screenshot-mockup">
+            <div class="mockup-sidebar">
+              <div class="mockup-label">관리 대상 광고주</div>
+              <div class="mockup-item">감동식당 노원본점</div>
+              <div class="mockup-item" style="background: var(--accent); color: #0B1120;">백세돼지국밥</div>
+              <div class="mockup-item">CMS 신동탄영재교육</div>
+              <div class="mockup-item">검산별빛캠핑장</div>
+              <div class="mockup-item">베럴짐 광화문점</div>
+              <div class="mockup-item">라보떼 메디컬스킨케어</div>
+            </div>
+            <div class="mockup-main">
+              <div class="mockup-tabs">
+                <div class="mockup-tab">구글로그</div>
+                <div class="mockup-tab">카톡브리핑</div>
+                <div class="mockup-tab active">플레이스</div>
+                <div class="mockup-tab">블로그</div>
+                <div class="mockup-tab">분석기록</div>
+              </div>
+              <div class="mockup-result">
+                <div class="mockup-rank-row">
+                  <span class="mockup-rank-num">1위</span>
+                  <span>진주 호탄동 국밥</span>
+                  <span style="color: var(--success); margin-left: auto;">▲ 2</span>
+                </div>
+                <div class="mockup-rank-row">
+                  <span class="mockup-rank-num">3위</span>
+                  <span>진주 돼지국밥 맛집</span>
+                  <span style="color: var(--success); margin-left: auto;">▲ 5</span>
+                </div>
+                <div class="mockup-rank-row">
+                  <span class="mockup-rank-num">5위</span>
+                  <span>호탄역 국밥</span>
+                  <span style="color: var(--text-muted); margin-left: auto;">-</span>
+                </div>
+                <div class="mockup-rank-row">
+                  <span class="mockup-rank-num">7위</span>
+                  <span>진주 아침식사</span>
+                  <span style="color: #EF4444; margin-left: auto;">▼ 1</span>
+                </div>
+                <div class="mockup-rank-row" style="border: none;">
+                  <span class="mockup-rank-num">12위</span>
+                  <span>경남 돼지국밥</span>
+                  <span style="color: var(--success); margin-left: auto;">NEW</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Requirements -->
+  <section class="requirements">
+    <div class="container">
+      <div class="section-header">
+        <h2>설치 환경</h2>
+        <p>아래 환경에서 사용 가능합니다</p>
+      </div>
+
+      <div class="req-grid">
+        <div class="req-card">
+          <div class="icon">🖥️</div>
+          <h4>운영체제</h4>
+          <p>Windows 10 이상</p>
+        </div>
+        <div class="req-card">
+          <div class="icon">💾</div>
+          <h4>디스크 용량</h4>
+          <p>약 200MB (Python 포함)</p>
+        </div>
+        <div class="req-card">
+          <div class="icon">🌐</div>
+          <h4>네트워크</h4>
+          <p>인터넷 연결 필요</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta" id="download">
+    <div class="container">
+      <div class="cta-box">
+        <h2>지금 바로 시작하세요</h2>
+        <p>설치 후 로그인하면 바로 사용 가능합니다.<br>업데이트는 자동으로 진행됩니다.</p>
+        <div class="cta-buttons">
+          <a href="https://drive.google.com/file/d/YOUR_FILE_ID/view?usp=sharing" class="btn btn-primary btn-large" target="_blank">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            Windows 다운로드
+          </a>
+        </div>
+        <p class="download-info">
+          Windows 10 이상 지원 · 설치 용량 약 200MB · Python 자동 설치
+        </p>
+
+        <div class="install-steps">
+          <div class="install-step">
+            <span class="num">1</span>
+            <span>ZIP 다운로드 후 압축 해제</span>
+          </div>
+          <div class="install-step">
+            <span class="num">2</span>
+            <span>설치.exe 실행</span>
+          </div>
+          <div class="install-step">
+            <span class="num">3</span>
+            <span>플레이스마스터 실행 후 로그인</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">
+    <p class="footer-text">
+      © 2026 플레이스 마스터 PRO ·
+      문의: <a href="mailto:narusepopo@gmail.com">narusepopo@gmail.com</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// Animate rank number
+const rankEl = document.getElementById('rank1');
+const ranks = [1, 2, 1, 3, 1, 2, 1];
+let idx = 0;
+
+setInterval(() => {
+  idx = (idx + 1) % ranks.length;
+  rankEl.style.transform = 'scale(1.1)';
+  rankEl.textContent = ranks[idx];
+  setTimeout(() => {
+    rankEl.style.transform = 'scale(1)';
+  }, 150);
+}, 2000);
+
+// Smooth scroll
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
