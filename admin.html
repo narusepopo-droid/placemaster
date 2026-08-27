@@ -599,6 +599,7 @@
           <span class="badge" id="pendingCount" style="display:none;">0</span>
         </button>
         <button class="tab" data-tab="users">회원 관리</button>
+        <button class="tab" data-tab="admins">관리자 목록</button>
       </div>
 
       <!-- 가입 신청 탭 -->
@@ -656,14 +657,45 @@
                   <th>매장명</th>
                   <th>가입일</th>
                   <th>만료일</th>
-                  <th>등급</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="9" class="loading">
+                  <td colspan="8" class="loading">
+                    <div class="spinner"></div>
+                    로딩 중...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 관리자 목록 탭 -->
+      <div class="tab-content" id="tab-admins">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">관리자 목록</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadAdmins()">새로고침</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>이메일</th>
+                  <th>이름</th>
+                  <th>연락처</th>
+                  <th>매장명</th>
+                  <th>가입일</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="adminsTable">
+                <tr>
+                  <td colspan="6" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -844,6 +876,7 @@
 
         if (tab.dataset.tab === 'signups') loadSignups();
         else if (tab.dataset.tab === 'users') loadUsers();
+        else if (tab.dataset.tab === 'admins') loadAdmins();
       });
     });
 
@@ -1019,12 +1052,12 @@
     let showSuspended = false;
     async function loadUsers() {
       const tbody = document.getElementById('usersTable');
-      tbody.innerHTML = '<tr><td colspan="9" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
         const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
-          tbody.innerHTML = '<tr><td colspan="9" class="empty-state">회원이 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="empty-state">회원이 없습니다.</td></tr>';
           return;
         }
 
@@ -1032,6 +1065,9 @@
         let activeCount = 0, suspendedCount = 0;
         snapshot.forEach(doc => {
           const d = doc.data();
+          // 회원(member)만 표시
+          if (d.role === 'admin') return;
+
           const isSuspended = d.status === 'suspended';
           if (isSuspended) suspendedCount++; else activeCount++;
 
@@ -1042,9 +1078,6 @@
           const statusBadge = isSuspended
             ? '<span class="status-badge status-rejected">권한상실</span>'
             : '<span class="status-badge status-approved">활성</span>';
-          const roleBadge = d.role === 'admin'
-            ? '<span class="status-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;">관리자</span>'
-            : '<span class="status-badge" style="background:rgba(156,163,175,0.2);color:#9ca3af;">회원</span>';
 
           html += `
             <tr style="${isSuspended ? 'opacity:0.6;' : ''}">
@@ -1054,7 +1087,6 @@
               <td>${d.company || '-'}</td>
               <td>${d.created_at || '-'}</td>
               <td>${d.expires_at || '무제한'}</td>
-              <td>${roleBadge}</td>
               <td>${statusBadge}</td>
               <td class="actions">
                 ${isSuspended ? `
@@ -1070,7 +1102,7 @@
         });
 
         if (!html) {
-          tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
         } else {
           tbody.innerHTML = html;
         }
@@ -1079,7 +1111,7 @@
         document.getElementById('filterBtnActive').textContent = `활성 (${activeCount})`;
         document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="9" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
@@ -1105,6 +1137,60 @@
         });
         await batch.commit();
         showToast(`${count}명의 등급이 관리자로 변경되었습니다.`, 'success');
+        loadUsers();
+        loadAdmins();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    // 관리자 목록 로드
+    async function loadAdmins() {
+      const tbody = document.getElementById('adminsTable');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const snapshot = await db.collection('users').get();
+        let html = '';
+        let count = 0;
+
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          // 관리자(admin)만 표시, 권한상실 제외
+          if (d.role !== 'admin' || d.status === 'suspended') return;
+          count++;
+
+          html += `
+            <tr>
+              <td>${d.email || '-'}</td>
+              <td>${d.name || '-'}</td>
+              <td>${d.phone || '-'}</td>
+              <td>${d.company || '-'}</td>
+              <td>${d.created_at || '-'}</td>
+              <td class="actions">
+                <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}', '${d.role || 'admin'}')">수정</button>
+                <button class="btn btn-sm" onclick="demoteToMember('${doc.id}', '${d.email || ''}')" style="background:var(--warning);">회원으로</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        if (!html) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">관리자가 없습니다.</td></tr>';
+        } else {
+          tbody.innerHTML = html;
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    async function demoteToMember(uid, email) {
+      if (!confirm(`"${email}"을(를) 회원으로 변경하시겠습니까?\n매장 등록 3개 제한이 적용됩니다.`)) return;
+      try {
+        await db.collection('users').doc(uid).update({ role: 'member' });
+        showToast('회원으로 변경되었습니다.', 'success');
+        loadAdmins();
         loadUsers();
       } catch (err) {
         showToast('오류: ' + err.message, 'error');
