@@ -786,11 +786,8 @@
       sender: '01075410805'
     };
 
-    // 관리자 계정
-    const ADMIN_EMAIL = 'narusepopo@gmail.com';
-    const ADMIN_PASSWORD = 'tdag2b20park';
-
     let currentSignup = null;
+    let currentUserEmail = '';
 
     // 로그인 처리
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -799,29 +796,36 @@
       const password = document.getElementById('loginPassword').value;
       const errorEl = document.getElementById('loginError');
 
-      if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-        errorEl.textContent = '관리자 계정이 아닙니다.';
-        return;
-      }
-
       try {
-        await auth.signInWithEmailAndPassword(email, password);
+        errorEl.textContent = '로그인 중...';
+        const userCred = await auth.signInWithEmailAndPassword(email, password);
+
+        // Firestore에서 role 확인
+        const userDoc = await db.collection('users').doc(userCred.user.uid).get();
+        if (!userDoc.exists) {
+          errorEl.textContent = '등록되지 않은 계정입니다.';
+          await auth.signOut();
+          return;
+        }
+
+        const userData = userDoc.data();
+        if (userData.role !== 'admin') {
+          errorEl.textContent = '관리자 권한이 없습니다.';
+          await auth.signOut();
+          return;
+        }
+
+        currentUserEmail = email;
         showDashboard();
       } catch (err) {
-        // Firebase 계정이 없으면 생성
-        try {
-          await auth.createUserWithEmailAndPassword(email, password);
-          showDashboard();
-        } catch (err2) {
-          errorEl.textContent = '로그인 실패: ' + err2.message;
-        }
+        errorEl.textContent = '로그인 실패: ' + (err.message || err);
       }
     });
 
     function showDashboard() {
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboard').classList.add('active');
-      document.getElementById('userEmail').textContent = ADMIN_EMAIL;
+      document.getElementById('userEmail').textContent = currentUserEmail;
       loadSignups();
     }
 
@@ -1325,9 +1329,17 @@
     }
 
     // 자동 로그인 체크
-    auth.onAuthStateChanged(user => {
-      if (user && user.email === ADMIN_EMAIL) {
-        showDashboard();
+    auth.onAuthStateChanged(async user => {
+      if (user) {
+        try {
+          const userDoc = await db.collection('users').doc(user.uid).get();
+          if (userDoc.exists && userDoc.data().role === 'admin') {
+            currentUserEmail = user.email;
+            showDashboard();
+          }
+        } catch (err) {
+          console.log('Auto login check failed:', err);
+        }
       }
     });
   </script>
