@@ -528,98 +528,88 @@ header {
   color: var(--accent);
 }
 
-/* Architecture Diagram */
+/* Architecture Diagram - 간소화 */
 .architecture {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 40px;
-  max-width: 900px;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
 .arch-title {
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: var(--accent);
-  margin-bottom: 32px;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
+  margin-bottom: 24px;
 }
 
-.arch-diagram {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.arch-row {
+.arch-simple {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 20px;
+  gap: 16px;
 }
 
-.arch-box {
+.arch-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   background: var(--ground);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 20px 28px;
-  text-align: center;
-  min-width: 160px;
+  padding: 16px 20px;
 }
 
-.arch-box.highlight {
-  border-color: var(--accent);
-  background: var(--accent-glow);
+.arch-num {
+  width: 32px;
+  height: 32px;
+  background: var(--accent);
+  color: #0B1120;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
 }
 
-.arch-box .icon {
-  font-size: 2rem;
-  margin-bottom: 8px;
+.arch-content {
+  text-align: left;
 }
 
-.arch-box .label {
+.arch-label {
   font-size: 0.9rem;
   font-weight: 600;
+  margin-bottom: 2px;
 }
 
-.arch-box .desc {
+.arch-desc {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  margin-top: 4px;
 }
 
-.arch-connector {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.arch-connector .line {
-  width: 2px;
-  height: 30px;
-  background: var(--border);
-}
-
-.arch-connector .arrow {
+.arch-arrow {
   color: var(--accent);
-  font-size: 1rem;
+  font-size: 1.2rem;
+  font-weight: bold;
 }
 
-.arch-connector-h {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--accent);
-}
-
-.arch-connector-h .line {
-  width: 30px;
-  height: 2px;
-  background: var(--border);
+@media (max-width: 768px) {
+  .arch-simple {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .arch-arrow {
+    transform: rotate(90deg);
+  }
+  .arch-step {
+    width: 100%;
+    max-width: 280px;
+  }
 }
 
 /* Features */
@@ -1390,32 +1380,32 @@ footer {
 
         <div class="ranking-preview">
           <div class="preview-header">
-            <span class="preview-title">📊 백세돼지국밥 순위 현황</span>
+            <span class="preview-title">📊 우아성형외과 순위 현황</span>
             <span class="preview-live">실시간</span>
           </div>
           <div class="ranking-item">
             <div class="rank-number" id="rank1">1</div>
             <div class="rank-info">
-              <div class="rank-keyword">진주 호탄동 국밥</div>
-              <div class="rank-store">백세돼지국밥</div>
+              <div class="rank-keyword">신논현 성형외과</div>
+              <div class="rank-store">우아성형외과의원</div>
+            </div>
+            <div class="rank-change up">▲ 신규</div>
+          </div>
+          <div class="ranking-item">
+            <div class="rank-number">2</div>
+            <div class="rank-info">
+              <div class="rank-keyword">신논현역 성형외과</div>
+              <div class="rank-store">우아성형외과의원</div>
             </div>
             <div class="rank-change up">▲ 2</div>
           </div>
           <div class="ranking-item">
-            <div class="rank-number">3</div>
+            <div class="rank-number">4</div>
             <div class="rank-info">
-              <div class="rank-keyword">진주 돼지국밥 맛집</div>
-              <div class="rank-store">백세돼지국밥</div>
+              <div class="rank-keyword">강남 성형외과</div>
+              <div class="rank-store">우아성형외과의원</div>
             </div>
-            <div class="rank-change up">▲ 5</div>
-          </div>
-          <div class="ranking-item">
-            <div class="rank-number">7</div>
-            <div class="rank-info">
-              <div class="rank-keyword">호탄동 맛집</div>
-              <div class="rank-store">백세돼지국밥</div>
-            </div>
-            <div class="rank-change down">▼ 1</div>
+            <div class="rank-change down">▼ 3</div>
           </div>
         </div>
       </div>
@@ -1496,59 +1486,31 @@ footer {
         </div>
       </div>
 
-      <!-- Architecture Diagram -->
+      <!-- Architecture Diagram - 간소화 -->
       <div class="architecture">
-        <div class="arch-title">시스템 구조도</div>
-        <div class="arch-diagram">
-          <div class="arch-row">
-            <div class="arch-box highlight">
-              <div class="icon">💻</div>
-              <div class="label">플레이스 마스터 PRO</div>
-              <div class="desc">사용자 PC에서 실행</div>
+        <div class="arch-title">작동 원리</div>
+        <div class="arch-simple">
+          <div class="arch-step">
+            <div class="arch-num">1</div>
+            <div class="arch-content">
+              <div class="arch-label">프로그램 실행</div>
+              <div class="arch-desc">PC에서 플레이스마스터 실행</div>
             </div>
           </div>
-
-          <div class="arch-connector">
-            <div class="arrow">↓</div>
-            <div class="line"></div>
-          </div>
-
-          <div class="arch-row">
-            <div class="arch-box">
-              <div class="icon">🌐</div>
-              <div class="label">Playwright 브라우저</div>
-              <div class="desc">백그라운드 크롤링</div>
-            </div>
-            <div class="arch-connector-h">
-              <div class="line"></div>
-              <span>→</span>
-            </div>
-            <div class="arch-box">
-              <div class="icon">🗺️</div>
-              <div class="label">네이버 지도/블로그</div>
-              <div class="desc">실시간 순위 데이터</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-num">2</div>
+            <div class="arch-content">
+              <div class="arch-label">자동 크롤링</div>
+              <div class="arch-desc">네이버 지도/블로그 검색</div>
             </div>
           </div>
-
-          <div class="arch-connector">
-            <div class="line"></div>
-            <div class="arrow">↓</div>
-          </div>
-
-          <div class="arch-row">
-            <div class="arch-box">
-              <div class="icon">🔥</div>
-              <div class="label">Firebase</div>
-              <div class="desc">계정 관리 & 자동 업데이트</div>
-            </div>
-            <div class="arch-connector-h">
-              <div class="line"></div>
-              <span>←→</span>
-            </div>
-            <div class="arch-box">
-              <div class="icon">💾</div>
-              <div class="label">로컬 저장소</div>
-              <div class="desc">분석 기록 보관</div>
+          <div class="arch-arrow">→</div>
+          <div class="arch-step">
+            <div class="arch-num">3</div>
+            <div class="arch-content">
+              <div class="arch-label">순위 추출</div>
+              <div class="arch-desc">광고 제외 실제 순위만</div>
             </div>
           </div>
         </div>
@@ -1708,12 +1670,12 @@ footer {
           <div class="screenshot-mockup">
             <div class="mockup-sidebar">
               <div class="mockup-label">관리 대상 광고주</div>
-              <div class="mockup-item">감동식당 노원본점</div>
-              <div class="mockup-item" style="background: var(--accent); color: #0B1120;">백세돼지국밥</div>
-              <div class="mockup-item">CMS 신동탄영재교육</div>
-              <div class="mockup-item">검산별빛캠핑장</div>
+              <div class="mockup-item" style="background: var(--accent); color: #0B1120;">우아성형외과의원</div>
+              <div class="mockup-item">미모드림의원</div>
               <div class="mockup-item">베럴짐 광화문점</div>
-              <div class="mockup-item">라보떼 메디컬스킨케어</div>
+              <div class="mockup-item">더블에스 PT&필라테</div>
+              <div class="mockup-item">베럴짐 대치점</div>
+              <div class="mockup-item">소초스튠화목난로</div>
             </div>
             <div class="mockup-main">
               <div class="mockup-tabs">
@@ -1725,28 +1687,28 @@ footer {
               <div class="mockup-result">
                 <div class="mockup-rank-row">
                   <span class="mockup-rank-num">1위</span>
-                  <span>노원역 등갈비</span>
+                  <span>신논현 성형외과</span>
                   <span style="color: #22c55e; margin-left: auto;">▲ 신규</span>
                 </div>
                 <div class="mockup-rank-row">
                   <span class="mockup-rank-num">2위</span>
-                  <span>돼지등갈비찜</span>
+                  <span>신논현역 성형외과</span>
                   <span style="color: #64748b; margin-left: auto;">-</span>
                 </div>
                 <div class="mockup-rank-row">
                   <span class="mockup-rank-num">2위</span>
-                  <span>상계동 등갈비</span>
-                  <span style="color: #ef4444; margin-left: auto;">▼ 1</span>
+                  <span>강남 성형외과 추천</span>
+                  <span style="color: #22c55e; margin-left: auto;">▲ 2</span>
                 </div>
                 <div class="mockup-rank-row">
-                  <span class="mockup-rank-num">1위</span>
-                  <span>노원 갈비찜</span>
-                  <span style="color: #22c55e; margin-left: auto;">▲ 1</span>
+                  <span class="mockup-rank-num">4위</span>
+                  <span>성형외과</span>
+                  <span style="color: #ef4444; margin-left: auto;">▼ 3</span>
                 </div>
                 <div class="mockup-rank-row" style="border: none;">
-                  <span class="mockup-rank-num" style="color: #64748b;">30위 밖</span>
-                  <span style="color: #64748b;">노현역 갈비찜</span>
-                  <span style="color: #ef4444; margin-left: auto;">▼ 30+</span>
+                  <span class="mockup-rank-num">5위</span>
+                  <span>신논현역 성형외과 추천</span>
+                  <span style="color: #64748b; margin-left: auto;">-</span>
                 </div>
               </div>
             </div>
