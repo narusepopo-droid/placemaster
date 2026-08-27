@@ -639,9 +639,10 @@
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">회원 목록</h2>
-            <div style="display:flex;gap:8px;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
               <button class="btn btn-sm active" id="filterBtnActive" onclick="toggleUserFilter(false)" style="background:var(--success);">활성 (0)</button>
               <button class="btn btn-sm" id="filterBtnSuspended" onclick="toggleUserFilter(true)" style="background:var(--surface-2);">권한상실 (0)</button>
+              <button class="btn btn-sm" onclick="setAllAdmin()" style="background:var(--warning);">전체 관리자로</button>
               <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
             </div>
           </div>
@@ -655,13 +656,14 @@
                   <th>매장명</th>
                   <th>가입일</th>
                   <th>만료일</th>
+                  <th>등급</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="8" class="loading">
+                  <td colspan="9" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -740,6 +742,13 @@
         <div class="form-group">
           <label>만료일</label>
           <input type="date" id="editUserExpires">
+        </div>
+        <div class="form-group">
+          <label>등급</label>
+          <select id="editUserRole" style="width:100%;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;">
+            <option value="member">회원 (매장 3개 제한)</option>
+            <option value="admin">관리자 (무제한)</option>
+          </select>
         </div>
       </div>
       <div class="modal-footer">
@@ -1006,12 +1015,12 @@
     let showSuspended = false;
     async function loadUsers() {
       const tbody = document.getElementById('usersTable');
-      tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="9" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
         const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
-          tbody.innerHTML = '<tr><td colspan="8" class="empty-state">회원이 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="9" class="empty-state">회원이 없습니다.</td></tr>';
           return;
         }
 
@@ -1029,6 +1038,9 @@
           const statusBadge = isSuspended
             ? '<span class="status-badge status-rejected">권한상실</span>'
             : '<span class="status-badge status-approved">활성</span>';
+          const roleBadge = d.role === 'admin'
+            ? '<span class="status-badge" style="background:rgba(59,130,246,0.2);color:#3b82f6;">관리자</span>'
+            : '<span class="status-badge" style="background:rgba(156,163,175,0.2);color:#9ca3af;">회원</span>';
 
           html += `
             <tr style="${isSuspended ? 'opacity:0.6;' : ''}">
@@ -1038,13 +1050,14 @@
               <td>${d.company || '-'}</td>
               <td>${d.created_at || '-'}</td>
               <td>${d.expires_at || '무제한'}</td>
+              <td>${roleBadge}</td>
               <td>${statusBadge}</td>
               <td class="actions">
                 ${isSuspended ? `
                   <button class="btn btn-sm btn-success" onclick="restoreUser('${doc.id}')">복원</button>
                   <button class="btn btn-sm btn-danger" onclick="deleteUserPermanently('${doc.id}', '${d.email || ''}')">삭제</button>
                 ` : `
-                  <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}')">수정</button>
+                  <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}', '${d.role || 'member'}')">수정</button>
                   <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
                 `}
               </td>
@@ -1053,7 +1066,7 @@
         });
 
         if (!html) {
-          tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
         } else {
           tbody.innerHTML = html;
         }
@@ -1062,7 +1075,7 @@
         document.getElementById('filterBtnActive').textContent = `활성 (${activeCount})`;
         document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
@@ -1071,6 +1084,27 @@
       document.getElementById('filterBtnActive').classList.toggle('active', !suspended);
       document.getElementById('filterBtnSuspended').classList.toggle('active', suspended);
       loadUsers();
+    }
+
+    async function setAllAdmin() {
+      if (!confirm('모든 활성 회원을 관리자 등급으로 변경하시겠습니까?')) return;
+      try {
+        const snapshot = await db.collection('users').get();
+        const batch = db.batch();
+        let count = 0;
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if (d.status !== 'suspended' && d.role !== 'admin') {
+            batch.update(doc.ref, { role: 'admin' });
+            count++;
+          }
+        });
+        await batch.commit();
+        showToast(`${count}명의 등급이 관리자로 변경되었습니다.`, 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
     }
 
     async function suspendUser(uid, email) {
@@ -1114,12 +1148,13 @@
     }
 
     // 회원 수정 모달
-    function showEditUserModal(uid, name, phone, company, expires) {
+    function showEditUserModal(uid, name, phone, company, expires, role) {
       document.getElementById('editUserUid').value = uid;
       document.getElementById('editUserName').value = name;
       document.getElementById('editUserPhone').value = phone;
       document.getElementById('editUserCompany').value = company;
       document.getElementById('editUserExpires').value = expires;
+      document.getElementById('editUserRole').value = role || 'member';
       document.getElementById('editUserModal').classList.add('active');
     }
 
@@ -1130,7 +1165,8 @@
           name: document.getElementById('editUserName').value,
           phone: document.getElementById('editUserPhone').value,
           company: document.getElementById('editUserCompany').value,
-          expires_at: document.getElementById('editUserExpires').value
+          expires_at: document.getElementById('editUserExpires').value,
+          role: document.getElementById('editUserRole').value
         });
         showToast('저장되었습니다.', 'success');
         closeModal('editUserModal');
