@@ -1050,38 +1050,278 @@ footer {
 }
 
 @media (max-width: 640px) {
+  .container {
+    padding: 0 16px;
+  }
+
   .nav-links {
     display: none;
   }
 
+  /* 헤더 모바일 최적화 */
+  .header-inner {
+    height: 56px;
+    gap: 8px;
+  }
+
+  .logo {
+    font-size: 1rem;
+    gap: 8px;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  /* 히어로 모바일 */
   .hero {
-    padding: 120px 0 60px;
+    padding: 80px 0 40px;
   }
 
-  .features-grid {
-    grid-template-columns: 1fr;
+  .hero h1 {
+    font-size: 1.75rem;
+    margin-bottom: 16px;
   }
 
-  .cta-box {
-    padding: 40px 24px;
+  .hero-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    margin-bottom: 16px;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem;
+    margin-bottom: 24px;
   }
 
   .hero-buttons {
     flex-direction: column;
+    gap: 12px;
   }
 
   .btn-large {
     width: 100%;
     justify-content: center;
+    padding: 14px 20px;
+    font-size: 0.95rem;
   }
 
+  .btn-xlarge {
+    padding: 16px 24px;
+    font-size: 1.1rem;
+    border-radius: 12px;
+  }
+
+  /* 프리뷰 카드 모바일 */
+  .ranking-preview {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .preview-header {
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+  }
+
+  .preview-title {
+    font-size: 0.85rem;
+  }
+
+  .ranking-item {
+    gap: 12px;
+    padding: 10px 0;
+  }
+
+  .rank-number {
+    font-size: 1.2rem;
+    width: 36px;
+  }
+
+  .rank-keyword {
+    font-size: 0.85rem;
+  }
+
+  .rank-store {
+    font-size: 0.75rem;
+  }
+
+  /* 섹션 모바일 */
+  .problem {
+    padding: 60px 0;
+  }
+
+  .problem h2 {
+    font-size: 1.25rem;
+  }
+
+  .problem-list li {
+    font-size: 0.9rem;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .solution-box {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .solution-box h3 {
+    font-size: 1rem;
+  }
+
+  .solution-box p {
+    font-size: 0.9rem;
+  }
+
+  /* How it works 모바일 */
+  .how-it-works {
+    padding: 60px 0;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
+  }
+
+  .section-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .section-header p {
+    font-size: 0.95rem;
+  }
+
+  .flow-step {
+    max-width: 140px;
+  }
+
+  .flow-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 14px;
+  }
+
+  .flow-icon svg, .flow-icon img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .flow-label {
+    font-size: 0.85rem;
+    margin-top: 10px;
+  }
+
+  .flow-arrow {
+    font-size: 1.2rem;
+  }
+
+  /* Features 모바일 */
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .feature-card {
+    padding: 20px;
+    border-radius: 12px;
+  }
+
+  .feature-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+
+  .feature-card h3 {
+    font-size: 1rem;
+  }
+
+  .feature-card p {
+    font-size: 0.85rem;
+  }
+
+  /* CTA 모바일 */
+  .cta-box {
+    padding: 32px 20px;
+    border-radius: 16px;
+  }
+
+  .cta-box h2 {
+    font-size: 1.25rem;
+  }
+
+  .cta-box p {
+    font-size: 0.9rem;
+  }
+
+  /* Stats 모바일 */
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .stat-number {
+    font-size: 1.5rem;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+  }
+
+  /* 다운로드 섹션 모바일 */
+  .download {
+    padding: 60px 0;
+  }
+
+  .download-card {
+    padding: 24px 20px;
+    border-radius: 16px;
+  }
+
+  .install-steps {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .install-step {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .install-step .number {
+    width: 28px;
+    height: 28px;
+    font-size: 0.85rem;
+  }
+
+  /* 아키텍처 모바일 */
   .architecture {
-    padding: 24px;
+    padding: 20px;
+    border-radius: 12px;
   }
 
   .arch-box {
-    min-width: 120px;
-    padding: 16px;
+    min-width: 100px;
+    padding: 12px;
+    font-size: 0.8rem;
+  }
+
+  /* 푸터 모바일 */
+  footer {
+    padding: 32px 0;
+  }
+
+  .footer-text {
+    font-size: 0.8rem;
   }
 }
 </style>
