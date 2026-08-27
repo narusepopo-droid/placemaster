@@ -249,21 +249,48 @@ header {
 }
 
 .btn-xlarge {
-  padding: 20px 48px;
-  font-size: 1.2rem;
-  border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(34, 211, 238, 0.3);
-  animation: glowPulse 2s infinite;
+  padding: 24px 64px;
+  font-size: 1.4rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(34, 211, 238, 0.4);
+  animation: glowPulse 1.5s infinite;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-xlarge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: shine 2s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  50%, 100% { left: 100%; }
 }
 
 @keyframes glowPulse {
-  0%, 100% { box-shadow: 0 8px 30px rgba(34, 211, 238, 0.3); }
-  50% { box-shadow: 0 8px 40px rgba(34, 211, 238, 0.5); }
+  0%, 100% { box-shadow: 0 10px 40px rgba(34, 211, 238, 0.4); }
+  50% { box-shadow: 0 10px 60px rgba(34, 211, 238, 0.7); }
 }
 
 .btn-xlarge:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 40px rgba(34, 211, 238, 0.4);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 15px 50px rgba(34, 211, 238, 0.5);
+}
+
+.btn-xlarge svg {
+  animation: downloadArrow 1s infinite;
+}
+
+@keyframes downloadArrow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
 }
 
 /* Live Ranking Preview */
@@ -965,110 +992,6 @@ footer {
   text-decoration: none;
 }
 
-/* Sticky Download Banner */
-.sticky-download {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-  background: linear-gradient(135deg, #0891B2 0%, #06B6D4 50%, #22D3EE 100%);
-  padding: 16px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.5s ease-out;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.sticky-download .banner-text {
-  color: #0B1120;
-  font-weight: 700;
-  font-size: 1.1rem;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.sticky-download .banner-icon {
-  font-size: 1.5rem;
-  animation: bounce 2s infinite;
-}
-
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-}
-
-.sticky-download .btn-download {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 32px;
-  background: #0B1120;
-  color: #22D3EE;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 1.05rem;
-  text-decoration: none;
-  transition: all 0.3s;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-.sticky-download .btn-download:hover {
-  background: #1a2540;
-  transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-}
-
-.sticky-download .btn-download svg {
-  animation: downloadBounce 1.5s infinite;
-}
-
-@keyframes downloadBounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(3px); }
-}
-
-.sticky-download .close-banner {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.2);
-  border: none;
-  color: #0B1120;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.sticky-download .close-banner:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-/* Extra padding for footer when banner is visible */
-footer {
-  padding-bottom: 100px;
-}
 
 /* Responsive */
 @media (max-width: 1024px) {
@@ -1639,19 +1562,6 @@ footer {
     </div>
   </section>
 </main>
-
-<!-- Sticky Download Banner -->
-<div class="sticky-download" id="stickyBanner">
-  <span class="banner-text">
-    <span class="banner-icon">⬇️</span>
-    지금 무료 다운로드하세요!
-  </span>
-  <a href="https://drive.google.com/file/d/1r46-10odhsCz6_Yq6blJ1pdhpU2BfXan/view?usp=sharing" class="btn-download" target="_blank">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-    Windows 다운로드
-  </a>
-  <button class="close-banner" onclick="document.getElementById('stickyBanner').style.display='none'; document.querySelector('footer').style.paddingBottom='40px';" aria-label="닫기">×</button>
-</div>
 
 <footer>
   <div class="container">
