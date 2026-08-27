@@ -599,7 +599,6 @@
           <span class="badge" id="pendingCount" style="display:none;">0</span>
         </button>
         <button class="tab" data-tab="users">회원 관리</button>
-        <button class="tab" data-tab="team">팀원 관리</button>
       </div>
 
       <!-- 가입 신청 탭 -->
@@ -673,39 +672,6 @@
         </div>
       </div>
 
-      <!-- 팀원 관리 탭 -->
-      <div class="tab-content" id="tab-team">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">팀원 목록</h2>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-sm btn-success" onclick="showAddTeamModal()">+ 팀원 추가</button>
-              <button class="btn btn-sm btn-primary" onclick="loadTeam()">새로고침</button>
-            </div>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>이메일</th>
-                  <th>이름</th>
-                  <th>기기 상태</th>
-                  <th>만료일</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody id="teamTable">
-                <tr>
-                  <td colspan="5" class="loading">
-                    <div class="spinner"></div>
-                    로딩 중...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </main>
   </div>
 
@@ -779,34 +745,6 @@
       <div class="modal-footer">
         <button class="btn btn-logout" onclick="closeModal('editUserModal')">취소</button>
         <button class="btn btn-primary" onclick="saveUser()">저장</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 팀원 추가 모달 -->
-  <div class="modal-overlay" id="addTeamModal">
-    <div class="modal">
-      <div class="modal-header">
-        <h3 class="modal-title">팀원 추가</h3>
-        <button class="modal-close" onclick="closeModal('addTeamModal')">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div class="form-group">
-          <label>이메일</label>
-          <input type="email" id="addTeamEmail" placeholder="example@email.com">
-        </div>
-        <div class="form-group">
-          <label>비밀번호</label>
-          <input type="password" id="addTeamPassword" placeholder="6자 이상">
-        </div>
-        <div class="form-group">
-          <label>만료일 (선택)</label>
-          <input type="date" id="addTeamExpires">
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-logout" onclick="closeModal('addTeamModal')">취소</button>
-        <button class="btn btn-success" onclick="addTeamMember()">추가</button>
       </div>
     </div>
   </div>
@@ -893,7 +831,6 @@
 
         if (tab.dataset.tab === 'signups') loadSignups();
         else if (tab.dataset.tab === 'users') loadUsers();
-        else if (tab.dataset.tab === 'team') loadTeam();
       });
     });
 
@@ -1105,6 +1042,7 @@
               <td class="actions">
                 ${isSuspended ? `
                   <button class="btn btn-sm btn-success" onclick="restoreUser('${doc.id}')">복원</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteUserPermanently('${doc.id}', '${d.email || ''}')">삭제</button>
                 ` : `
                   <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}')">수정</button>
                   <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
@@ -1157,6 +1095,18 @@
           restoredAt: new Date().toISOString()
         });
         showToast('복원되었습니다.', 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteUserPermanently(uid, email) {
+      if (!confirm(`"${email}" 회원을 완전히 삭제하시겠습니까?\n\n⚠️ 이 작업은 되돌릴 수 없습니다.`)) return;
+      if (!confirm('정말 삭제하시겠습니까? 모든 데이터가 영구 삭제됩니다.')) return;
+      try {
+        await db.collection('users').doc(uid).delete();
+        showToast('완전 삭제되었습니다.', 'success');
         loadUsers();
       } catch (err) {
         showToast('오류: ' + err.message, 'error');
