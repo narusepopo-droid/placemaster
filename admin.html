@@ -640,7 +640,11 @@
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">회원 목록</h2>
-            <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm active" id="filterBtnActive" onclick="toggleUserFilter(false)" style="background:var(--success);">활성 (0)</button>
+              <button class="btn btn-sm" id="filterBtnSuspended" onclick="toggleUserFilter(true)" style="background:var(--surface-2);">권한상실 (0)</button>
+              <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
+            </div>
           </div>
           <div class="table-container">
             <table>
@@ -652,12 +656,13 @@
                   <th>회사</th>
                   <th>가입일</th>
                   <th>만료일</th>
+                  <th>상태</th>
                   <th>관리</th>
                 </tr>
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="7" class="loading">
+                  <td colspan="8" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -683,14 +688,15 @@
               <thead>
                 <tr>
                   <th>이메일</th>
-                  <th>역할</th>
+                  <th>이름</th>
                   <th>기기 상태</th>
+                  <th>만료일</th>
                   <th>관리</th>
                 </tr>
               </thead>
               <tbody id="teamTable">
                 <tr>
-                  <td colspan="4" class="loading">
+                  <td colspan="5" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -1060,38 +1066,100 @@
     }
 
     // 회원 목록 로드
+    let showSuspended = false;
     async function loadUsers() {
       const tbody = document.getElementById('usersTable');
-      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
         const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
-          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">회원이 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="empty-state">회원이 없습니다.</td></tr>';
           return;
         }
 
         let html = '';
+        let activeCount = 0, suspendedCount = 0;
         snapshot.forEach(doc => {
           const d = doc.data();
+          const isSuspended = d.status === 'suspended';
+          if (isSuspended) suspendedCount++; else activeCount++;
+
+          // 필터링
+          if (!showSuspended && isSuspended) return;
+          if (showSuspended && !isSuspended) return;
+
+          const statusBadge = isSuspended
+            ? '<span class="status-badge status-rejected">권한상실</span>'
+            : '<span class="status-badge status-approved">활성</span>';
+
           html += `
-            <tr>
+            <tr style="${isSuspended ? 'opacity:0.6;' : ''}">
               <td>${d.email || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
               <td>${d.company || '-'}</td>
               <td>${d.created_at || '-'}</td>
               <td>${d.expires_at || '무제한'}</td>
+              <td>${statusBadge}</td>
               <td class="actions">
-                <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}')">수정</button>
-                <button class="btn btn-sm btn-danger" onclick="resetDevice('${doc.id}')">기기초기화</button>
+                ${isSuspended ? `
+                  <button class="btn btn-sm btn-success" onclick="restoreUser('${doc.id}')">복원</button>
+                ` : `
+                  <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}')">수정</button>
+                  <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
+                `}
               </td>
             </tr>
           `;
         });
-        tbody.innerHTML = html;
+
+        if (!html) {
+          tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+        } else {
+          tbody.innerHTML = html;
+        }
+
+        // 필터 버튼 업데이트
+        document.getElementById('filterBtnActive').textContent = `활성 (${activeCount})`;
+        document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    function toggleUserFilter(suspended) {
+      showSuspended = suspended;
+      document.getElementById('filterBtnActive').classList.toggle('active', !suspended);
+      document.getElementById('filterBtnSuspended').classList.toggle('active', suspended);
+      loadUsers();
+    }
+
+    async function suspendUser(uid, email) {
+      if (!confirm(`"${email}" 회원의 권한을 상실시키겠습니까?\n로그인이 불가능해지지만, 정보는 보존됩니다.`)) return;
+      try {
+        await db.collection('users').doc(uid).update({
+          status: 'suspended',
+          suspendedAt: new Date().toISOString()
+        });
+        showToast('권한상실 처리되었습니다.', 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function restoreUser(uid) {
+      if (!confirm('회원 권한을 복원하시겠습니까?')) return;
+      try {
+        await db.collection('users').doc(uid).update({
+          status: 'active',
+          restoredAt: new Date().toISOString()
+        });
+        showToast('복원되었습니다.', 'success');
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
       }
     }
 
@@ -1135,34 +1203,44 @@
     // 팀원 관리
     async function loadTeam() {
       const tbody = document.getElementById('teamTable');
-      tbody.innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
-        const snapshot = await db.collection('users').where('role', '==', 'member').get();
+        const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
-          tbody.innerHTML = '<tr><td colspan="4" class="empty-state">팀원이 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">팀원이 없습니다.</td></tr>';
           return;
         }
 
         let html = '';
         snapshot.forEach(doc => {
           const d = doc.data();
-          const deviceStatus = d.device_id ? '등록됨' : '미등록';
+          // 관리자 계정은 제외, 권한상실된 사용자도 제외
+          if (d.email === 'narusepopo@gmail.com') return;
+          if (d.status === 'suspended') return;
+
+          const deviceStatus = d.device_id ? '<span style="color:var(--success);">등록됨</span>' : '<span style="color:var(--text-muted);">미등록</span>';
           html += `
             <tr>
               <td>${d.email || '-'}</td>
-              <td>${d.role || 'member'}</td>
+              <td>${d.name || '-'}</td>
               <td>${deviceStatus}</td>
+              <td>${d.expires_at || '무제한'}</td>
               <td class="actions">
                 <button class="btn btn-sm btn-primary" onclick="resetDevice('${doc.id}')">기기초기화</button>
-                <button class="btn btn-sm btn-danger" onclick="deleteUser('${doc.id}')">삭제</button>
+                <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
               </td>
             </tr>
           `;
         });
-        tbody.innerHTML = html;
+
+        if (!html) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">팀원이 없습니다.</td></tr>';
+        } else {
+          tbody.innerHTML = html;
+        }
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
