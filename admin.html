@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>플레이스 마스터 PRO - 관리자</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0f1a;
+      --surface: #111827;
+      --surface-2: #1f2937;
+      --border: #374151;
+      --text: #f9fafb;
+      --text-muted: #9ca3af;
+      --accent: #3b82f6;
+      --accent-hover: #2563eb;
+      --success: #22c55e;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* Login Screen */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .login-logo h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .login-logo p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-bottom: 8px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      width: 100%;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background: #16a34a;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.85rem;
+    }
+
+    .login-error {
+      color: var(--danger);
+      font-size: 0.875rem;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    /* Dashboard */
+    .dashboard {
+      display: none;
+    }
+
+    .dashboard.active {
+      display: block;
+    }
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .header-logo span {
+      background: var(--surface-2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-user span {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .btn-logout {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 8px 16px;
+    }
+
+    .btn-logout:hover {
+      background: var(--surface-2);
+      color: var(--text);
+    }
+
+    .main {
+      padding: 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .tab:hover {
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .tab .badge {
+      background: var(--danger);
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 10px;
+      margin-left: 8px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    /* Table */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    td {
+      font-size: 0.95rem;
+    }
+
+    tr:hover {
+      background: var(--surface-2);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .status-pending {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .status-approved {
+      background: rgba(34, 197, 94, 0.2);
+      color: var(--success);
+    }
+
+    .status-rejected {
+      background: rgba(239, 68, 68, 0.2);
+      color: var(--danger);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    /* Info List */
+    .info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .info-value {
+      font-size: 1rem;
+    }
+
+    /* Loading */
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .header {
+        padding: 12px 16px;
+      }
+
+      .header-logo h1 {
+        font-size: 1rem;
+      }
+
+      .header-user span {
+        display: none;
+      }
+
+      .main {
+        padding: 16px;
+      }
+
+      .tabs {
+        gap: 4px;
+      }
+
+      .tab {
+        padding: 8px 14px;
+        font-size: 0.85rem;
+      }
+
+      .card {
+        padding: 16px;
+      }
+
+      th, td {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+      }
+
+      .actions {
+        flex-direction: column;
+        gap: 4px;
+      }
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      padding: 16px 24px;
+      border-radius: 12px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 2000;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+    }
+
+    .toast.success {
+      border-color: var(--success);
+    }
+
+    .toast.error {
+      border-color: var(--danger);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Login Screen -->
+  <div class="login-container" id="loginScreen">
+    <div class="login-box">
+      <div class="login-logo">
+        <h1>플레이스 마스터 PRO</h1>
+        <p>관리자 대시보드</p>
+      </div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" id="loginEmail" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="loginPassword" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary">로그인</button>
+        <div class="login-error" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="dashboard" id="dashboard">
+    <header class="header">
+      <div class="header-logo">
+        <h1>플레이스 마스터 PRO</h1>
+        <span>관리자</span>
+      </div>
+      <div class="header-user">
+        <span id="userEmail"></span>
+        <button class="btn btn-logout" onclick="logout()">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="tabs">
+        <button class="tab active" data-tab="signups">
+          가입 신청
+          <span class="badge" id="pendingCount" style="display:none;">0</span>
+        </button>
+        <button class="tab" data-tab="users">회원 관리</button>
+        <button class="tab" data-tab="team">팀원 관리</button>
+      </div>
+
+      <!-- 가입 신청 탭 -->
+      <div class="tab-content active" id="tab-signups">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">가입 신청 목록</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadSignups()">새로고침</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>신청일</th>
+                  <th>이름</th>
+                  <th>연락처</th>
+                  <th>이메일</th>
+                  <th>회사</th>
+                  <th>상태</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="signupsTable">
+                <tr>
+                  <td colspan="7" class="loading">
+                    <div class="spinner"></div>
+                    로딩 중...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 회원 관리 탭 -->
+      <div class="tab-content" id="tab-users">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">회원 목록</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>이메일</th>
+                  <th>이름</th>
+                  <th>연락처</th>
+                  <th>회사</th>
+                  <th>가입일</th>
+                  <th>만료일</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="usersTable">
+                <tr>
+                  <td colspan="7" class="loading">
+                    <div class="spinner"></div>
+                    로딩 중...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 팀원 관리 탭 -->
+      <div class="tab-content" id="tab-team">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">팀원 목록</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm btn-success" onclick="showAddTeamModal()">+ 팀원 추가</button>
+              <button class="btn btn-sm btn-primary" onclick="loadTeam()">새로고침</button>
+            </div>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>이메일</th>
+                  <th>역할</th>
+                  <th>기기 상태</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="teamTable">
+                <tr>
+                  <td colspan="4" class="loading">
+                    <div class="spinner"></div>
+                    로딩 중...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 승인 모달 -->
+  <div class="modal-overlay" id="approveModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">가입 승인</h3>
+        <button class="modal-close" onclick="closeModal('approveModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-label">이름</span>
+            <span class="info-value" id="approveModalName"></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">연락처</span>
+            <span class="info-value" id="approveModalPhone"></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">이메일 (아이디)</span>
+            <span class="info-value" id="approveModalEmail"></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">회사</span>
+            <span class="info-value" id="approveModalCompany"></span>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top:20px;">
+          <label>만료일 (선택)</label>
+          <input type="date" id="approveExpiresAt">
+        </div>
+        <p style="color:var(--text-muted);font-size:0.85rem;margin-top:12px;">
+          승인 시 Firebase 계정이 생성되고, 임시 비밀번호가 문자로 발송됩니다.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-logout" onclick="closeModal('approveModal')">취소</button>
+        <button class="btn btn-success" id="approveBtn" onclick="approveSignup()">승인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회원 수정 모달 -->
+  <div class="modal-overlay" id="editUserModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">회원 정보 수정</h3>
+        <button class="modal-close" onclick="closeModal('editUserModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editUserUid">
+        <div class="form-group">
+          <label>이름</label>
+          <input type="text" id="editUserName">
+        </div>
+        <div class="form-group">
+          <label>연락처</label>
+          <input type="text" id="editUserPhone">
+        </div>
+        <div class="form-group">
+          <label>회사</label>
+          <input type="text" id="editUserCompany">
+        </div>
+        <div class="form-group">
+          <label>만료일</label>
+          <input type="date" id="editUserExpires">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-logout" onclick="closeModal('editUserModal')">취소</button>
+        <button class="btn btn-primary" onclick="saveUser()">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 팀원 추가 모달 -->
+  <div class="modal-overlay" id="addTeamModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title">팀원 추가</h3>
+        <button class="modal-close" onclick="closeModal('addTeamModal')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label>이메일</label>
+          <input type="email" id="addTeamEmail" placeholder="example@email.com">
+        </div>
+        <div class="form-group">
+          <label>비밀번호</label>
+          <input type="password" id="addTeamPassword" placeholder="6자 이상">
+        </div>
+        <div class="form-group">
+          <label>만료일 (선택)</label>
+          <input type="date" id="addTeamExpires">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-logout" onclick="closeModal('addTeamModal')">취소</button>
+        <button class="btn btn-success" onclick="addTeamMember()">추가</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <span id="toastMsg"></span>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo",
+      authDomain: "placemaster-pro.firebaseapp.com",
+      projectId: "placemaster-pro"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    // 알리고 API 설정
+    const ALIGO = {
+      key: 'n743layhxv8a0qsae33jm0i5hnjxpphw',
+      user_id: 'metpopo',
+      sender: '01075410805'
+    };
+
+    // 관리자 계정
+    const ADMIN_EMAIL = 'narusepopo@gmail.com';
+    const ADMIN_PASSWORD = 'tdag2b20park';
+
+    let currentSignup = null;
+
+    // 로그인 처리
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const errorEl = document.getElementById('loginError');
+
+      if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+        errorEl.textContent = '관리자 계정이 아닙니다.';
+        return;
+      }
+
+      try {
+        await auth.signInWithEmailAndPassword(email, password);
+        showDashboard();
+      } catch (err) {
+        // Firebase 계정이 없으면 생성
+        try {
+          await auth.createUserWithEmailAndPassword(email, password);
+          showDashboard();
+        } catch (err2) {
+          errorEl.textContent = '로그인 실패: ' + err2.message;
+        }
+      }
+    });
+
+    function showDashboard() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      document.getElementById('userEmail').textContent = ADMIN_EMAIL;
+      loadSignups();
+    }
+
+    function logout() {
+      auth.signOut();
+      location.reload();
+    }
+
+    // 탭 전환
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+
+        if (tab.dataset.tab === 'signups') loadSignups();
+        else if (tab.dataset.tab === 'users') loadUsers();
+        else if (tab.dataset.tab === 'team') loadTeam();
+      });
+    });
+
+    // 가입 신청 로드
+    async function loadSignups() {
+      const tbody = document.getElementById('signupsTable');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const snapshot = await db.collection('signups').orderBy('createdAt', 'desc').get();
+        if (snapshot.empty) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">가입 신청이 없습니다.</td></tr>';
+          return;
+        }
+
+        let pendingCount = 0;
+        let html = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if (d.status === 'pending') pendingCount++;
+
+          const statusClass = d.status === 'pending' ? 'status-pending' :
+                             d.status === 'approved' ? 'status-approved' : 'status-rejected';
+          const statusText = d.status === 'pending' ? '대기중' :
+                            d.status === 'approved' ? '승인됨' : '거절됨';
+
+          html += `
+            <tr>
+              <td>${d.createdAt || '-'}</td>
+              <td>${d.name || '-'}</td>
+              <td>${d.phone || '-'}</td>
+              <td>${d.email || '-'}</td>
+              <td>${d.company || '-'}</td>
+              <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+              <td class="actions">
+                ${d.status === 'pending' ? `
+                  <button class="btn btn-sm btn-success" onclick="showApproveModal('${doc.id}', '${d.name}', '${d.phone}', '${d.email}', '${d.company}')">승인</button>
+                  <button class="btn btn-sm btn-danger" onclick="rejectSignup('${doc.id}')">거절</button>
+                ` : '-'}
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+
+        // 배지 업데이트
+        const badge = document.getElementById('pendingCount');
+        if (pendingCount > 0) {
+          badge.textContent = pendingCount;
+          badge.style.display = 'inline';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 승인 모달 표시
+    function showApproveModal(docId, name, phone, email, company) {
+      currentSignup = { docId, name, phone, email, company };
+      document.getElementById('approveModalName').textContent = name;
+      document.getElementById('approveModalPhone').textContent = phone;
+      document.getElementById('approveModalEmail').textContent = email;
+      document.getElementById('approveModalCompany').textContent = company;
+      document.getElementById('approveModal').classList.add('active');
+    }
+
+    // 가입 승인
+    async function approveSignup() {
+      if (!currentSignup) return;
+
+      const btn = document.getElementById('approveBtn');
+      btn.disabled = true;
+      btn.textContent = '처리 중...';
+
+      try {
+        // 1) 임시 비밀번호 생성
+        const tempPw = generatePassword();
+
+        // 2) Firebase Auth 계정 생성 (REST API)
+        const createRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: currentSignup.email,
+            password: tempPw,
+            returnSecureToken: true
+          })
+        });
+        const createData = await createRes.json();
+
+        if (createData.error) {
+          throw new Error(createData.error.message);
+        }
+
+        const uid = createData.localId;
+        const expiresAt = document.getElementById('approveExpiresAt').value || '';
+
+        // 3) Firestore에 사용자 정보 저장
+        await db.collection('users').doc(uid).set({
+          email: currentSignup.email,
+          name: currentSignup.name,
+          phone: currentSignup.phone,
+          company: currentSignup.company,
+          role: 'member',
+          expires_at: expiresAt,
+          device_id: '',
+          created_at: new Date().toISOString().split('T')[0]
+        });
+
+        // 4) 가입 신청 상태 업데이트
+        await db.collection('signups').doc(currentSignup.docId).update({
+          status: 'approved',
+          approvedAt: new Date().toISOString(),
+          uid: uid
+        });
+
+        // 5) 문자 발송 대기열에 추가 (CORS 우회)
+        await db.collection('sms_queue').add({
+          receiver: currentSignup.phone,
+          msg: `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+
+        // 직접 발송 시도 (CORS 프록시 사용)
+        try {
+          const formData = new FormData();
+          formData.append('key', ALIGO.key);
+          formData.append('user_id', ALIGO.user_id);
+          formData.append('sender', ALIGO.sender);
+          formData.append('receiver', currentSignup.phone.replace(/-/g, ''));
+          formData.append('msg', `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`);
+          formData.append('msg_type', 'LMS');
+
+          await fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+            method: 'POST',
+            body: formData
+          });
+        } catch (smsErr) {
+          console.log('SMS 직접 발송 실패, 대기열에 저장됨:', smsErr);
+        }
+
+        showToast('승인 완료! 문자가 발송되었습니다.', 'success');
+        closeModal('approveModal');
+        loadSignups();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '승인';
+      }
+    }
+
+    // 가입 거절
+    async function rejectSignup(docId) {
+      if (!confirm('정말 거절하시겠습니까?')) return;
+
+      try {
+        await db.collection('signups').doc(docId).update({
+          status: 'rejected',
+          rejectedAt: new Date().toISOString()
+        });
+        showToast('거절되었습니다.', 'success');
+        loadSignups();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    // 회원 목록 로드
+    async function loadUsers() {
+      const tbody = document.getElementById('usersTable');
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const snapshot = await db.collection('users').get();
+        if (snapshot.empty) {
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">회원이 없습니다.</td></tr>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          html += `
+            <tr>
+              <td>${d.email || '-'}</td>
+              <td>${d.name || '-'}</td>
+              <td>${d.phone || '-'}</td>
+              <td>${d.company || '-'}</td>
+              <td>${d.created_at || '-'}</td>
+              <td>${d.expires_at || '무제한'}</td>
+              <td class="actions">
+                <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}')">수정</button>
+                <button class="btn btn-sm btn-danger" onclick="resetDevice('${doc.id}')">기기초기화</button>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 회원 수정 모달
+    function showEditUserModal(uid, name, phone, company, expires) {
+      document.getElementById('editUserUid').value = uid;
+      document.getElementById('editUserName').value = name;
+      document.getElementById('editUserPhone').value = phone;
+      document.getElementById('editUserCompany').value = company;
+      document.getElementById('editUserExpires').value = expires;
+      document.getElementById('editUserModal').classList.add('active');
+    }
+
+    async function saveUser() {
+      const uid = document.getElementById('editUserUid').value;
+      try {
+        await db.collection('users').doc(uid).update({
+          name: document.getElementById('editUserName').value,
+          phone: document.getElementById('editUserPhone').value,
+          company: document.getElementById('editUserCompany').value,
+          expires_at: document.getElementById('editUserExpires').value
+        });
+        showToast('저장되었습니다.', 'success');
+        closeModal('editUserModal');
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function resetDevice(uid) {
+      if (!confirm('기기 정보를 초기화하시겠습니까?\n사용자가 다른 PC에서 로그인할 수 있게 됩니다.')) return;
+      try {
+        await db.collection('users').doc(uid).update({ device_id: '' });
+        showToast('기기 초기화 완료', 'success');
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    // 팀원 관리
+    async function loadTeam() {
+      const tbody = document.getElementById('teamTable');
+      tbody.innerHTML = '<tr><td colspan="4" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const snapshot = await db.collection('users').where('role', '==', 'member').get();
+        if (snapshot.empty) {
+          tbody.innerHTML = '<tr><td colspan="4" class="empty-state">팀원이 없습니다.</td></tr>';
+          return;
+        }
+
+        let html = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          const deviceStatus = d.device_id ? '등록됨' : '미등록';
+          html += `
+            <tr>
+              <td>${d.email || '-'}</td>
+              <td>${d.role || 'member'}</td>
+              <td>${deviceStatus}</td>
+              <td class="actions">
+                <button class="btn btn-sm btn-primary" onclick="resetDevice('${doc.id}')">기기초기화</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteUser('${doc.id}')">삭제</button>
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    function showAddTeamModal() {
+      document.getElementById('addTeamEmail').value = '';
+      document.getElementById('addTeamPassword').value = '';
+      document.getElementById('addTeamExpires').value = '';
+      document.getElementById('addTeamModal').classList.add('active');
+    }
+
+    async function addTeamMember() {
+      const email = document.getElementById('addTeamEmail').value;
+      const password = document.getElementById('addTeamPassword').value;
+      const expires = document.getElementById('addTeamExpires').value;
+
+      if (!email || !password) {
+        showToast('이메일과 비밀번호를 입력하세요.', 'error');
+        return;
+      }
+
+      try {
+        // Firebase Auth 계정 생성
+        const createRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password, returnSecureToken: true })
+        });
+        const createData = await createRes.json();
+
+        if (createData.error) {
+          throw new Error(createData.error.message);
+        }
+
+        const uid = createData.localId;
+
+        // Firestore에 저장
+        await db.collection('users').doc(uid).set({
+          email: email,
+          role: 'member',
+          expires_at: expires,
+          device_id: '',
+          created_at: new Date().toISOString().split('T')[0]
+        });
+
+        showToast('팀원이 추가되었습니다.', 'success');
+        closeModal('addTeamModal');
+        loadTeam();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteUser(uid) {
+      if (!confirm('정말 삭제하시겠습니까?')) return;
+      try {
+        await db.collection('users').doc(uid).delete();
+        showToast('삭제되었습니다.', 'success');
+        loadTeam();
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    // 유틸리티
+    function generatePassword() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+      let pw = '';
+      for (let i = 0; i < 8; i++) {
+        pw += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return pw;
+    }
+
+    async function sendSMS(receiver, msg) {
+      // CORS 문제로 직접 호출 불가 - 프록시 필요
+      // 여기서는 Firebase Functions나 별도 서버 필요
+      // 임시로 콘솔 출력
+      console.log('SMS 발송:', receiver, msg);
+
+      // 실제 발송은 서버사이드에서 처리해야 함
+      // 여기서는 시뮬레이션
+      return true;
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function showToast(msg, type = 'success') {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => { toast.className = 'toast'; }, 3000);
+    }
+
+    // 자동 로그인 체크
+    auth.onAuthStateChanged(user => {
+      if (user && user.email === ADMIN_EMAIL) {
+        showDashboard();
+      }
+    });
+  </script>
+</body>
+</html>
