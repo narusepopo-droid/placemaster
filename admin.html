@@ -834,19 +834,24 @@
         errorEl.textContent = '로그인 중...';
         const userCred = await auth.signInWithEmailAndPassword(email, password);
 
-        // Firestore에서 role 확인
-        const userDoc = await db.collection('users').doc(userCred.user.uid).get();
-        if (!userDoc.exists) {
-          errorEl.textContent = '등록되지 않은 계정입니다.';
-          await auth.signOut();
-          return;
-        }
+        // 최고 관리자 이메일 (항상 접근 가능)
+        const SUPER_ADMIN_EMAIL = 'narusepopo@gmail.com';
 
-        const userData = userDoc.data();
-        if (userData.role !== 'admin') {
-          errorEl.textContent = '관리자 권한이 없습니다.';
-          await auth.signOut();
-          return;
+        // Firestore에서 role 확인 (최고 관리자는 패스)
+        if (email !== SUPER_ADMIN_EMAIL) {
+          const userDoc = await db.collection('users').doc(userCred.user.uid).get();
+          if (!userDoc.exists) {
+            errorEl.textContent = '등록되지 않은 계정입니다.';
+            await auth.signOut();
+            return;
+          }
+
+          const userData = userDoc.data();
+          if (userData.role !== 'admin') {
+            errorEl.textContent = '관리자 권한이 없습니다.';
+            await auth.signOut();
+            return;
+          }
         }
 
         currentUserEmail = email;

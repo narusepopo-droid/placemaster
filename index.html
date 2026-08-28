@@ -1909,6 +1909,11 @@ const db = firebase.firestore();
 
 auth.onAuthStateChanged(async user => {
   if (user) {
+    const SUPER_ADMIN_EMAIL = 'narusepopo@gmail.com';
+    if (user.email === SUPER_ADMIN_EMAIL) {
+      document.getElementById('adminBtn').style.display = 'inline-block';
+      return;
+    }
     try {
       const userDoc = await db.collection('users').doc(user.uid).get();
       if (userDoc.exists && userDoc.data().role === 'admin') {
