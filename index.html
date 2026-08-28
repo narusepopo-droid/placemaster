@@ -1472,7 +1472,10 @@ footer {
       <a href="#features">기능</a>
       <a href="#download">다운로드</a>
     </nav>
-    <a href="https://drive.google.com/uc?export=download&id=1r46-10odhsCz6_Yq6blJ1pdhpU2BfXan" class="btn btn-primary">무료 다운로드</a>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="admin.html" id="adminBtn" class="btn" style="display:none;background:#3b82f6;color:white;text-decoration:none;padding:8px 16px;border-radius:8px;font-size:0.9rem;">관리자</a>
+      <a href="https://drive.google.com/uc?export=download&id=1r46-10odhsCz6_Yq6blJ1pdhpU2BfXan" class="btn btn-primary">무료 다운로드</a>
+    </div>
   </div>
 </header>
 
@@ -1888,5 +1891,32 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   });
+});
+</script>
+
+<!-- Firebase SDK - 관리자 로그인 체크 -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey: "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo",
+  authDomain: "placemaster-pro.firebaseapp.com",
+  projectId: "placemaster-pro"
+});
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    try {
+      const userDoc = await db.collection('users').doc(user.uid).get();
+      if (userDoc.exists && userDoc.data().role === 'admin') {
+        document.getElementById('adminBtn').style.display = 'inline-block';
+      }
+    } catch (err) {
+      console.log('Admin check failed:', err);
+    }
+  }
 });
 </script>
