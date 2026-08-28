@@ -642,17 +642,24 @@
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">회원 목록</h2>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
               <button class="btn btn-sm active" id="filterBtnActive" onclick="toggleUserFilter(false)" style="background:var(--success);">활성 (0)</button>
               <button class="btn btn-sm" id="filterBtnSuspended" onclick="toggleUserFilter(true)" style="background:var(--surface-2);">권한상실 (0)</button>
-              <button class="btn btn-sm" onclick="setAllAdmin()" style="background:var(--warning);">전체 관리자로</button>
               <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
             </div>
+          </div>
+          <!-- 선택 액션 바 -->
+          <div id="userActionBar" style="display:none;padding:12px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;">
+            <span id="selectedCount" style="color:var(--text-muted);font-size:0.9rem;">0명 선택</span>
+            <button class="btn btn-sm" onclick="moveSelectedToAdmin()" style="background:var(--warning);">관리자로 이동</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteSelectedUsers()">선택 삭제</button>
+            <button class="btn btn-sm" onclick="clearUserSelection()" style="background:var(--surface);">선택 취소</button>
           </div>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
+                  <th style="width:40px;"><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this)"></th>
                   <th>이메일</th>
                   <th>이름</th>
                   <th>연락처</th>
@@ -665,7 +672,7 @@
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="8" class="loading">
+                  <td colspan="9" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -683,10 +690,18 @@
             <h2 class="card-title">관리자 목록</h2>
             <button class="btn btn-sm btn-primary" onclick="loadAdmins()">새로고침</button>
           </div>
+          <!-- 선택 액션 바 -->
+          <div id="adminActionBar" style="display:none;padding:12px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;">
+            <span id="selectedAdminCount" style="color:var(--text-muted);font-size:0.9rem;">0명 선택</span>
+            <button class="btn btn-sm" onclick="moveSelectedToMember()" style="background:var(--warning);">회원으로 이동</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteSelectedAdmins()">선택 삭제</button>
+            <button class="btn btn-sm" onclick="clearAdminSelection()" style="background:var(--surface);">선택 취소</button>
+          </div>
           <div class="table-container">
             <table>
               <thead>
                 <tr>
+                  <th style="width:40px;"><input type="checkbox" id="selectAllAdmins" onchange="toggleSelectAllAdmins(this)"></th>
                   <th>이메일</th>
                   <th>이름</th>
                   <th>연락처</th>
@@ -697,7 +712,7 @@
               </thead>
               <tbody id="adminsTable">
                 <tr>
-                  <td colspan="6" class="loading">
+                  <td colspan="7" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -1064,7 +1079,8 @@
       try {
         const snapshot = await db.collection('users').get();
         if (snapshot.empty) {
-          tbody.innerHTML = '<tr><td colspan="8" class="empty-state">회원이 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="9" class="empty-state">회원이 없습니다.</td></tr>';
+          updateUserActionBar();
           return;
         }
 
@@ -1072,13 +1088,11 @@
         let activeCount = 0, suspendedCount = 0;
         snapshot.forEach(doc => {
           const d = doc.data();
-          // 회원(member)만 표시
           if (d.role === 'admin') return;
 
           const isSuspended = d.status === 'suspended';
           if (isSuspended) suspendedCount++; else activeCount++;
 
-          // 필터링
           if (!showSuspended && isSuspended) return;
           if (showSuspended && !isSuspended) return;
 
@@ -1087,7 +1101,8 @@
             : '<span class="status-badge status-approved">활성</span>';
 
           html += `
-            <tr style="${isSuspended ? 'opacity:0.6;' : ''}">
+            <tr style="${isSuspended ? 'opacity:0.6;' : ''}" data-uid="${doc.id}">
+              <td><input type="checkbox" class="user-checkbox" data-uid="${doc.id}" onchange="updateUserActionBar()"></td>
               <td>${d.email || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
@@ -1109,16 +1124,16 @@
         });
 
         if (!html) {
-          tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
         } else {
           tbody.innerHTML = html;
         }
 
-        // 필터 버튼 업데이트
         document.getElementById('filterBtnActive').textContent = `활성 (${activeCount})`;
         document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
+        updateUserActionBar();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
@@ -1126,26 +1141,74 @@
       showSuspended = suspended;
       document.getElementById('filterBtnActive').classList.toggle('active', !suspended);
       document.getElementById('filterBtnSuspended').classList.toggle('active', suspended);
+      document.getElementById('selectAllUsers').checked = false;
       loadUsers();
     }
 
-    async function setAllAdmin() {
-      if (!confirm('모든 활성 회원을 관리자 등급으로 변경하시겠습니까?')) return;
+    // 선택 관련 함수들
+    function getSelectedUserIds() {
+      return Array.from(document.querySelectorAll('.user-checkbox:checked')).map(cb => cb.dataset.uid);
+    }
+
+    function updateUserActionBar() {
+      const selected = getSelectedUserIds();
+      const actionBar = document.getElementById('userActionBar');
+      const countEl = document.getElementById('selectedCount');
+      if (selected.length > 0) {
+        actionBar.style.display = 'flex';
+        countEl.textContent = `${selected.length}명 선택`;
+      } else {
+        actionBar.style.display = 'none';
+      }
+    }
+
+    function toggleSelectAllUsers(checkbox) {
+      document.querySelectorAll('.user-checkbox').forEach(cb => {
+        cb.checked = checkbox.checked;
+      });
+      updateUserActionBar();
+    }
+
+    function clearUserSelection() {
+      document.querySelectorAll('.user-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('selectAllUsers').checked = false;
+      updateUserActionBar();
+    }
+
+    async function moveSelectedToAdmin() {
+      const uids = getSelectedUserIds();
+      if (uids.length === 0) return;
+      if (!confirm(`${uids.length}명을 관리자로 이동하시겠습니까?`)) return;
+
       try {
-        const snapshot = await db.collection('users').get();
         const batch = db.batch();
-        let count = 0;
-        snapshot.forEach(doc => {
-          const d = doc.data();
-          if (d.status !== 'suspended' && d.role !== 'admin') {
-            batch.update(doc.ref, { role: 'admin' });
-            count++;
-          }
+        uids.forEach(uid => {
+          batch.update(db.collection('users').doc(uid), { role: 'admin' });
         });
         await batch.commit();
-        showToast(`${count}명의 등급이 관리자로 변경되었습니다.`, 'success');
+        showToast(`${uids.length}명이 관리자로 이동되었습니다.`, 'success');
+        document.getElementById('selectAllUsers').checked = false;
         loadUsers();
         loadAdmins();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteSelectedUsers() {
+      const uids = getSelectedUserIds();
+      if (uids.length === 0) return;
+      if (!confirm(`${uids.length}명을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) return;
+
+      try {
+        const batch = db.batch();
+        uids.forEach(uid => {
+          batch.delete(db.collection('users').doc(uid));
+        });
+        await batch.commit();
+        showToast(`${uids.length}명이 삭제되었습니다.`, 'success');
+        document.getElementById('selectAllUsers').checked = false;
+        loadUsers();
       } catch (err) {
         showToast('오류: ' + err.message, 'error');
       }
@@ -1154,7 +1217,7 @@
     // 관리자 목록 로드
     async function loadAdmins() {
       const tbody = document.getElementById('adminsTable');
-      tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
         const snapshot = await db.collection('users').get();
@@ -1163,12 +1226,12 @@
 
         snapshot.forEach(doc => {
           const d = doc.data();
-          // 관리자(admin)만 표시, 권한상실 제외
           if (d.role !== 'admin' || d.status === 'suspended') return;
           count++;
 
           html += `
-            <tr>
+            <tr data-uid="${doc.id}">
+              <td><input type="checkbox" class="admin-checkbox" data-uid="${doc.id}" onchange="updateAdminActionBar()"></td>
               <td>${d.email || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
@@ -1183,12 +1246,82 @@
         });
 
         if (!html) {
-          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">관리자가 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">관리자가 없습니다.</td></tr>';
         } else {
           tbody.innerHTML = html;
         }
+        updateAdminActionBar();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 관리자 선택 관련 함수들
+    function getSelectedAdminIds() {
+      return Array.from(document.querySelectorAll('.admin-checkbox:checked')).map(cb => cb.dataset.uid);
+    }
+
+    function updateAdminActionBar() {
+      const selected = getSelectedAdminIds();
+      const actionBar = document.getElementById('adminActionBar');
+      const countEl = document.getElementById('selectedAdminCount');
+      if (selected.length > 0) {
+        actionBar.style.display = 'flex';
+        countEl.textContent = `${selected.length}명 선택`;
+      } else {
+        actionBar.style.display = 'none';
+      }
+    }
+
+    function toggleSelectAllAdmins(checkbox) {
+      document.querySelectorAll('.admin-checkbox').forEach(cb => {
+        cb.checked = checkbox.checked;
+      });
+      updateAdminActionBar();
+    }
+
+    function clearAdminSelection() {
+      document.querySelectorAll('.admin-checkbox').forEach(cb => cb.checked = false);
+      document.getElementById('selectAllAdmins').checked = false;
+      updateAdminActionBar();
+    }
+
+    async function moveSelectedToMember() {
+      const uids = getSelectedAdminIds();
+      if (uids.length === 0) return;
+      if (!confirm(`${uids.length}명을 회원으로 이동하시겠습니까?\n매장 등록 3개 제한이 적용됩니다.`)) return;
+
+      try {
+        const batch = db.batch();
+        uids.forEach(uid => {
+          batch.update(db.collection('users').doc(uid), { role: 'member' });
+        });
+        await batch.commit();
+        showToast(`${uids.length}명이 회원으로 이동되었습니다.`, 'success');
+        document.getElementById('selectAllAdmins').checked = false;
+        loadAdmins();
+        loadUsers();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteSelectedAdmins() {
+      const uids = getSelectedAdminIds();
+      if (uids.length === 0) return;
+      if (!confirm(`${uids.length}명을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.`)) return;
+
+      try {
+        const batch = db.batch();
+        uids.forEach(uid => {
+          batch.delete(db.collection('users').doc(uid));
+        });
+        await batch.commit();
+        showToast(`${uids.length}명이 삭제되었습니다.`, 'success');
+        document.getElementById('selectAllAdmins').checked = false;
+        loadAdmins();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
       }
     }
 
