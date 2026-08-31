@@ -733,42 +733,40 @@ h1, h2, h3, p { word-break: keep-all; }
   .stat-label { font-size: 0.95rem; }
 
   .problem-section { padding: 50px 24px; }
-  .problem-left h2 { font-size: 1.6rem; text-align: center; line-height: 1.45; margin-bottom: 28px; }
-  .problem-item { flex-direction: column; align-items: center; text-align: center; padding: 18px; margin-bottom: 16px; }
-  .problem-item p { font-size: 1rem; line-height: 1.65; }
-  .solution-box { padding: 26px 22px; }
-  .solution-box h3 { font-size: 1.25rem; margin-bottom: 14px; }
-  .solution-box p { font-size: 1rem; line-height: 1.75; }
+  .problem-left { text-align: center; display: flex; flex-direction: column; align-items: center; }
+  .problem-left h2 { font-size: 1.8rem; text-align: center; line-height: 1.45; margin-bottom: 28px; }
+  .problem-item { flex-direction: row; align-items: center; text-align: left; padding: 20px; margin-bottom: 16px; width: 100%; max-width: 400px; }
+  .problem-item p { font-size: 1.1rem; line-height: 1.65; }
+  .solution-box { padding: 28px 24px; }
+  .solution-box h3 { font-size: 1.35rem; margin-bottom: 14px; }
+  .solution-box p { font-size: 1.1rem; line-height: 1.75; }
 
   .howto { padding: 50px 24px; }
-  .howto h2 { font-size: 1.6rem; margin-bottom: 12px; }
-  .howto > p { font-size: 1rem; margin-bottom: 36px; }
+  .howto h2 { font-size: 1.8rem; margin-bottom: 12px; }
+  .howto > p { font-size: 1.1rem; margin-bottom: 36px; }
   .howto-steps { flex-direction: column; gap: 32px; align-items: center; }
   .howto-step { width: 100%; text-align: center; }
-  .step-icon { width: 76px; height: 76px; font-size: 32px; margin-bottom: 16px; }
-  .step-title { font-size: 1.25rem; margin-bottom: 12px; font-weight: 700; }
-  .step-desc { font-size: 1.1rem; line-height: 1.7; padding: 0 12px; }
+  .step-icon { width: 80px; height: 80px; font-size: 34px; margin-bottom: 18px; }
+  .step-title { font-size: 1.35rem; margin-bottom: 14px; font-weight: 700; }
+  .step-desc { font-size: 1.15rem; line-height: 1.75; padding: 0 10px; }
 
   .features { padding: 50px 24px; }
-  .features h2 { font-size: 1.6rem; }
-  .features > p { font-size: 1.05rem; margin-bottom: 40px; }
-  .features-grid { grid-template-columns: 1fr; gap: 18px; }
-  .feature-card { padding: 28px 24px; }
-  .feature-icon { width: 56px; height: 56px; font-size: 26px; margin-bottom: 18px; }
-  .feature-card h3 { font-size: 1.25rem; margin-bottom: 12px; }
-  .feature-card p { font-size: 1.08rem; line-height: 1.7; }
+  .features h2 { font-size: 1.8rem; }
+  .features > p { font-size: 1.15rem; margin-bottom: 40px; }
+  .features-grid { grid-template-columns: 1fr; gap: 20px; }
+  .feature-card { padding: 30px 26px; }
+  .feature-icon { width: 60px; height: 60px; font-size: 28px; margin-bottom: 20px; }
+  .feature-card h3 { font-size: 1.35rem; margin-bottom: 14px; }
+  .feature-card p { font-size: 1.15rem; line-height: 1.75; }
 
   .industries { padding: 50px 24px; }
-  .industries h2 { font-size: 1.6rem; }
-  .industries > p { font-size: 1.05rem; margin-bottom: 40px; }
-  .industries-grid { grid-template-columns: 1fr; gap: 16px; }
-  .industry-card { padding: 24px 22px; }
-  .industry-card h3 { font-size: 1.15rem; }
-  .industry-card p { font-size: 1rem; line-height: 1.65; }
-  .industry-card { padding: 22px 20px; }
-  .industry-icon { font-size: 30px; }
-  .industry-card h3 { font-size: 1rem; margin-bottom: 6px; }
-  .industry-card p { font-size: 0.85rem; line-height: 1.55; }
+  .industries h2 { font-size: 1.8rem; }
+  .industries > p { font-size: 1.15rem; margin-bottom: 40px; }
+  .industries-grid { grid-template-columns: 1fr; gap: 18px; }
+  .industry-card { padding: 26px 24px; }
+  .industry-icon { font-size: 34px; }
+  .industry-card h3 { font-size: 1.25rem; margin-bottom: 10px; }
+  .industry-card p { font-size: 1.1rem; line-height: 1.7; }
 
   .stats { padding: 45px 24px; }
   .stats-inner { flex-wrap: wrap; gap: 28px 20px; justify-content: center; }
@@ -777,13 +775,13 @@ h1, h2, h3, p { word-break: keep-all; }
   .stat-label { font-size: 0.85rem; margin-top: 6px; }
 
   .screenshot { padding: 50px 24px; }
-  .screenshot h2 { font-size: 1.6rem; }
-  .screenshot > p { font-size: 1rem; margin-bottom: 36px; }
+  .screenshot h2 { font-size: 1.8rem; }
+  .screenshot > p { font-size: 1.15rem; margin-bottom: 36px; }
 
   .cta { padding: 50px 24px; }
-  .cta-box { padding: 44px 26px; border-radius: 20px; }
-  .cta h2 { font-size: 1.6rem; margin-bottom: 14px; }
-  .cta p { font-size: 1rem; line-height: 1.7; margin-bottom: 28px; }
+  .cta-box { padding: 48px 28px; border-radius: 20px; }
+  .cta h2 { font-size: 1.8rem; margin-bottom: 16px; }
+  .cta p { font-size: 1.15rem; line-height: 1.75; margin-bottom: 30px; }
   .btn-cta { padding: 18px 36px; font-size: 1.1rem; width: 100%; justify-content: center; }
   .cta-sub { margin-top: 20px; font-size: 0.9rem; line-height: 1.5; }
   .cta-steps { flex-direction: column; gap: 16px; align-items: flex-start; margin-top: 32px; width: fit-content; margin-left: auto; margin-right: auto; }
