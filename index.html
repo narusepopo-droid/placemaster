@@ -727,10 +727,14 @@ h1, h2, h3, p { word-break: keep-all; }
 }
 
 @media (max-width: 768px) {
-  header { padding: 0 20px; }
-  .header-inner { height: 64px; }
+  header { padding: 0 16px; }
+  .header-inner { height: 60px; }
   nav { display: none; }
   .header-btns .btn-outline { display: none; }
+  .logo { font-size: 1rem; gap: 8px; white-space: nowrap; }
+  .logo-img { width: 32px; height: 32px; }
+  .logo span { display: none; }
+  .header-btns .btn-primary { padding: 8px 14px; font-size: 0.85rem; }
 
   .hero { padding: 50px 24px 40px; }
   .hero-content { text-align: center; }
