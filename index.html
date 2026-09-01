@@ -1090,3 +1090,14 @@ h1, h2, h3, p { word-break: keep-all; }
 <footer>
   © 2026 플레이스 마스터 PRO · 문의: <a href="mailto:narusepopo@gmail.com">narusepopo@gmail.com</a>
 </footer>
+
+<script>
+document.querySelectorAll('a[download]').forEach(function(btn) {
+  btn.addEventListener('click', function(e) {
+    if (/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      e.preventDefault();
+      alert('플레이스 마스터 PRO는 Windows PC 전용 프로그램입니다.\n\nPC에서 placemaster.co.kr 접속 후 다운로드해주세요.');
+    }
+  });
+});
+</script>
