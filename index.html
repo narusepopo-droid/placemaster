@@ -290,6 +290,7 @@ nav a:hover { color: var(--primary); }
   display: flex;
   align-items: center;
   gap: 6px;
+  margin-left: 12px;
 }
 .live-dot::before {
   content: '';
@@ -752,12 +753,12 @@ h1, h2, h3, p { word-break: keep-all; }
   .howto > p { font-size: 0.9rem; margin-bottom: 30px; }
   .howto-steps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
   .howto-step { width: 100%; text-align: center; position: relative; }
-  .howto-step::before { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+  .howto-step::before { position: absolute; top: 8px; left: 8px; background: var(--primary); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
   .howto-step:nth-child(1)::before { content: "1"; }
   .howto-step:nth-child(2)::before { content: "2"; }
   .howto-step:nth-child(3)::before { content: "3"; }
   .howto-step:nth-child(4)::before { content: "4"; }
-  .step-icon { width: 56px; height: 56px; font-size: 26px; margin-bottom: 10px; margin-top: 16px; }
+  .step-icon { width: 56px; height: 56px; font-size: 26px; margin-bottom: 10px; }
   .step-title { font-size: 0.9rem; margin-bottom: 8px; font-weight: 700; }
   .step-desc { font-size: 0.8rem; line-height: 1.65; padding: 0 6px; }
 
@@ -765,10 +766,11 @@ h1, h2, h3, p { word-break: keep-all; }
   .features h2 { font-size: 1.2rem; }
   .features > p { font-size: 0.9rem; margin-bottom: 30px; }
   .features-grid { grid-template-columns: 1fr; gap: 16px; }
-  .feature-card { padding: 24px 20px; }
-  .feature-icon { width: 56px; height: 56px; font-size: 28px; margin-bottom: 16px; }
-  .feature-card h3 { font-size: 1rem; margin-bottom: 10px; }
-  .feature-card p { font-size: 0.9rem; line-height: 1.75; }
+  .feature-card { padding: 20px 16px; display: flex; flex-direction: column; }
+  .feature-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .feature-icon { width: 36px; height: 36px; font-size: 20px; margin-bottom: 0; }
+  .feature-card h3 { font-size: 0.95rem; margin-bottom: 0; }
+  .feature-card p { font-size: 0.85rem; line-height: 1.7; }
 
   .industries { padding: 40px 24px; }
   .industries h2 { font-size: 1.2rem; }
@@ -989,33 +991,27 @@ h1, h2, h3, p { word-break: keep-all; }
   <p>광고대행사 업무에 필요한 모든 기능을 담았습니다</p>
   <div class="features-grid">
     <div class="feature-card">
-      <div class="feature-icon">📍</div>
-      <h3>플레이스 순위 분석</h3>
+      <div class="feature-card-header"><div class="feature-icon">📍</div><h3>플레이스 순위 분석</h3></div>
       <p>키워드별 네이버 플레이스 순위를 실시간으로 추적합니다. 최대 100개 키워드까지 동시에 분석하고, <strong>광고 제외 순수 순위</strong>만 표시합니다.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📝</div>
-      <h3>블로그 포스팅 순위</h3>
+      <div class="feature-card-header"><div class="feature-icon">📝</div><h3>블로그 포스팅 순위</h3></div>
       <p>매장 <strong>장소태그가 달린</strong> 블로그 포스팅의 순위를 추적합니다. 어떤 포스팅이 상위에 노출되는지 한눈에 파악하세요.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">✨</div>
-      <h3>스마트 키워드 생성</h3>
+      <div class="feature-card-header"><div class="feature-icon">✨</div><h3>스마트 키워드 생성</h3></div>
       <p>업종과 지역을 분석해 최적의 검색 키워드를 <strong>자동 생성</strong>합니다. 역, 동, 구 단위 지역명과 업종 의도를 조합해 놓치는 키워드 없이.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">💬</div>
-      <h3>카톡 보고서 자동 생성</h3>
+      <div class="feature-card-header"><div class="feature-icon">💬</div><h3>카톡 보고서 자동 생성</h3></div>
       <p>분석 결과를 <strong>카카오톡으로 바로 복사</strong>할 수 있는 형태로 변환합니다. 광고주에게 전달하기 딱 좋은 깔끔한 보고서 형식.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">📈</div>
-      <h3>순위 변화 추적</h3>
+      <div class="feature-card-header"><div class="feature-icon">📈</div><h3>순위 변화 추적</h3></div>
       <p>분석 기록을 저장하고 <strong>이전 순위와 비교</strong>합니다. 신규 진입, 순위 상승/하락을 한눈에 확인하세요.</p>
     </div>
     <div class="feature-card">
-      <div class="feature-icon">🔄</div>
-      <h3>자동 업데이트</h3>
+      <div class="feature-card-header"><div class="feature-icon">🔄</div><h3>자동 업데이트</h3></div>
       <p>새 버전이 나오면 <strong>자동으로 다운로드</strong>하고 업데이트합니다. 항상 최신 기능을 별도 설치 없이 사용하세요.</p>
     </div>
   </div>
@@ -1093,4 +1089,3 @@ h1, h2, h3, p { word-break: keep-all; }
 <footer>
   © 2026 플레이스 마스터 PRO · 문의: <a href="mailto:narusepopo@gmail.com">narusepopo@gmail.com</a>
 </footer>
-<!-- v12-1788249542 -->
