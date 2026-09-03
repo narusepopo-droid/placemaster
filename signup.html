@@ -226,8 +226,21 @@ h1 {
     <p class="subtitle">무료로 가입하고 플레이스 순위 추적을 시작하세요</p>
 
     <div class="form-group">
-      <label>이메일</label>
-      <input type="email" id="signup-email" placeholder="example@email.com">
+      <label>이름 <span style="color:#e53935">*</span></label>
+      <input type="text" id="signup-name" placeholder="홍길동" required>
+    </div>
+    <div class="form-group">
+      <label>연락처 <span style="color:#e53935">*</span></label>
+      <input type="tel" id="signup-phone" placeholder="010-1234-5678" required>
+    </div>
+    <div class="form-group">
+      <label>매장명 <span style="color:#e53935">*</span></label>
+      <input type="text" id="signup-store" placeholder="OO카페 강남점" required>
+    </div>
+    <div class="form-group">
+      <label>이메일 (로그인 아이디) <span style="color:#e53935">*</span></label>
+      <input type="email" id="signup-email" placeholder="example@email.com" required>
+      <p class="password-hint">이메일이 로그인 아이디로 사용됩니다</p>
     </div>
     <div class="form-group">
       <label>비밀번호</label>
@@ -299,12 +312,19 @@ function showError(msg) {
 }
 
 function signup() {
+  const name = document.getElementById('signup-name').value.trim();
+  const phone = document.getElementById('signup-phone').value.trim();
+  const store = document.getElementById('signup-store').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const pw = document.getElementById('signup-password').value;
   const pw2 = document.getElementById('signup-password2').value;
 
   document.getElementById('error').style.display = 'none';
 
+  if (!name || !phone || !store) {
+    showError('이름, 연락처, 매장명을 모두 입력해주세요.');
+    return;
+  }
   if (!email || !pw) {
     showError('이메일과 비밀번호를 입력해주세요.');
     return;
@@ -328,7 +348,7 @@ function signup() {
       fetch('https://placeranking.com/api/placemaster/signup-notify', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email: email})
+        body: JSON.stringify({email: email, name: name, phone: phone, store: store})
       }).catch(() => {});
 
       document.getElementById('signup-form').style.display = 'none';
