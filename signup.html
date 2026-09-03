@@ -324,6 +324,13 @@ function signup() {
 
   auth.createUserWithEmailAndPassword(email, pw)
     .then((userCredential) => {
+      // SMS 알림 발송
+      fetch('https://placeranking.com/api/placemaster/signup-notify', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email: email})
+      }).catch(() => {});
+
       document.getElementById('signup-form').style.display = 'none';
       document.getElementById('success').style.display = 'block';
       document.querySelector('.tabs').style.display = 'none';
