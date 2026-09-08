@@ -609,22 +609,48 @@
       <!-- 대시보드 탭 -->
       <div class="tab-content active" id="tab-dashboard">
         <!-- 핵심 지표 카드 -->
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:24px;">
           <div class="card" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);margin:0;padding:20px;">
-            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 회원 수</div>
-            <div style="color:white;font-size:2rem;font-weight:700;" id="dashTotalUsers">-</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">오늘 방문</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashTodayVisits">-</div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#06b6d4,#0891b2);margin:0;padding:20px;">
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">이번주 방문</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashWeekVisits">-</div>
           </div>
           <div class="card" style="background:linear-gradient(135deg,#22c55e,#16a34a);margin:0;padding:20px;">
-            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">활성 회원</div>
-            <div style="color:white;font-size:2rem;font-weight:700;" id="dashActiveUsers">-</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 회원</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashTotalUsers">-</div>
           </div>
           <div class="card" style="background:linear-gradient(135deg,#f59e0b,#d97706);margin:0;padding:20px;">
-            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">가입 신청 대기</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">가입 대기</div>
             <div style="color:white;font-size:2rem;font-weight:700;" id="dashPending">-</div>
           </div>
           <div class="card" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);margin:0;padding:20px;">
-            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 분석 횟수</div>
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 분석</div>
             <div style="color:white;font-size:2rem;font-weight:700;" id="dashTotalAnalysis">-</div>
+          </div>
+        </div>
+
+        <!-- 방문 통계 & 유입 경로 -->
+        <div style="display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px;">
+          <!-- 일별 방문 추이 -->
+          <div class="card" style="margin:0;">
+            <div class="card-header">
+              <h2 class="card-title">일별 방문 추이 (최근 14일)</h2>
+            </div>
+            <div id="visitChart" style="height:200px;display:flex;align-items:flex-end;gap:8px;padding:20px 0;"></div>
+            <div id="visitChartLabels" style="display:flex;gap:8px;font-size:0.7rem;color:var(--text-muted);"></div>
+          </div>
+
+          <!-- 유입 경로 -->
+          <div class="card" style="margin:0;">
+            <div class="card-header">
+              <h2 class="card-title">유입 경로</h2>
+            </div>
+            <div id="sourceList" style="display:flex;flex-direction:column;gap:12px;">
+              <div class="loading">로딩 중...</div>
+            </div>
           </div>
         </div>
 
@@ -632,7 +658,7 @@
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">이용자별 분석 현황</h2>
-            <button class="btn btn-sm btn-primary" onclick="loadDashboard()">새로고침</button>
+            <button class="btn btn-sm btn-primary" onclick="loadDashboardData()">새로고침</button>
           </div>
           <div class="table-container">
             <table>
@@ -641,7 +667,7 @@
                   <th>이름</th>
                   <th>이메일</th>
                   <th>매장명</th>
-                  <th>등록 매장 수</th>
+                  <th>등록 매장</th>
                   <th>분석 횟수</th>
                   <th>최근 분석</th>
                 </tr>
@@ -1675,18 +1701,19 @@
     // 대시보드 데이터 로드
     async function loadDashboardData() {
       try {
+        // 방문 통계 로드
+        await loadVisitStats();
+
         // 회원 통계
         const usersSnap = await db.collection('users').get();
-        let totalUsers = 0, activeUsers = 0, totalAnalysis = 0;
+        let totalUsers = 0, totalAnalysis = 0;
         const userAnalysisData = [];
 
         usersSnap.forEach(doc => {
           const d = doc.data();
-          if (d.role === 'admin' && d.email === 'narusepopo@gmail.com') return;
+          if (d.email === 'narusepopo@gmail.com') return;
           totalUsers++;
-          if (d.status !== 'suspended') activeUsers++;
 
-          // 분석 횟수 (stores_json에서 추출)
           let storeCount = 0;
           let analysisCount = d.analysis_count || 0;
           try {
@@ -1706,7 +1733,6 @@
         });
 
         document.getElementById('dashTotalUsers').textContent = totalUsers;
-        document.getElementById('dashActiveUsers').textContent = activeUsers;
         document.getElementById('dashTotalAnalysis').textContent = totalAnalysis;
 
         // 이용자별 분석 테이블
@@ -1755,6 +1781,98 @@
         }
       } catch (err) {
         console.error('Dashboard error:', err);
+      }
+    }
+
+    // 방문 통계 로드
+    async function loadVisitStats() {
+      const today = new Date().toISOString().split('T')[0];
+      const dates = [];
+      for (let i = 13; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        dates.push(d.toISOString().split('T')[0]);
+      }
+
+      // 이번주 시작일
+      const weekStart = new Date();
+      weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+      const weekStartStr = weekStart.toISOString().split('T')[0];
+
+      let todayVisits = 0, weekVisits = 0;
+      const visitData = [];
+      const sourceData = { direct: 0, google: 0, naver: 0, kakao: 0, other: 0 };
+
+      try {
+        const visitsSnap = await db.collection('visits').orderBy('date', 'desc').limit(30).get();
+        const visitMap = {};
+
+        visitsSnap.forEach(doc => {
+          const d = doc.data();
+          visitMap[d.date] = d.count || 0;
+
+          if (d.date === today) todayVisits = d.count || 0;
+          if (d.date >= weekStartStr) weekVisits += d.count || 0;
+
+          // 유입 경로 집계
+          Object.keys(d).forEach(key => {
+            if (key.startsWith('source_')) {
+              const src = key.replace('source_', '');
+              if (sourceData[src] !== undefined) sourceData[src] += d[key];
+              else sourceData['other'] += d[key];
+            }
+          });
+        });
+
+        // 14일 데이터 채우기
+        dates.forEach(date => {
+          visitData.push({ date, count: visitMap[date] || 0 });
+        });
+
+        document.getElementById('dashTodayVisits').textContent = todayVisits;
+        document.getElementById('dashWeekVisits').textContent = weekVisits;
+
+        // 차트 그리기
+        const maxVisit = Math.max(...visitData.map(v => v.count), 1);
+        const chartEl = document.getElementById('visitChart');
+        const labelsEl = document.getElementById('visitChartLabels');
+
+        chartEl.innerHTML = visitData.map(v => {
+          const height = Math.max((v.count / maxVisit) * 150, 4);
+          const isToday = v.date === today;
+          return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:4px;">${v.count}</div>
+            <div style="width:100%;height:${height}px;background:${isToday ? 'var(--accent)' : 'var(--surface-2)'};border-radius:4px;"></div>
+          </div>`;
+        }).join('');
+
+        labelsEl.innerHTML = visitData.map((v, i) => {
+          if (i % 2 === 0) return `<div style="flex:1;text-align:center;">${v.date.slice(5)}</div>`;
+          return `<div style="flex:1;"></div>`;
+        }).join('');
+
+        // 유입 경로 표시
+        const totalSources = Object.values(sourceData).reduce((a, b) => a + b, 0) || 1;
+        const sourceNames = { direct: '직접 방문', google: '구글', naver: '네이버', kakao: '카카오', other: '기타' };
+        const sourceColors = { direct: '#3b82f6', google: '#ea4335', naver: '#03C75A', kakao: '#fee500', other: '#9ca3af' };
+
+        const sourceList = document.getElementById('sourceList');
+        sourceList.innerHTML = Object.entries(sourceData)
+          .sort((a, b) => b[1] - a[1])
+          .map(([key, val]) => {
+            const pct = Math.round((val / totalSources) * 100);
+            return `<div style="display:flex;align-items:center;gap:12px;">
+              <div style="width:10px;height:10px;border-radius:50%;background:${sourceColors[key]};"></div>
+              <div style="flex:1;font-size:0.9rem;">${sourceNames[key]}</div>
+              <div style="font-weight:600;">${val}</div>
+              <div style="color:var(--text-muted);font-size:0.85rem;">${pct}%</div>
+            </div>`;
+          }).join('');
+
+      } catch (err) {
+        console.error('Visit stats error:', err);
+        document.getElementById('dashTodayVisits').textContent = '0';
+        document.getElementById('dashWeekVisits').textContent = '0';
       }
     }
 

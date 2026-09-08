@@ -1156,6 +1156,7 @@ document.querySelectorAll('a[download]').forEach(function(btn) {
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo",
@@ -1163,6 +1164,34 @@ const firebaseConfig = {
   projectId: "placemaster-pro"
 };
 firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+// 방문 로그 기록
+(function logVisit() {
+  const today = new Date().toISOString().split('T')[0];
+  const hour = new Date().getHours();
+  const referrer = document.referrer || 'direct';
+  let source = 'direct';
+  if (referrer.includes('google')) source = 'google';
+  else if (referrer.includes('naver')) source = 'naver';
+  else if (referrer.includes('daum')) source = 'daum';
+  else if (referrer.includes('facebook') || referrer.includes('fb.')) source = 'facebook';
+  else if (referrer.includes('instagram')) source = 'instagram';
+  else if (referrer.includes('kakao')) source = 'kakao';
+  else if (referrer) source = 'other';
+
+  // URL 파라미터에서 utm_source 확인
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('utm_source')) source = params.get('utm_source');
+
+  // 일별 방문 카운트 증가
+  db.collection('visits').doc(today).set({
+    date: today,
+    count: firebase.firestore.FieldValue.increment(1),
+    [`source_${source}`]: firebase.firestore.FieldValue.increment(1),
+    [`hour_${hour}`]: firebase.firestore.FieldValue.increment(1)
+  }, { merge: true }).catch(() => {});
+})();
 
 const ADMIN_UID = "104K4S7E4bNm9Cl4dQsg7Sz18Zf1";
 const ADMIN_EMAIL = "narusepopo@gmail.com";
