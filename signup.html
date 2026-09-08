@@ -351,9 +351,8 @@ function signup() {
         body: JSON.stringify({email: email, name: name, phone: phone, store: store})
       }).catch(() => {});
 
-      document.getElementById('signup-form').style.display = 'none';
-      document.getElementById('success').style.display = 'block';
-      document.querySelector('.tabs').style.display = 'none';
+      // 회원가입 성공 시 홈으로 이동
+      window.location.href = 'index.html';
     })
     .catch((error) => {
       btn.disabled = false;
@@ -388,14 +387,8 @@ function login() {
 
   auth.signInWithEmailAndPassword(email, pw)
     .then((userCredential) => {
-      document.getElementById('login-form').style.display = 'none';
-      document.getElementById('success').innerHTML = `
-        <h3>로그인 성공!</h3>
-        <p>환영합니다. 프로그램을 다운로드하세요.</p>
-        <a href="https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip" class="btn" style="display:inline-block; margin-top:16px; width:auto; padding:14px 32px;" download>프로그램 다운로드</a>
-      `;
-      document.getElementById('success').style.display = 'block';
-      document.querySelector('.tabs').style.display = 'none';
+      // 로그인 성공 시 홈으로 이동
+      window.location.href = 'index.html';
     })
     .catch((error) => {
       btn.disabled = false;

@@ -873,8 +873,8 @@ h1, h2, h3, p { word-break: keep-all; }
       <a href="#download">다운로드</a>
     </nav>
     <div class="header-btns">
-      <a href="signup.html" class="btn btn-outline">로그인/가입</a>
-      <a href="signup.html" class="btn btn-primary">무료 다운로드</a>
+      <a href="signup.html" class="btn btn-outline" id="auth-btn">로그인/가입</a>
+      <a href="signup.html" class="btn btn-primary" id="download-btn">무료 다운로드</a>
     </div>
   </div>
 </header>
@@ -1151,5 +1151,32 @@ document.querySelectorAll('a[download]').forEach(function(btn) {
       alert('플레이스 마스터 PRO는 Windows PC 전용 프로그램입니다.\n\nPC에서 placemaster.co.kr 접속 후 다운로드해주세요.');
     }
   });
+});
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo",
+  authDomain: "placemaster-pro.firebaseapp.com",
+  projectId: "placemaster-pro"
+};
+firebase.initializeApp(firebaseConfig);
+
+firebase.auth().onAuthStateChanged(function(user) {
+  const authBtn = document.getElementById('auth-btn');
+  const downloadBtn = document.getElementById('download-btn');
+
+  if (user) {
+    authBtn.textContent = '로그아웃';
+    authBtn.href = '#';
+    authBtn.onclick = function(e) {
+      e.preventDefault();
+      firebase.auth().signOut().then(() => location.reload());
+    };
+    downloadBtn.href = 'https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip';
+    downloadBtn.setAttribute('download', '');
+  }
 });
 </script>
