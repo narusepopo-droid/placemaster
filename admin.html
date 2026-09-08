@@ -596,16 +596,83 @@
 
     <main class="main">
       <div class="tabs">
-        <button class="tab active" data-tab="signups">
+        <button class="tab active" data-tab="dashboard">대시보드</button>
+        <button class="tab" data-tab="signups">
           가입 신청
           <span class="badge" id="pendingCount" style="display:none;">0</span>
         </button>
         <button class="tab" data-tab="users">회원 관리</button>
         <button class="tab" data-tab="admins">관리자 목록</button>
+        <button class="tab" data-tab="deploy">버전 배포</button>
+      </div>
+
+      <!-- 대시보드 탭 -->
+      <div class="tab-content active" id="tab-dashboard">
+        <!-- 핵심 지표 카드 -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:24px;">
+          <div class="card" style="background:linear-gradient(135deg,#3b82f6,#1d4ed8);margin:0;padding:20px;">
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 회원 수</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashTotalUsers">-</div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#22c55e,#16a34a);margin:0;padding:20px;">
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">활성 회원</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashActiveUsers">-</div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#f59e0b,#d97706);margin:0;padding:20px;">
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">가입 신청 대기</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashPending">-</div>
+          </div>
+          <div class="card" style="background:linear-gradient(135deg,#8b5cf6,#7c3aed);margin:0;padding:20px;">
+            <div style="color:rgba(255,255,255,0.8);font-size:0.85rem;margin-bottom:8px;">총 분석 횟수</div>
+            <div style="color:white;font-size:2rem;font-weight:700;" id="dashTotalAnalysis">-</div>
+          </div>
+        </div>
+
+        <!-- 이용자별 분석 현황 -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">이용자별 분석 현황</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadDashboard()">새로고침</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>이름</th>
+                  <th>이메일</th>
+                  <th>매장명</th>
+                  <th>등록 매장 수</th>
+                  <th>분석 횟수</th>
+                  <th>최근 분석</th>
+                </tr>
+              </thead>
+              <tbody id="userAnalysisTable">
+                <tr><td colspan="6" class="loading"><div class="spinner"></div>로딩 중...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 최근 가입 신청 -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">최근 가입 신청</h2>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>신청일</th><th>이름</th><th>연락처</th><th>이메일</th><th>상태</th></tr>
+              </thead>
+              <tbody id="dashRecentSignups">
+                <tr><td colspan="5" class="loading">로딩 중...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <!-- 가입 신청 탭 -->
-      <div class="tab-content active" id="tab-signups">
+      <div class="tab-content" id="tab-signups">
         <div class="card">
           <div class="card-header">
             <h2 class="card-title">가입 신청 목록</h2>
@@ -717,6 +784,55 @@
                     로딩 중...
                   </td>
                 </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 버전 배포 탭 -->
+      <div class="tab-content" id="tab-deploy">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">프로그램 버전 배포</h2>
+          </div>
+          <p style="color:var(--text-muted);margin-bottom:20px;">
+            구글드라이브에 새 버전 파일을 업로드한 뒤, 아래 버튼을 클릭하면 팀원들이 다음 로그인 시 자동 업데이트됩니다.
+          </p>
+
+          <div style="background:var(--surface-2);border-radius:12px;padding:24px;margin-bottom:20px;">
+            <div style="display:flex;align-items:center;gap:32px;margin-bottom:20px;">
+              <div>
+                <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:4px;">현재 배포 버전</div>
+                <div style="font-size:1.5rem;font-weight:700;color:var(--success);" id="deployCurrentVer">-</div>
+              </div>
+              <div style="color:var(--text-muted);font-size:1.5rem;">→</div>
+              <div>
+                <div style="color:var(--text-muted);font-size:0.85rem;margin-bottom:4px;">새 버전</div>
+                <div style="font-size:1.5rem;font-weight:700;color:var(--accent);" id="deployNewVer">-</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>업데이트 내용 (선택)</label>
+              <input type="text" id="deployNote" placeholder="예: 버그 수정, 새 기능 추가 등">
+            </div>
+
+            <button class="btn btn-success" style="width:100%;padding:16px;font-size:1rem;" onclick="deployNewVersion()">
+              새 버전 배포하기
+            </button>
+          </div>
+
+          <div class="card-header" style="margin-top:24px;">
+            <h3 class="card-title" style="font-size:1rem;">배포 이력</h3>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr><th>버전</th><th>배포일</th><th>내용</th></tr>
+              </thead>
+              <tbody id="deployHistory">
+                <tr><td colspan="3" style="text-align:center;color:var(--text-muted);">배포 이력이 없습니다.</td></tr>
               </tbody>
             </table>
           </div>
@@ -880,7 +996,7 @@
       document.getElementById('loginScreen').style.display = 'none';
       document.getElementById('dashboard').classList.add('active');
       document.getElementById('userEmail').textContent = currentUserEmail;
-      loadSignups();
+      loadDashboardData();
     }
 
     function logout() {
@@ -896,9 +1012,11 @@
         tab.classList.add('active');
         document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
 
-        if (tab.dataset.tab === 'signups') loadSignups();
+        if (tab.dataset.tab === 'dashboard') loadDashboardData();
+        else if (tab.dataset.tab === 'signups') loadSignups();
         else if (tab.dataset.tab === 'users') loadUsers();
         else if (tab.dataset.tab === 'admins') loadAdmins();
+        else if (tab.dataset.tab === 'deploy') loadDeployInfo();
       });
     });
 
@@ -1552,6 +1670,160 @@
       toastMsg.textContent = msg;
       toast.className = 'toast show ' + type;
       setTimeout(() => { toast.className = 'toast'; }, 3000);
+    }
+
+    // 대시보드 데이터 로드
+    async function loadDashboardData() {
+      try {
+        // 회원 통계
+        const usersSnap = await db.collection('users').get();
+        let totalUsers = 0, activeUsers = 0, totalAnalysis = 0;
+        const userAnalysisData = [];
+
+        usersSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.role === 'admin' && d.email === 'narusepopo@gmail.com') return;
+          totalUsers++;
+          if (d.status !== 'suspended') activeUsers++;
+
+          // 분석 횟수 (stores_json에서 추출)
+          let storeCount = 0;
+          let analysisCount = d.analysis_count || 0;
+          try {
+            const stores = JSON.parse(d.stores_json || '[]');
+            storeCount = stores.length;
+          } catch(e) {}
+          totalAnalysis += analysisCount;
+
+          userAnalysisData.push({
+            name: d.name || '-',
+            email: d.email || '-',
+            company: d.company || '-',
+            storeCount,
+            analysisCount,
+            lastAnalysis: d.last_analysis || '-'
+          });
+        });
+
+        document.getElementById('dashTotalUsers').textContent = totalUsers;
+        document.getElementById('dashActiveUsers').textContent = activeUsers;
+        document.getElementById('dashTotalAnalysis').textContent = totalAnalysis;
+
+        // 이용자별 분석 테이블
+        const analysisTable = document.getElementById('userAnalysisTable');
+        if (userAnalysisData.length === 0) {
+          analysisTable.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);">데이터가 없습니다.</td></tr>';
+        } else {
+          analysisTable.innerHTML = userAnalysisData.map(u => `
+            <tr>
+              <td>${u.name}</td>
+              <td>${u.email}</td>
+              <td>${u.company}</td>
+              <td>${u.storeCount}개</td>
+              <td>${u.analysisCount}회</td>
+              <td>${u.lastAnalysis}</td>
+            </tr>
+          `).join('');
+        }
+
+        // 가입 신청 대기
+        const signupsSnap = await db.collection('signups').where('status', '==', 'pending').get();
+        document.getElementById('dashPending').textContent = signupsSnap.size;
+
+        // 최근 가입 신청
+        const recentSnap = await db.collection('signups').orderBy('createdAt', 'desc').limit(5).get();
+        const recentTable = document.getElementById('dashRecentSignups');
+        if (recentSnap.empty) {
+          recentTable.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);">신청 내역이 없습니다.</td></tr>';
+        } else {
+          let html = '';
+          recentSnap.forEach(doc => {
+            const d = doc.data();
+            const statusClass = d.status === 'pending' ? 'status-pending' : (d.status === 'approved' ? 'status-approved' : 'status-rejected');
+            const statusText = d.status === 'pending' ? '대기중' : (d.status === 'approved' ? '승인됨' : '거절됨');
+            html += `
+              <tr>
+                <td>${d.createdAt || '-'}</td>
+                <td>${d.name || '-'}</td>
+                <td>${d.phone || '-'}</td>
+                <td>${d.email || '-'}</td>
+                <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+              </tr>
+            `;
+          });
+          recentTable.innerHTML = html;
+        }
+      } catch (err) {
+        console.error('Dashboard error:', err);
+      }
+    }
+
+    // 버전 배포 정보 로드
+    async function loadDeployInfo() {
+      try {
+        const doc = await db.collection('app_meta').doc('latest').get();
+        if (doc.exists) {
+          const ver = doc.data().version || '0';
+          document.getElementById('deployCurrentVer').textContent = 'v' + ver;
+
+          const parts = ver.split('.');
+          parts[parts.length - 1] = parseInt(parts[parts.length - 1]) + 1;
+          document.getElementById('deployNewVer').textContent = 'v' + parts.join('.');
+        } else {
+          document.getElementById('deployCurrentVer').textContent = '미설정';
+          document.getElementById('deployNewVer').textContent = 'v1.0.0';
+        }
+
+        // 배포 이력 로드
+        const historySnap = await db.collection('deploy_history').orderBy('deployedAt', 'desc').limit(10).get();
+        const historyTable = document.getElementById('deployHistory');
+        if (historySnap.empty) {
+          historyTable.innerHTML = '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);">배포 이력이 없습니다.</td></tr>';
+        } else {
+          let html = '';
+          historySnap.forEach(doc => {
+            const d = doc.data();
+            html += `<tr><td>v${d.version}</td><td>${d.deployedAt || '-'}</td><td>${d.note || '-'}</td></tr>`;
+          });
+          historyTable.innerHTML = html;
+        }
+      } catch (err) {
+        console.error('Deploy info error:', err);
+      }
+    }
+
+    // 새 버전 배포
+    async function deployNewVersion() {
+      const newVerText = document.getElementById('deployNewVer').textContent.replace('v', '');
+      const note = document.getElementById('deployNote').value.trim();
+
+      if (!confirm(`v${newVerText}을 배포하시겠습니까?\n팀원들이 다음 로그인 시 자동 업데이트됩니다.`)) return;
+
+      try {
+        const now = new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0].slice(0,5);
+
+        // 버전 정보 업데이트
+        await db.collection('app_meta').doc('latest').set({
+          version: newVerText,
+          download_url: 'https://drive.google.com/file/d/1hTZehHzev07v6VmR0FkmCpilkaDh9_Cr/view?usp=sharing',
+          note,
+          deployedAt: now
+        }, { merge: true });
+
+        // 배포 이력 저장
+        await db.collection('deploy_history').add({
+          version: newVerText,
+          note,
+          deployedAt: now,
+          deployedBy: currentUserEmail
+        });
+
+        document.getElementById('deployNote').value = '';
+        showToast('배포 완료! 팀원들이 다음 로그인 시 자동 업데이트됩니다.', 'success');
+        loadDeployInfo();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
     }
 
     // 자동 로그인 체크 (페이지 로드 시)

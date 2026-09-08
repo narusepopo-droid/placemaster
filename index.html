@@ -1164,11 +1164,25 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 
+const ADMIN_UID = "104K4S7E4bNm9Cl4dQsg7Sz18Zf1";
+const ADMIN_EMAIL = "narusepopo@gmail.com";
+
 firebase.auth().onAuthStateChanged(function(user) {
   const authBtn = document.getElementById('auth-btn');
   const downloadBtn = document.getElementById('download-btn');
+  const headerBtns = document.querySelector('.header-btns');
 
   if (user) {
+    // 관리자인 경우 관리자 버튼 추가
+    if (user.uid === ADMIN_UID || user.email === ADMIN_EMAIL) {
+      const adminBtn = document.createElement('a');
+      adminBtn.href = 'admin.html';
+      adminBtn.className = 'btn btn-outline';
+      adminBtn.textContent = '관리자';
+      adminBtn.style.marginRight = '8px';
+      headerBtns.insertBefore(adminBtn, authBtn);
+    }
+
     authBtn.textContent = '로그아웃';
     authBtn.href = '#';
     authBtn.onclick = function(e) {
