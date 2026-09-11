@@ -1260,6 +1260,7 @@
                   <button class="btn btn-sm btn-danger" onclick="deleteUserPermanently('${doc.id}', '${d.email || ''}')">삭제</button>
                 ` : `
                   <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}', '${d.role || 'member'}')">수정</button>
+                  <button class="btn btn-sm" style="background:var(--warning);" onclick="resetPassword('${doc.id}', '${d.email || ''}', '${d.phone || ''}', '${d.name || ''}')">비번재설정</button>
                   <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
                 `}
               </td>
@@ -1383,6 +1384,7 @@
               <td>${d.created_at || '-'}</td>
               <td class="actions">
                 <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}', '${d.role || 'admin'}')">수정</button>
+                <button class="btn btn-sm btn-success" onclick="resetPassword('${doc.id}', '${d.email || ''}', '${d.phone || ''}', '${d.name || ''}')">비번재설정</button>
                 <button class="btn btn-sm" onclick="demoteToMember('${doc.id}', '${d.email || ''}')" style="background:var(--warning);">회원으로</button>
               </td>
             </tr>
@@ -1673,6 +1675,38 @@
         pw += chars.charAt(Math.floor(Math.random() * chars.length));
       }
       return pw;
+    }
+
+    // 비밀번호 재설정
+    async function resetPassword(uid, email, phone, name) {
+      const newPw = generatePassword();
+
+      if (!confirm(`${name || email}님의 비밀번호를 재설정하시겠습니까?\n\n새 비밀번호: ${newPw}\n\n확인을 누르면 이메일로 재설정 링크가 발송됩니다.`)) return;
+
+      try {
+        // Firebase Auth 비밀번호 재설정 이메일 발송
+        await firebase.auth().sendPasswordResetEmail(email);
+
+        // 문자로 임시 비밀번호 안내 (CORS 프록시)
+        if (phone) {
+          const formData = new FormData();
+          formData.append('key', ALIGO.key);
+          formData.append('user_id', ALIGO.user_id);
+          formData.append('sender', ALIGO.sender);
+          formData.append('receiver', phone.replace(/-/g, ''));
+          formData.append('msg', `[플레이스마스터PRO]\n\n비밀번호 재설정 안내\n\n이메일(${email})로 비밀번호 재설정 링크가 발송되었습니다.\n\n링크를 클릭하여 새 비밀번호를 설정해주세요.`);
+          formData.append('msg_type', 'LMS');
+
+          fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+            method: 'POST',
+            body: formData
+          }).catch(() => {});
+        }
+
+        showToast(`${email}로 비밀번호 재설정 이메일이 발송되었습니다.`, 'success');
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
     }
 
     async function sendSMS(receiver, msg) {
