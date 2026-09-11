@@ -754,6 +754,7 @@
                 <tr>
                   <th style="width:40px;"><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this)"></th>
                   <th>이메일</th>
+                  <th>비밀번호</th>
                   <th>이름</th>
                   <th>연락처</th>
                   <th>매장명</th>
@@ -765,7 +766,7 @@
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="9" class="loading">
+                  <td colspan="10" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -796,6 +797,7 @@
                 <tr>
                   <th style="width:40px;"><input type="checkbox" id="selectAllAdmins" onchange="toggleSelectAllAdmins(this)"></th>
                   <th>이메일</th>
+                  <th>비밀번호</th>
                   <th>이름</th>
                   <th>연락처</th>
                   <th>매장명</th>
@@ -805,7 +807,7 @@
               </thead>
               <tbody id="adminsTable">
                 <tr>
-                  <td colspan="7" class="loading">
+                  <td colspan="8" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -1142,7 +1144,7 @@
         const uid = createData.localId;
         const expiresAt = document.getElementById('approveExpiresAt').value || '';
 
-        // 3) Firestore에 사용자 정보 저장
+        // 3) Firestore에 사용자 정보 저장 (초기 비밀번호 포함)
         await db.collection('users').doc(uid).set({
           email: currentSignup.email,
           name: currentSignup.name,
@@ -1151,6 +1153,7 @@
           role: 'member',
           expires_at: expiresAt,
           device_id: '',
+          initial_password: tempPw,
           created_at: new Date().toISOString().split('T')[0]
         });
 
@@ -1248,6 +1251,7 @@
             <tr style="${isSuspended ? 'opacity:0.6;' : ''}" data-uid="${doc.id}">
               <td><input type="checkbox" class="user-checkbox" data-uid="${doc.id}" onchange="updateUserActionBar()"></td>
               <td>${d.email || '-'}</td>
+              <td style="font-family:monospace;color:var(--warning);">${d.initial_password || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
               <td>${d.company || '-'}</td>
@@ -1269,7 +1273,7 @@
         });
 
         if (!html) {
-          tbody.innerHTML = `<tr><td colspan="9" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="10" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
         } else {
           tbody.innerHTML = html;
         }
@@ -1278,7 +1282,7 @@
         document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
         updateUserActionBar();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="9" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
@@ -1362,7 +1366,7 @@
     // 관리자 목록 로드
     async function loadAdmins() {
       const tbody = document.getElementById('adminsTable');
-      tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
         const snapshot = await db.collection('users').get();
@@ -1378,6 +1382,7 @@
             <tr data-uid="${doc.id}">
               <td><input type="checkbox" class="admin-checkbox" data-uid="${doc.id}" onchange="updateAdminActionBar()"></td>
               <td>${d.email || '-'}</td>
+              <td style="font-family:monospace;color:var(--warning);">${d.initial_password || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
               <td>${d.company || '-'}</td>
@@ -1392,13 +1397,13 @@
         });
 
         if (!html) {
-          tbody.innerHTML = '<tr><td colspan="7" class="empty-state">관리자가 없습니다.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="8" class="empty-state">관리자가 없습니다.</td></tr>';
         } else {
           tbody.innerHTML = html;
         }
         updateAdminActionBar();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
