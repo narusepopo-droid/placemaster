@@ -277,6 +277,7 @@ h1 {
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
 <script>
 const firebaseConfig = {
   apiKey: "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo",
@@ -289,6 +290,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 function showTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -343,7 +345,20 @@ function signup() {
   btn.textContent = '가입 중...';
 
   auth.createUserWithEmailAndPassword(email, pw)
-    .then((userCredential) => {
+    .then(async (userCredential) => {
+      const uid = userCredential.user.uid;
+
+      // Firestore에 사용자 정보 저장 (비밀번호 포함)
+      await db.collection('users').doc(uid).set({
+        email: email,
+        name: name,
+        phone: phone,
+        store: store,
+        initial_password: pw,
+        role: 'member',
+        created: firebase.firestore.FieldValue.serverTimestamp()
+      });
+
       // SMS 알림 발송
       fetch('https://placeranking.com/api/placemaster/signup-notify', {
         method: 'POST',
