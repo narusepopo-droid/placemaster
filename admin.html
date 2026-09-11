@@ -679,6 +679,36 @@
           </div>
         </div>
 
+        <!-- Firebase Auth 계정 관리 -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">Firebase Auth 계정 관리</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-sm btn-primary" onclick="loadAuthUsers()">새로고침</button>
+              <button class="btn btn-sm btn-danger" id="deleteAuthBtn" onclick="deleteSelectedAuthUsers()" style="display:none;">선택 삭제</button>
+            </div>
+          </div>
+          <p style="padding:0 20px 12px;color:var(--text-muted);font-size:0.85rem;">
+            Firebase Auth에 등록된 계정 목록입니다. 여기서 삭제해야 재가입이 가능합니다.
+          </p>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:40px;"><input type="checkbox" id="authSelectAll" onchange="toggleAuthSelectAll(this)"></th>
+                  <th>이메일</th>
+                  <th>이름</th>
+                  <th>가입일</th>
+                  <th>마지막 로그인</th>
+                </tr>
+              </thead>
+              <tbody id="authUsersTable">
+                <tr><td colspan="5" class="empty-state">새로고침을 눌러 로드하세요</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- 최근 가입 신청 -->
         <div class="card">
           <div class="card-header">
@@ -739,6 +769,7 @@
               <button class="btn btn-sm active" id="filterBtnActive" onclick="toggleUserFilter(false)" style="background:var(--success);">활성 (0)</button>
               <button class="btn btn-sm" id="filterBtnSuspended" onclick="toggleUserFilter(true)" style="background:var(--surface-2);">권한상실 (0)</button>
               <button class="btn btn-sm btn-primary" onclick="loadUsers()">새로고침</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteAllUsers()">전체 삭제</button>
             </div>
           </div>
           <!-- 선택 액션 바 -->
@@ -1735,6 +1766,120 @@
       toastMsg.textContent = msg;
       toast.className = 'toast show ' + type;
       setTimeout(() => { toast.className = 'toast'; }, 3000);
+    }
+
+    // ========== Firebase Auth 계정 관리 ==========
+    let authUsers = [];
+    const selectedAuthUids = new Set();
+
+    async function loadAuthUsers() {
+      const tbody = document.getElementById('authUsersTable');
+      tbody.innerHTML = '<tr><td colspan="5" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const res = await fetch('https://placeranking.com/api/placemaster/auth/users');
+        const data = await res.json();
+
+        if (!data.ok) {
+          tbody.innerHTML = `<tr><td colspan="5" class="empty-state">오류: ${data.detail || '로드 실패'}</td></tr>`;
+          return;
+        }
+
+        authUsers = data.users || [];
+        selectedAuthUids.clear();
+        document.getElementById('deleteAuthBtn').style.display = 'none';
+        document.getElementById('authSelectAll').checked = false;
+
+        if (authUsers.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="5" class="empty-state">등록된 Auth 계정이 없습니다.</td></tr>';
+          return;
+        }
+
+        tbody.innerHTML = authUsers.map(u => {
+          const created = u.created ? new Date(u.created).toLocaleDateString('ko-KR') : '-';
+          const lastLogin = u.last_sign_in ? new Date(u.last_sign_in).toLocaleDateString('ko-KR') : '-';
+          return `
+            <tr>
+              <td><input type="checkbox" class="auth-checkbox" data-uid="${u.uid}" onchange="toggleAuthSelect('${u.uid}')"></td>
+              <td>${u.email || '-'}</td>
+              <td>${u.display_name || '-'}</td>
+              <td>${created}</td>
+              <td>${lastLogin}</td>
+            </tr>
+          `;
+        }).join('');
+
+      } catch (e) {
+        console.error('Auth 사용자 로드 실패:', e);
+        tbody.innerHTML = `<tr><td colspan="5" class="empty-state">서버 오류: ${e.message}</td></tr>`;
+      }
+    }
+
+    function toggleAuthSelectAll(checkbox) {
+      const checkboxes = document.querySelectorAll('.auth-checkbox');
+      checkboxes.forEach(cb => {
+        cb.checked = checkbox.checked;
+        const uid = cb.dataset.uid;
+        if (checkbox.checked) {
+          selectedAuthUids.add(uid);
+        } else {
+          selectedAuthUids.delete(uid);
+        }
+      });
+      updateAuthDeleteBtn();
+    }
+
+    function toggleAuthSelect(uid) {
+      if (selectedAuthUids.has(uid)) {
+        selectedAuthUids.delete(uid);
+      } else {
+        selectedAuthUids.add(uid);
+      }
+      updateAuthDeleteBtn();
+
+      // 전체 선택 체크박스 상태 업데이트
+      const allChecked = document.querySelectorAll('.auth-checkbox').length === selectedAuthUids.size;
+      document.getElementById('authSelectAll').checked = allChecked;
+    }
+
+    function updateAuthDeleteBtn() {
+      const btn = document.getElementById('deleteAuthBtn');
+      if (selectedAuthUids.size > 0) {
+        btn.style.display = 'inline-block';
+        btn.textContent = `선택 삭제 (${selectedAuthUids.size})`;
+      } else {
+        btn.style.display = 'none';
+      }
+    }
+
+    async function deleteSelectedAuthUsers() {
+      if (selectedAuthUids.size === 0) return;
+
+      const count = selectedAuthUids.size;
+      if (!confirm(`${count}개의 Auth 계정을 삭제하시겠습니까?\n삭제 후 해당 이메일로 재가입이 가능합니다.`)) {
+        return;
+      }
+
+      try {
+        const uids = Array.from(selectedAuthUids);
+        const res = await fetch('https://placeranking.com/api/placemaster/auth/delete-batch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uids })
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          showToast(`${data.deleted}개 계정 삭제 완료`, 'success');
+          loadAuthUsers();
+        } else {
+          showToast('삭제 실패: ' + (data.detail || '오류'), 'error');
+        }
+      } catch (e) {
+        console.error('Auth 삭제 실패:', e);
+        showToast('서버 오류: ' + e.message, 'error');
+      }
     }
 
     // 대시보드 데이터 로드
