@@ -729,11 +729,11 @@
               <thead>
                 <tr>
                   <th style="width:40px;"><input type="checkbox" id="selectAllUsers" onchange="toggleSelectAllUsers(this)"></th>
+                  <th>매장명</th>
                   <th>이메일</th>
                   <th>비밀번호</th>
                   <th>이름</th>
                   <th>연락처</th>
-                  <th>매장명</th>
                   <th>가입일</th>
                   <th>만료일</th>
                   <th>상태</th>
@@ -1321,11 +1321,11 @@ Windows 보안 경고 시
           html += `
             <tr style="${isSuspended ? 'opacity:0.6;' : ''}" data-uid="${doc.id}">
               <td><input type="checkbox" class="user-checkbox" data-uid="${doc.id}" onchange="updateUserActionBar()"></td>
+              <td><strong>${d.company || '-'}</strong></td>
               <td>${d.email || '-'}</td>
               <td style="font-family:monospace;color:var(--warning);">${d.initial_password || '-'}</td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
-              <td>${d.company || '-'}</td>
               <td>${d.created_at || '-'}</td>
               <td>${d.expires_at || '무제한'}</td>
               <td>${statusBadge}</td>
