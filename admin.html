@@ -683,11 +683,11 @@
             <table>
               <thead>
                 <tr>
-                  <th>신청일</th>
+                  <th>매장명</th>
                   <th>이름</th>
                   <th>연락처</th>
                   <th>이메일</th>
-                  <th>매장명</th>
+                  <th>신청일</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
@@ -1049,15 +1049,15 @@
 
           html += `
             <tr>
-              <td>${d.createdAt || '-'}</td>
+              <td><strong>${d.company || '-'}</strong></td>
               <td>${d.name || '-'}</td>
               <td>${d.phone || '-'}</td>
               <td>${d.email || '-'}</td>
-              <td>${d.company || '-'}</td>
+              <td>${d.createdAt || '-'}</td>
               <td><span class="status-badge ${statusClass}">${statusText}</span></td>
               <td class="actions">
                 ${d.status === 'pending' ? `
-                  <button class="btn btn-sm btn-success" onclick="showApproveModal('${doc.id}', '${d.name}', '${d.phone}', '${d.email}', '${d.company}')">승인</button>
+                  <button class="btn btn-sm btn-success" onclick="directApprove('${doc.id}', '${d.name}', '${d.phone}', '${d.email}', '${d.company}')">승인</button>
                   <button class="btn btn-sm btn-danger" onclick="rejectSignup('${doc.id}')">거절</button>
                 ` : '-'}
               </td>
@@ -1079,7 +1079,102 @@
       }
     }
 
-    // 승인 모달 표시
+    // 원클릭 승인
+    async function directApprove(docId, name, phone, email, company) {
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '처리중...';
+
+      try {
+        // 1) 임시 비밀번호 생성
+        const tempPw = generatePassword();
+
+        // 2) Firebase Auth 계정 생성
+        const createRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: tempPw, returnSecureToken: true })
+        });
+        const createData = await createRes.json();
+        if (createData.error) throw new Error(createData.error.message);
+
+        const uid = createData.localId;
+
+        // 3) Firestore에 사용자 정보 저장
+        await db.collection('users').doc(uid).set({
+          email, name, phone, company,
+          role: 'member',
+          expires_at: '',
+          device_id: '',
+          initial_password: tempPw,
+          created_at: new Date().toISOString().split('T')[0]
+        });
+
+        // 4) 가입 신청 상태 업데이트
+        await db.collection('signups').doc(docId).update({
+          status: 'approved',
+          approvedAt: new Date().toISOString(),
+          uid: uid
+        });
+
+        // 5) 승인 문자 발송
+        const smsMsg = `[플레이스마스터PRO]
+
+가입이 승인되었습니다!
+
+▶ 아이디: ${email}
+▶ 비밀번호: ${tempPw}
+
+━━━━━━━━━━━━━━
+📥 다운로드 방법
+━━━━━━━━━━━━━━
+1. placemaster.co.kr 접속
+2. 로그인 후 [무료 다운로드] 클릭
+3. ZIP 파일 압축 해제
+4. PlaceMasterPRO.exe 실행
+
+━━━━━━━━━━━━━━
+⚠️ 실행 안될 때
+━━━━━━━━━━━━━━
+Windows 보안 경고 시
+→ [추가 정보] → [실행] 클릭
+
+※ 현재 무료 프로모션 진행중!
+※ 비밀번호는 로그인 후 변경 가능`;
+
+        await db.collection('sms_queue').add({
+          receiver: phone,
+          msg: smsMsg,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+
+        try {
+          const formData = new FormData();
+          formData.append('key', ALIGO.key);
+          formData.append('user_id', ALIGO.user_id);
+          formData.append('sender', ALIGO.sender);
+          formData.append('receiver', phone.replace(/-/g, ''));
+          formData.append('msg', smsMsg);
+          formData.append('msg_type', 'LMS');
+          await fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+            method: 'POST',
+            body: formData
+          });
+        } catch (smsErr) {
+          console.log('SMS 직접 발송 실패:', smsErr);
+        }
+
+        showToast('승인 완료! 문자가 발송되었습니다.', 'success');
+        loadSignups();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+        btn.disabled = false;
+        btn.textContent = '승인';
+      }
+    }
+
+    // 승인 모달 표시 (기존 호환용)
     function showApproveModal(docId, name, phone, email, company) {
       currentSignup = { docId, name, phone, email, company };
       document.getElementById('approveModalName').textContent = name;
@@ -1089,7 +1184,7 @@
       document.getElementById('approveModal').classList.add('active');
     }
 
-    // 가입 승인
+    // 가입 승인 (모달용 - 기존 호환)
     async function approveSignup() {
       if (!currentSignup) return;
 
