@@ -1139,9 +1139,45 @@ h1, h2, h3, p { word-break: keep-all; }
   </div>
 </section>
 
+<!-- 문의 섹션 -->
+<section class="contact-section" style="background:#f8fafc;padding:60px 24px;text-align:center;">
+  <h2 style="font-size:1.8rem;font-weight:700;margin-bottom:12px;color:#1a1a1a;">문의하기</h2>
+  <p style="color:#666;margin-bottom:24px;">궁금한 점이 있으시면 언제든 문의해주세요</p>
+  <button onclick="openContactModal()" style="padding:16px 48px;background:#03C75A;color:white;border:none;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;">문의하기</button>
+</section>
+
 <footer>
   © 2026 플레이스 마스터 PRO · 문의: <a href="mailto:narusepopo@gmail.com">narusepopo@gmail.com</a>
 </footer>
+
+<!-- 문의 모달 -->
+<div id="contactModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+  <div style="background:white;border-radius:16px;padding:32px;max-width:440px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <h3 style="margin:0 0 24px;font-size:1.4rem;color:#1a1a1a;text-align:center;">문의하기</h3>
+    <div id="contactError" style="display:none;background:#fee2e2;color:#dc2626;padding:12px;border-radius:8px;margin-bottom:16px;font-size:0.9rem;"></div>
+    <div id="contactSuccess" style="display:none;background:#dcfce7;color:#16a34a;padding:16px;border-radius:8px;margin-bottom:16px;text-align:center;">
+      <strong>문의가 접수되었습니다!</strong><br><span style="font-size:0.9rem;">빠른 시일 내 답변드리겠습니다.</span>
+    </div>
+    <div id="contactForm">
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">이름 *</label>
+        <input type="text" id="contactName" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:16px;">
+        <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">연락처 *</label>
+        <input type="tel" id="contactPhone" placeholder="010-1234-5678" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;">
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">문의 내용 *</label>
+        <textarea id="contactMessage" rows="4" placeholder="궁금한 점을 적어주세요" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <button onclick="closeContactModal()" style="flex:1;padding:14px;border:1px solid #ddd;background:white;border-radius:8px;cursor:pointer;font-size:1rem;">취소</button>
+        <button id="contactSubmitBtn" onclick="submitContact()" style="flex:1;padding:14px;border:none;background:#03C75A;color:white;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;">문의하기</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 document.querySelectorAll('a[download]').forEach(function(btn) {
@@ -1291,6 +1327,84 @@ async function changePassword() {
   } finally {
     btn.disabled = false;
     btn.textContent = '비밀번호 변경';
+  }
+}
+
+// 문의 모달
+function openContactModal() {
+  document.getElementById('contactModal').style.display = 'flex';
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactPhone').value = '';
+  document.getElementById('contactMessage').value = '';
+  document.getElementById('contactError').style.display = 'none';
+  document.getElementById('contactSuccess').style.display = 'none';
+  document.getElementById('contactForm').style.display = 'block';
+}
+
+function closeContactModal() {
+  document.getElementById('contactModal').style.display = 'none';
+}
+
+async function submitContact() {
+  const name = document.getElementById('contactName').value.trim();
+  const phone = document.getElementById('contactPhone').value.trim();
+  const message = document.getElementById('contactMessage').value.trim();
+  const errorDiv = document.getElementById('contactError');
+  const btn = document.getElementById('contactSubmitBtn');
+
+  errorDiv.style.display = 'none';
+
+  if (!name || !phone || !message) {
+    errorDiv.textContent = '모든 항목을 입력해주세요.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '전송 중...';
+
+  try {
+    const db = firebase.firestore();
+
+    // Firestore에 문의 저장
+    await db.collection('inquiries').add({
+      name: name,
+      phone: phone,
+      message: message,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+
+    // 관리자에게 SMS 발송 (대기열에 추가)
+    await db.collection('sms_queue').add({
+      receiver: '01062950489',
+      msg: `[플마PRO 문의]\n이름: ${name}\n연락처: ${phone}\n내용: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+
+    // 고객에게 접수 확인 SMS 발송
+    await db.collection('sms_queue').add({
+      receiver: phone.replace(/-/g, ''),
+      msg: `[플레이스마스터PRO]\n\n문의가 접수되었습니다.\n빠른 시일 내 답변드리겠습니다.\n\n감사합니다.`,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+
+    // 성공 메시지 표시
+    document.getElementById('contactForm').style.display = 'none';
+    document.getElementById('contactSuccess').style.display = 'block';
+
+    setTimeout(() => {
+      closeContactModal();
+    }, 2000);
+
+  } catch (error) {
+    errorDiv.textContent = '문의 전송 실패: ' + error.message;
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '문의하기';
   }
 }
 </script>

@@ -88,6 +88,11 @@ h1 {
 .form-group input::placeholder {
   color: #aaa;
 }
+.password-hint {
+  font-size: 12px;
+  color: #888;
+  margin-top: 6px;
+}
 
 .btn {
   width: 100%;
@@ -100,34 +105,9 @@ h1 {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
-  margin-top: 8px;
 }
-.btn:hover {
-  background: #02a54b;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(3,199,90,0.3);
-}
-.btn:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  margin: 28px 0;
-  color: #aaa;
-  font-size: 13px;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #e0e0e0;
-}
-.divider span { padding: 0 16px; }
+.btn:hover { background: #02a84d; }
+.btn:disabled { background: #ccc; cursor: not-allowed; }
 
 .links {
   text-align: center;
@@ -137,65 +117,49 @@ h1 {
   color: #03C75A;
   text-decoration: none;
   font-size: 14px;
-  font-weight: 500;
-}
-.links a:hover {
-  text-decoration: underline;
 }
 
 .error {
-  background: #fff0f0;
-  color: #e53935;
+  background: #fee2e2;
+  color: #dc2626;
   padding: 12px 16px;
   border-radius: 10px;
-  font-size: 14px;
   margin-bottom: 20px;
+  font-size: 14px;
   display: none;
 }
 .success {
-  background: #e8f8ef;
-  color: #03C75A;
-  padding: 16px;
+  background: #dcfce7;
+  color: #16a34a;
+  padding: 20px;
   border-radius: 10px;
-  font-size: 14px;
+  margin-bottom: 20px;
   text-align: center;
   display: none;
 }
-.success h3 {
-  font-size: 18px;
-  margin-bottom: 8px;
-}
-
-.password-hint {
-  font-size: 12px;
-  color: #888;
-  margin-top: 6px;
-}
+.success h3 { margin-bottom: 8px; font-size: 18px; }
+.success p { font-size: 14px; line-height: 1.6; }
 
 .tabs {
   display: flex;
-  margin-bottom: 28px;
-  border-radius: 12px;
-  background: #f5f5f5;
-  padding: 4px;
+  margin-bottom: 24px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #e0e0e0;
 }
 .tab {
   flex: 1;
   padding: 12px;
   text-align: center;
-  font-size: 14px;
+  cursor: pointer;
   font-weight: 600;
   color: #666;
-  cursor: pointer;
-  border-radius: 10px;
   transition: all 0.2s;
 }
 .tab.active {
-  background: white;
-  color: #03C75A;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #03C75A;
+  color: white;
 }
-
 .form-section { display: none; }
 .form-section.active { display: block; }
 </style>
@@ -209,22 +173,26 @@ h1 {
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('signup')">회원가입</div>
+    <div class="tab active" onclick="showTab('signup')">가입신청</div>
     <div class="tab" onclick="showTab('login')">로그인</div>
   </div>
 
   <div class="error" id="error"></div>
   <div class="success" id="success">
-    <h3>가입 완료!</h3>
-    <p>이제 프로그램을 다운로드하여 사용하실 수 있습니다.</p>
-    <a href="https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip" class="btn" style="display:inline-block; margin-top:16px; width:auto; padding:14px 32px;" download>프로그램 다운로드</a>
+    <h3>가입 신청 완료!</h3>
+    <p>관리자 승인 후 로그인 정보가<br>문자로 발송됩니다.</p>
+    <p style="margin-top:12px;font-size:13px;color:#666;">승인까지 영업일 기준 1일 이내 소요</p>
   </div>
 
-  <!-- 회원가입 폼 -->
+  <!-- 가입신청 폼 -->
   <div class="form-section active" id="signup-form">
-    <h1>회원가입</h1>
-    <p class="subtitle">무료로 가입하고 플레이스 순위 추적을 시작하세요</p>
+    <h1>가입 신청</h1>
+    <p class="subtitle">신청 후 승인되면 문자로 로그인 정보가 발송됩니다</p>
 
+    <div class="form-group">
+      <label>매장명 <span style="color:#e53935">*</span></label>
+      <input type="text" id="signup-store" placeholder="OO카페 강남점" required>
+    </div>
     <div class="form-group">
       <label>이름 <span style="color:#e53935">*</span></label>
       <input type="text" id="signup-name" placeholder="홍길동" required>
@@ -232,32 +200,19 @@ h1 {
     <div class="form-group">
       <label>연락처 <span style="color:#e53935">*</span></label>
       <input type="tel" id="signup-phone" placeholder="010-1234-5678" required>
-    </div>
-    <div class="form-group">
-      <label>매장명 <span style="color:#e53935">*</span></label>
-      <input type="text" id="signup-store" placeholder="OO카페 강남점" required>
+      <p class="password-hint">승인 시 이 번호로 로그인 정보가 발송됩니다</p>
     </div>
     <div class="form-group">
       <label>이메일 (로그인 아이디) <span style="color:#e53935">*</span></label>
       <input type="email" id="signup-email" placeholder="example@email.com" required>
-      <p class="password-hint">이메일이 로그인 아이디로 사용됩니다</p>
     </div>
-    <div class="form-group">
-      <label>비밀번호</label>
-      <input type="password" id="signup-password" placeholder="비밀번호 입력">
-      <p class="password-hint">최소 6자 이상 입력해주세요</p>
-    </div>
-    <div class="form-group">
-      <label>비밀번호 확인</label>
-      <input type="password" id="signup-password2" placeholder="비밀번호 다시 입력">
-    </div>
-    <button class="btn" onclick="signup()" id="signup-btn">가입하기</button>
+    <button class="btn" onclick="submitSignup()" id="signup-btn">가입 신청하기</button>
   </div>
 
   <!-- 로그인 폼 -->
   <div class="form-section" id="login-form">
     <h1>로그인</h1>
-    <p class="subtitle">계정에 로그인하세요</p>
+    <p class="subtitle">승인 문자로 받은 정보로 로그인하세요</p>
 
     <div class="form-group">
       <label>이메일</label>
@@ -265,7 +220,7 @@ h1 {
     </div>
     <div class="form-group">
       <label>비밀번호</label>
-      <input type="password" id="login-password" placeholder="비밀번호 입력">
+      <input type="password" id="login-password" placeholder="문자로 받은 비밀번호">
     </div>
     <button class="btn" onclick="login()" id="login-btn">로그인</button>
   </div>
@@ -313,76 +268,67 @@ function showError(msg) {
   el.style.display = 'block';
 }
 
-function signup() {
+async function submitSignup() {
+  const store = document.getElementById('signup-store').value.trim();
   const name = document.getElementById('signup-name').value.trim();
   const phone = document.getElementById('signup-phone').value.trim();
-  const store = document.getElementById('signup-store').value.trim();
   const email = document.getElementById('signup-email').value.trim();
-  const pw = document.getElementById('signup-password').value;
-  const pw2 = document.getElementById('signup-password2').value;
 
   document.getElementById('error').style.display = 'none';
 
-  if (!name || !phone || !store) {
-    showError('이름, 연락처, 매장명을 모두 입력해주세요.');
+  if (!store || !name || !phone || !email) {
+    showError('모든 항목을 입력해주세요.');
     return;
   }
-  if (!email || !pw) {
-    showError('이메일과 비밀번호를 입력해주세요.');
-    return;
-  }
-  if (pw.length < 6) {
-    showError('비밀번호는 최소 6자 이상이어야 합니다.');
-    return;
-  }
-  if (pw !== pw2) {
-    showError('비밀번호가 일치하지 않습니다.');
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    showError('올바른 이메일 형식이 아닙니다.');
     return;
   }
 
   const btn = document.getElementById('signup-btn');
   btn.disabled = true;
-  btn.textContent = '가입 중...';
+  btn.textContent = '신청 중...';
 
-  auth.createUserWithEmailAndPassword(email, pw)
-    .then(async (userCredential) => {
-      const uid = userCredential.user.uid;
-
-      // Firestore에 사용자 정보 저장 (비밀번호 포함)
-      await db.collection('users').doc(uid).set({
-        email: email,
-        name: name,
-        phone: phone,
-        store: store,
-        initial_password: pw,
-        role: 'member',
-        created: firebase.firestore.FieldValue.serverTimestamp()
-      });
-
-      // SMS 알림 발송
-      fetch('https://placeranking.com/api/placemaster/signup-notify', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({email: email, name: name, phone: phone, store: store})
-      }).catch(() => {});
-
-      // 회원가입 성공 시 홈으로 이동
-      window.location.href = 'index.html';
-    })
-    .catch((error) => {
+  try {
+    // 이메일 중복 체크
+    const existingUser = await db.collection('users').where('email', '==', email).get();
+    if (!existingUser.empty) {
+      showError('이미 가입된 이메일입니다.');
       btn.disabled = false;
-      btn.textContent = '가입하기';
+      btn.textContent = '가입 신청하기';
+      return;
+    }
 
-      let msg = '가입 중 오류가 발생했습니다.';
-      if (error.code === 'auth/email-already-in-use') {
-        msg = '이미 가입된 이메일입니다.';
-      } else if (error.code === 'auth/invalid-email') {
-        msg = '올바른 이메일 형식이 아닙니다.';
-      } else if (error.code === 'auth/weak-password') {
-        msg = '비밀번호가 너무 약합니다.';
-      }
-      showError(msg);
+    const existingSignup = await db.collection('signups').where('email', '==', email).get();
+    if (!existingSignup.empty) {
+      showError('이미 신청된 이메일입니다. 승인을 기다려주세요.');
+      btn.disabled = false;
+      btn.textContent = '가입 신청하기';
+      return;
+    }
+
+    // signups 컬렉션에 저장
+    await db.collection('signups').add({
+      company: store,
+      name: name,
+      phone: phone,
+      email: email,
+      status: 'pending',
+      createdAt: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]
     });
+
+    // 성공 메시지 표시
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('success').style.display = 'block';
+
+  } catch (error) {
+    console.error('Signup error:', error);
+    showError('신청 중 오류가 발생했습니다. 다시 시도해주세요.');
+    btn.disabled = false;
+    btn.textContent = '가입 신청하기';
+  }
 }
 
 function login() {
@@ -402,7 +348,6 @@ function login() {
 
   auth.signInWithEmailAndPassword(email, pw)
     .then((userCredential) => {
-      // 로그인 성공 시 홈으로 이동
       window.location.href = 'index.html';
     })
     .catch((error) => {
@@ -411,7 +356,7 @@ function login() {
 
       let msg = '로그인 중 오류가 발생했습니다.';
       if (error.code === 'auth/user-not-found') {
-        msg = '등록되지 않은 이메일입니다.';
+        msg = '등록되지 않은 이메일입니다. 가입 신청 후 승인을 기다려주세요.';
       } else if (error.code === 'auth/wrong-password') {
         msg = '비밀번호가 올바르지 않습니다.';
       } else if (error.code === 'auth/invalid-email') {
@@ -422,16 +367,15 @@ function login() {
 }
 
 // Enter 키로 제출
-document.addEventListener('keypress', function(e) {
+document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     if (document.getElementById('signup-form').classList.contains('active')) {
-      signup();
+      submitSignup();
     } else {
       login();
     }
   }
 });
 </script>
-
 </body>
 </html>

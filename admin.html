@@ -1336,7 +1336,6 @@ Windows 보안 경고 시
                 ` : `
                   <button class="btn btn-sm btn-primary" onclick="showEditUserModal('${doc.id}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}', '${d.expires_at || ''}', '${d.role || 'member'}')">수정</button>
                   <button class="btn btn-sm" style="background:var(--warning);" onclick="resetPassword('${doc.id}', '${d.email || ''}', '${d.phone || ''}', '${d.name || ''}')">비번재설정</button>
-                  <button class="btn btn-sm" style="background:#8b5cf6;" onclick="moveToSignup('${doc.id}', '${d.email || ''}', '${d.name || ''}', '${d.phone || ''}', '${d.company || ''}')">신청으로</button>
                   <button class="btn btn-sm btn-danger" onclick="suspendUser('${doc.id}', '${d.email || ''}')">권한상실</button>
                 `}
               </td>

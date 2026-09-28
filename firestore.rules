@@ -27,5 +27,11 @@ service cloud.firestore {
     match /deploy_history/{document} {
       allow read, write: if request.auth != null;
     }
+
+    // 문의 - 누구나 쓰기 가능, 인증된 사용자만 읽기
+    match /inquiries/{document} {
+      allow write: if true;
+      allow read: if request.auth != null;
+    }
   }
 }
