@@ -1212,6 +1212,14 @@ firebase.auth().onAuthStateChanged(function(user) {
       headerBtns.insertBefore(adminBtn, authBtn);
     }
 
+    // 비밀번호 변경 버튼 추가
+    const pwChangeBtn = document.createElement('button');
+    pwChangeBtn.className = 'btn btn-outline';
+    pwChangeBtn.textContent = '비밀번호 변경';
+    pwChangeBtn.style.marginRight = '8px';
+    pwChangeBtn.onclick = function() { showPasswordModal(); };
+    headerBtns.insertBefore(pwChangeBtn, authBtn);
+
     authBtn.textContent = '로그아웃';
     authBtn.href = '#';
     authBtn.onclick = function(e) {
@@ -1222,4 +1230,91 @@ firebase.auth().onAuthStateChanged(function(user) {
     downloadBtn.setAttribute('download', '');
   }
 });
+
+function showPasswordModal() {
+  document.getElementById('pwModal').style.display = 'flex';
+  document.getElementById('currentPw').value = '';
+  document.getElementById('newPw').value = '';
+  document.getElementById('confirmPw').value = '';
+  document.getElementById('pwError').style.display = 'none';
+}
+
+function closePasswordModal() {
+  document.getElementById('pwModal').style.display = 'none';
+}
+
+async function changePassword() {
+  const currentPw = document.getElementById('currentPw').value;
+  const newPw = document.getElementById('newPw').value;
+  const confirmPw = document.getElementById('confirmPw').value;
+  const errorDiv = document.getElementById('pwError');
+  const btn = document.getElementById('changePwBtn');
+
+  errorDiv.style.display = 'none';
+
+  if (!currentPw || !newPw || !confirmPw) {
+    errorDiv.textContent = '모든 항목을 입력해주세요.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPw.length < 6) {
+    errorDiv.textContent = '새 비밀번호는 6자 이상이어야 합니다.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  if (newPw !== confirmPw) {
+    errorDiv.textContent = '새 비밀번호가 일치하지 않습니다.';
+    errorDiv.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '변경 중...';
+
+  try {
+    const user = firebase.auth().currentUser;
+    const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPw);
+    await user.reauthenticateWithCredential(credential);
+    await user.updatePassword(newPw);
+
+    alert('비밀번호가 성공적으로 변경되었습니다.');
+    closePasswordModal();
+  } catch (error) {
+    if (error.code === 'auth/wrong-password') {
+      errorDiv.textContent = '현재 비밀번호가 올바르지 않습니다.';
+    } else {
+      errorDiv.textContent = '비밀번호 변경 실패: ' + error.message;
+    }
+    errorDiv.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '비밀번호 변경';
+  }
+}
 </script>
+
+<!-- 비밀번호 변경 모달 -->
+<div id="pwModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+  <div style="background:white;border-radius:12px;padding:24px;max-width:400px;width:90%;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
+    <h3 style="margin:0 0 20px;font-size:1.25rem;color:#1a1a1a;">비밀번호 변경</h3>
+    <div id="pwError" style="display:none;background:#fee2e2;color:#dc2626;padding:12px;border-radius:8px;margin-bottom:16px;font-size:0.9rem;"></div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">현재 비밀번호</label>
+      <input type="password" id="currentPw" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">새 비밀번호</label>
+      <input type="password" id="newPw" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:20px;">
+      <label style="display:block;font-size:0.9rem;color:#666;margin-bottom:6px;">새 비밀번호 확인</label>
+      <input type="password" id="confirmPw" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:1rem;box-sizing:border-box;">
+    </div>
+    <div style="display:flex;gap:12px;">
+      <button onclick="closePasswordModal()" style="flex:1;padding:12px;border:1px solid #ddd;background:white;border-radius:8px;cursor:pointer;font-size:1rem;">취소</button>
+      <button id="changePwBtn" onclick="changePassword()" style="flex:1;padding:12px;border:none;background:#3b82f6;color:white;border-radius:8px;cursor:pointer;font-size:1rem;">비밀번호 변경</button>
+    </div>
+  </div>
+</div>
