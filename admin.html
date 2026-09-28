@@ -603,6 +603,10 @@
         </button>
         <button class="tab" data-tab="users">회원 관리</button>
         <button class="tab" data-tab="admins">관리자 목록</button>
+        <button class="tab" data-tab="inquiries">
+          문의 관리
+          <span class="badge" id="inquiryCount" style="display:none;">0</span>
+        </button>
         <button class="tab" data-tab="deploy">버전 배포</button>
       </div>
 
@@ -720,6 +724,7 @@
           <!-- 선택 액션 바 -->
           <div id="userActionBar" style="display:none;padding:12px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;">
             <span id="selectedCount" style="color:var(--text-muted);font-size:0.9rem;">0명 선택</span>
+            <button class="btn btn-sm" onclick="moveSelectedToSignups()" style="background:#8b5cf6;">가입신청으로</button>
             <button class="btn btn-sm" onclick="moveSelectedToAdmin()" style="background:var(--warning);">관리자로 이동</button>
             <button class="btn btn-sm btn-danger" onclick="deleteSelectedUsers()">선택 삭제</button>
             <button class="btn btn-sm" onclick="clearUserSelection()" style="background:var(--surface);">선택 취소</button>
@@ -784,6 +789,38 @@
               <tbody id="adminsTable">
                 <tr>
                   <td colspan="8" class="loading">
+                    <div class="spinner"></div>
+                    로딩 중...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 문의 관리 탭 -->
+      <div class="tab-content" id="tab-inquiries">
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">문의 목록</h2>
+            <button class="btn btn-sm btn-primary" onclick="loadInquiries()">새로고침</button>
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>접수일</th>
+                  <th>이름</th>
+                  <th>연락처</th>
+                  <th>문의 내용</th>
+                  <th>상태</th>
+                  <th>관리</th>
+                </tr>
+              </thead>
+              <tbody id="inquiriesTable">
+                <tr>
+                  <td colspan="6" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -1020,6 +1057,7 @@
         else if (tab.dataset.tab === 'signups') loadSignups();
         else if (tab.dataset.tab === 'users') loadUsers();
         else if (tab.dataset.tab === 'admins') loadAdmins();
+        else if (tab.dataset.tab === 'inquiries') loadInquiries();
         else if (tab.dataset.tab === 'deploy') loadDeployInfo();
       });
     });
@@ -1288,6 +1326,85 @@ Windows 보안 경고 시
       }
     }
 
+    // 문의 목록 로드
+    async function loadInquiries() {
+      const tbody = document.getElementById('inquiriesTable');
+      tbody.innerHTML = '<tr><td colspan="6" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
+
+      try {
+        const snapshot = await db.collection('inquiries').orderBy('createdAt', 'desc').get();
+        if (snapshot.empty) {
+          tbody.innerHTML = '<tr><td colspan="6" class="empty-state">문의가 없습니다.</td></tr>';
+          return;
+        }
+
+        let pendingCount = 0;
+        let html = '';
+        snapshot.forEach(doc => {
+          const d = doc.data();
+          if (d.status === 'pending') pendingCount++;
+
+          const statusClass = d.status === 'pending' ? 'status-pending' : 'status-approved';
+          const statusText = d.status === 'pending' ? '대기중' : '답변완료';
+          const createdAt = d.createdAt ? d.createdAt.split('T')[0] : '-';
+
+          html += `
+            <tr>
+              <td>${createdAt}</td>
+              <td>${d.name || '-'}</td>
+              <td>${d.phone || '-'}</td>
+              <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${d.message || '-'}</td>
+              <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+              <td class="actions">
+                ${d.status === 'pending' ? `
+                  <button class="btn btn-sm btn-success" onclick="replyInquiry('${doc.id}', '${d.phone || ''}', '${d.name || ''}')">답변</button>
+                ` : '-'}
+              </td>
+            </tr>
+          `;
+        });
+        tbody.innerHTML = html;
+
+        const badge = document.getElementById('inquiryCount');
+        if (pendingCount > 0) {
+          badge.textContent = pendingCount;
+          badge.style.display = 'inline';
+        } else {
+          badge.style.display = 'none';
+        }
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+      }
+    }
+
+    // 문의 답변
+    async function replyInquiry(docId, phone, name) {
+      const message = prompt(`${name}님에게 보낼 답변 내용을 입력하세요:`);
+      if (!message) return;
+
+      try {
+        // SMS 발송
+        await db.collection('sms_queue').add({
+          receiver: phone.replace(/-/g, ''),
+          msg: `[플레이스마스터PRO]\n\n${name}님, 문의 답변입니다.\n\n${message}\n\n감사합니다.`,
+          status: 'pending',
+          createdAt: new Date().toISOString()
+        });
+
+        // 상태 업데이트
+        await db.collection('inquiries').doc(docId).update({
+          status: 'replied',
+          repliedAt: new Date().toISOString(),
+          replyMessage: message
+        });
+
+        showToast('답변이 발송되었습니다.', 'success');
+        loadInquiries();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
     // 회원 목록 로드
     let showSuspended = false;
     async function loadUsers() {
@@ -1410,6 +1527,41 @@ Windows 보안 경고 시
         document.getElementById('selectAllUsers').checked = false;
         loadUsers();
         loadAdmins();
+      } catch (err) {
+        showToast('오류: ' + err.message, 'error');
+      }
+    }
+
+    async function moveSelectedToSignups() {
+      const uids = getSelectedUserIds();
+      if (uids.length === 0) return;
+      if (!confirm(`${uids.length}명을 가입 신청 목록으로 이동하시겠습니까?\n\n⚠️ 해당 회원들은 로그인이 불가능해지고, 다시 승인해야 사용할 수 있습니다.`)) return;
+
+      try {
+        for (const uid of uids) {
+          const userDoc = await db.collection('users').doc(uid).get();
+          if (!userDoc.exists) continue;
+          const d = userDoc.data();
+
+          // signups에 추가
+          await db.collection('signups').add({
+            company: d.company || d.store || '',
+            name: d.name || '',
+            phone: d.phone || '',
+            email: d.email || '',
+            status: 'pending',
+            createdAt: new Date().toISOString(),
+            movedFromUsers: true
+          });
+
+          // users에서 삭제
+          await db.collection('users').doc(uid).delete();
+        }
+
+        showToast(`${uids.length}명이 가입 신청으로 이동되었습니다.`, 'success');
+        document.getElementById('selectAllUsers').checked = false;
+        loadUsers();
+        loadSignups();
       } catch (err) {
         showToast('오류: ' + err.message, 'error');
       }
