@@ -369,13 +369,22 @@ function login() {
     .then((userCredential) => {
       window.location.href = 'index.html';
     })
-    .catch((error) => {
+    .catch(async (error) => {
       btn.disabled = false;
       btn.textContent = '로그인';
 
       let msg = '로그인 중 오류가 발생했습니다.';
       if (error.code === 'auth/user-not-found') {
-        msg = '등록되지 않은 이메일입니다. 가입 신청 후 승인을 기다려주세요.';
+        // 가입 신청 중인지 확인
+        const pendingSignup = await db.collection('signups')
+          .where('email', '==', email)
+          .where('status', '==', 'pending')
+          .limit(1).get();
+        if (!pendingSignup.empty) {
+          msg = '가입신청 승인대기중입니다. 승인 후 로그인 가능합니다.';
+        } else {
+          msg = '등록되지 않은 이메일입니다. 가입 신청 후 승인을 기다려주세요.';
+        }
       } else if (error.code === 'auth/wrong-password') {
         msg = '비밀번호가 올바르지 않습니다.';
       } else if (error.code === 'auth/invalid-email') {
