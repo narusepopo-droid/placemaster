@@ -1377,7 +1377,7 @@ async function submitContact() {
 
     // 관리자에게 SMS 발송 (대기열에 추가)
     await db.collection('sms_queue').add({
-      receiver: '01062950489',
+      receiver: '01075410805',
       msg: `[플마PRO 문의]\n이름: ${name}\n연락처: ${phone}\n내용: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
       status: 'pending',
       createdAt: new Date().toISOString()

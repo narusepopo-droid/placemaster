@@ -1223,7 +1223,7 @@ https://placemaster.co.kr/
           formData.append('receiver', phone.replace(/-/g, ''));
           formData.append('msg', smsMsg);
           formData.append('msg_type', 'LMS');
-          await fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+          await fetch('https://proxy.cors.sh/https://apis.aligo.in/send/', {
             method: 'POST',
             body: formData
           });
@@ -1319,7 +1319,7 @@ https://placemaster.co.kr/
           formData.append('msg', `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`);
           formData.append('msg_type', 'LMS');
 
-          await fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+          await fetch('https://proxy.cors.sh/https://apis.aligo.in/send/', {
             method: 'POST',
             body: formData
           });
@@ -1991,7 +1991,7 @@ https://placemaster.co.kr/
           formData.append('msg', `[플레이스마스터PRO]\n\n비밀번호 재설정 안내\n\n이메일(${email})로 비밀번호 재설정 링크가 발송되었습니다.\n\n링크를 클릭하여 새 비밀번호를 설정해주세요.`);
           formData.append('msg_type', 'LMS');
 
-          fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+          fetch('https://proxy.cors.sh/https://apis.aligo.in/send/', {
             method: 'POST',
             body: formData
           }).catch(() => {});
