@@ -302,14 +302,20 @@ async function submitSignup() {
       createdAt: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]
     });
 
-    // 관리자에게 SMS 알림 (sms_queue에 저장 - Cloud Function에서 처리)
-    await db.collection('sms_queue').add({
-      receiver: '01075410805',
-      msg: `[플마PRO 가입신청]\n매장: ${store}\n이름: ${name}\n연락처: ${phone}\n이메일: ${email}`,
-      type: 'signup_notify',
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
+    // 관리자에게 SMS 알림 (플레이스랭킹 서버 통해 발송)
+    try {
+      await fetch('https://placeranking.com/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiver: '01075410805',
+          msg: `[플마PRO 가입신청]\n매장: ${store}\n이름: ${name}\n연락처: ${phone}\n이메일: ${email}`,
+          sender: '01075410805'
+        })
+      });
+    } catch (smsErr) {
+      console.log('SMS 발송 실패:', smsErr);
+    }
 
     // 성공 메시지 표시
     document.getElementById('signup-form').style.display = 'none';

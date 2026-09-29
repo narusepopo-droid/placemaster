@@ -1375,21 +1375,31 @@ async function submitContact() {
       createdAt: new Date().toISOString()
     });
 
-    // 관리자에게 SMS 발송 (대기열에 추가)
-    await db.collection('sms_queue').add({
-      receiver: '01075410805',
-      msg: `[플마PRO 문의]\n이름: ${name}\n연락처: ${phone}\n내용: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
+    // 관리자에게 SMS 발송 (플레이스랭킹 서버 통해)
+    try {
+      await fetch('https://placeranking.com/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiver: '01075410805',
+          msg: `[플마PRO 문의]\n이름: ${name}\n연락처: ${phone}\n내용: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+          sender: '01075410805'
+        })
+      });
 
-    // 고객에게 접수 확인 SMS 발송
-    await db.collection('sms_queue').add({
-      receiver: phone.replace(/-/g, ''),
-      msg: `[플레이스마스터PRO]\n\n문의가 접수되었습니다.\n빠른 시일 내 답변드리겠습니다.\n\n감사합니다.`,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
+      // 고객에게 접수 확인 SMS 발송
+      await fetch('https://placeranking.com/api/sms/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiver: phone.replace(/-/g, ''),
+          msg: `[플레이스마스터PRO]\n\n문의가 접수되었습니다.\n빠른 시일 내 답변드리겠습니다.\n\n감사합니다.`,
+          sender: '01075410805'
+        })
+      });
+    } catch (smsErr) {
+      console.log('SMS 발송 실패:', smsErr);
+    }
 
     // 성공 메시지 표시
     document.getElementById('contactForm').style.display = 'none';
