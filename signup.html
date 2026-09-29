@@ -302,6 +302,14 @@ async function submitSignup() {
       createdAt: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]
     });
 
+    // 관리자에게 SMS 알림
+    await db.collection('sms_queue').add({
+      receiver: '01062950489',
+      msg: `[플마PRO 가입신청]\n매장: ${store}\n이름: ${name}\n연락처: ${phone}\n이메일: ${email}`,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    });
+
     // 성공 메시지 표시
     document.getElementById('signup-form').style.display = 'none';
     document.getElementById('success').style.display = 'block';

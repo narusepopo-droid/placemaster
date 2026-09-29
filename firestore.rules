@@ -12,9 +12,10 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
-    // SMS 대기열 - 인증된 사용자만 접근
+    // SMS 대기열 - 누구나 쓰기 가능, 인증된 사용자만 읽기
     match /sms_queue/{document} {
-      allow read, write: if request.auth != null;
+      allow write: if true;
+      allow read: if request.auth != null;
     }
 
     // 방문 통계 - 누구나 쓰기 가능, 인증된 사용자만 읽기
