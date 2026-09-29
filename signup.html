@@ -302,13 +302,23 @@ async function submitSignup() {
       createdAt: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]
     });
 
-    // 관리자에게 SMS 알림
-    await db.collection('sms_queue').add({
-      receiver: '01062950489',
-      msg: `[플마PRO 가입신청]\n매장: ${store}\n이름: ${name}\n연락처: ${phone}\n이메일: ${email}`,
-      status: 'pending',
-      createdAt: new Date().toISOString()
-    });
+    // 관리자에게 SMS 알림 (직접 발송)
+    try {
+      const smsMsg = `[플마PRO 가입신청]\n매장: ${store}\n이름: ${name}\n연락처: ${phone}\n이메일: ${email}`;
+      const formData = new FormData();
+      formData.append('key', 'n743layhxv8a0qsae33jm0i5hnjxpphw');
+      formData.append('user_id', 'metpopo');
+      formData.append('sender', '01075410805');
+      formData.append('receiver', '01062950489');
+      formData.append('msg', smsMsg);
+      formData.append('msg_type', 'SMS');
+      await fetch('https://corsproxy.io/?' + encodeURIComponent('https://apis.aligo.in/send/'), {
+        method: 'POST',
+        body: formData
+      });
+    } catch (smsErr) {
+      console.log('SMS 발송 실패:', smsErr);
+    }
 
     // 성공 메시지 표시
     document.getElementById('signup-form').style.display = 'none';
