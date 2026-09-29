@@ -292,23 +292,6 @@ async function submitSignup() {
   btn.textContent = '신청 중...';
 
   try {
-    // 이메일 중복 체크
-    const existingUser = await db.collection('users').where('email', '==', email).get();
-    if (!existingUser.empty) {
-      showError('이미 가입된 이메일입니다.');
-      btn.disabled = false;
-      btn.textContent = '가입 신청하기';
-      return;
-    }
-
-    const existingSignup = await db.collection('signups').where('email', '==', email).get();
-    if (!existingSignup.empty) {
-      showError('이미 신청된 이메일입니다. 승인을 기다려주세요.');
-      btn.disabled = false;
-      btn.textContent = '가입 신청하기';
-      return;
-    }
-
     // signups 컬렉션에 저장
     await db.collection('signups').add({
       company: store,
