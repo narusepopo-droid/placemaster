@@ -1189,42 +1189,30 @@
 
 이미 가입된 계정입니다.
 
-▶ 아이디: ${email}
-▶ 비밀번호: 이메일로 재설정 링크 발송됨
+* 아이디: ${email}
+* 비밀번호: 이메일로 재설정 링크 발송됨
 
 이메일을 확인하여 비밀번호를 재설정해주세요.
 
-━━━━━━━━━━━━━━
-📥 다운로드: https://placemaster.co.kr/
-━━━━━━━━━━━━━━
-
-※ 현재 무료 프로모션 진행중!`;
+다운로드: https://placemaster.co.kr/`;
         } else {
           smsMsg = `[플레이스마스터PRO]
 
 가입이 승인되었습니다!
 
-▶ 아이디: ${email}
-▶ 비밀번호: 가입 시 설정한 비밀번호
+* 아이디: ${email}
+* 비밀번호: ${userPw}
 
-━━━━━━━━━━━━━━
-📥 다운로드 방법
-━━━━━━━━━━━━━━
-1. PC에서 접속 (필수)
+[다운로드 방법]
+1. PC에서 접속
 https://placemaster.co.kr/
 
 2. 로그인 후 [무료 다운로드]
 3. ZIP 압축 해제 후 실행
 
-⚠️ Windows 전용 프로그램
-(PC에서만 다운로드 가능)
-
-━━━━━━━━━━━━━━
-⚠️ 실행 안될 때
-━━━━━━━━━━━━━━
-보안 경고 시 [추가 정보]→[실행]
-
-※ 현재 무료 프로모션 진행중!`;
+* Windows 전용 (PC에서만 가능)
+* 보안 경고 시 [추가 정보]-[실행]
+* 현재 무료 프로모션 진행중!`;
         }
 
         await sendSMS(phone, smsMsg);
@@ -1302,10 +1290,7 @@ https://placemaster.co.kr/
         });
 
         // 5) SMS 발송
-        await sendSMS(currentSignup.phone, `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: 가입 시 설정한 비밀번호\n\n로그인: https://placemaster.co.kr/`);
-
-        // SMS 발송
-        await sendSMS(currentSignup.phone, `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`);
+        await sendSMS(currentSignup.phone, `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n* 아이디: ${currentSignup.email}\n* 비밀번호: ${userPw}\n\n다운로드: https://placemaster.co.kr/`);
 
         showToast('승인 완료! 문자가 발송되었습니다.', 'success');
         closeModal('approveModal');
