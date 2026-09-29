@@ -180,14 +180,14 @@ h1 {
   <div class="error" id="error"></div>
   <div class="success" id="success">
     <h3>가입 신청 완료!</h3>
-    <p>관리자 승인 후 로그인 정보가<br>문자로 발송됩니다.</p>
+    <p>관리자 승인 후<br>설정한 비밀번호로 로그인 가능합니다.</p>
     <p style="margin-top:12px;font-size:13px;color:#666;">승인까지 영업일 기준 1일 이내 소요</p>
   </div>
 
   <!-- 가입신청 폼 -->
   <div class="form-section active" id="signup-form">
     <h1>가입 신청</h1>
-    <p class="subtitle">신청 후 승인되면 문자로 로그인 정보가 발송됩니다</p>
+    <p class="subtitle">신청 후 승인되면 바로 사용 가능합니다</p>
 
     <div class="form-group">
       <label>매장명 <span style="color:#e53935">*</span></label>
@@ -206,13 +206,21 @@ h1 {
       <label>이메일 (로그인 아이디) <span style="color:#e53935">*</span></label>
       <input type="email" id="signup-email" placeholder="example@email.com" required>
     </div>
+    <div class="form-group">
+      <label>비밀번호 <span style="color:#e53935">*</span></label>
+      <input type="password" id="signup-password" placeholder="6자 이상 입력" required>
+    </div>
+    <div class="form-group">
+      <label>비밀번호 확인 <span style="color:#e53935">*</span></label>
+      <input type="password" id="signup-password2" placeholder="비밀번호 재입력" required>
+    </div>
     <button class="btn" onclick="submitSignup()" id="signup-btn">가입 신청하기</button>
   </div>
 
   <!-- 로그인 폼 -->
   <div class="form-section" id="login-form">
     <h1>로그인</h1>
-    <p class="subtitle">승인 문자로 받은 정보로 로그인하세요</p>
+    <p class="subtitle">가입 시 설정한 정보로 로그인하세요</p>
 
     <div class="form-group">
       <label>이메일</label>
@@ -220,7 +228,7 @@ h1 {
     </div>
     <div class="form-group">
       <label>비밀번호</label>
-      <input type="password" id="login-password" placeholder="문자로 받은 비밀번호">
+      <input type="password" id="login-password" placeholder="비밀번호">
     </div>
     <button class="btn" onclick="login()" id="login-btn">로그인</button>
   </div>
@@ -273,11 +281,23 @@ async function submitSignup() {
   const name = document.getElementById('signup-name').value.trim();
   const phone = document.getElementById('signup-phone').value.trim();
   const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const password2 = document.getElementById('signup-password2').value;
 
   document.getElementById('error').style.display = 'none';
 
-  if (!store || !name || !phone || !email) {
+  if (!store || !name || !phone || !email || !password || !password2) {
     showError('모든 항목을 입력해주세요.');
+    return;
+  }
+
+  if (password.length < 6) {
+    showError('비밀번호는 6자 이상 입력해주세요.');
+    return;
+  }
+
+  if (password !== password2) {
+    showError('비밀번호가 일치하지 않습니다.');
     return;
   }
 
@@ -292,12 +312,13 @@ async function submitSignup() {
   btn.textContent = '신청 중...';
 
   try {
-    // signups 컬렉션에 저장
+    // signups 컬렉션에 저장 (비밀번호 포함)
     await db.collection('signups').add({
       company: store,
       name: name,
       phone: phone,
       email: email,
+      password: password,
       status: 'pending',
       createdAt: new Date().toISOString().split('T')[0] + ' ' + new Date().toTimeString().split(' ')[0]
     });

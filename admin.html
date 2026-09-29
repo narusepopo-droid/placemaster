@@ -1124,14 +1124,16 @@
       btn.textContent = '처리중...';
 
       try {
-        // 1) 임시 비밀번호 생성
-        const tempPw = generatePassword();
+        // 1) signups에서 비밀번호 가져오기
+        const signupDoc = await db.collection('signups').doc(docId).get();
+        const signupData = signupDoc.data();
+        const userPw = signupData.password || generatePassword();
 
         // 2) Firebase Auth 계정 생성
         const createRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, password: tempPw, returnSecureToken: true })
+          body: JSON.stringify({ email, password: userPw, returnSecureToken: true })
         });
         const createData = await createRes.json();
 
@@ -1168,7 +1170,7 @@
             role: 'member',
             expires_at: '',
             device_id: '',
-            initial_password: tempPw,
+            initial_password: userPw,
             created_at: new Date().toISOString().split('T')[0]
           });
         }
@@ -1203,7 +1205,7 @@
 가입이 승인되었습니다!
 
 ▶ 아이디: ${email}
-▶ 비밀번호: ${tempPw}
+▶ 비밀번호: 가입 시 설정한 비밀번호
 
 ━━━━━━━━━━━━━━
 📥 다운로드 방법
@@ -1222,8 +1224,7 @@ https://placemaster.co.kr/
 ━━━━━━━━━━━━━━
 보안 경고 시 [추가 정보]→[실행]
 
-※ 현재 무료 프로모션 진행중!
-※ 비밀번호는 로그인 후 변경 가능`;
+※ 현재 무료 프로모션 진행중!`;
         }
 
         await sendSMS(phone, smsMsg);
@@ -1256,8 +1257,10 @@ https://placemaster.co.kr/
       btn.textContent = '처리 중...';
 
       try {
-        // 1) 임시 비밀번호 생성
-        const tempPw = generatePassword();
+        // 1) signups에서 비밀번호 가져오기
+        const signupDoc = await db.collection('signups').doc(currentSignup.docId).get();
+        const signupData = signupDoc.data();
+        const userPw = signupData.password || generatePassword();
 
         // 2) Firebase Auth 계정 생성 (REST API)
         const createRes = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${firebaseConfig.apiKey}`, {
@@ -1265,7 +1268,7 @@ https://placemaster.co.kr/
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             email: currentSignup.email,
-            password: tempPw,
+            password: userPw,
             returnSecureToken: true
           })
         });
@@ -1278,7 +1281,7 @@ https://placemaster.co.kr/
         const uid = createData.localId;
         const expiresAt = document.getElementById('approveExpiresAt').value || '';
 
-        // 3) Firestore에 사용자 정보 저장 (초기 비밀번호 포함)
+        // 3) Firestore에 사용자 정보 저장
         await db.collection('users').doc(uid).set({
           email: currentSignup.email,
           name: currentSignup.name,
@@ -1287,7 +1290,7 @@ https://placemaster.co.kr/
           role: 'member',
           expires_at: expiresAt,
           device_id: '',
-          initial_password: tempPw,
+          initial_password: userPw,
           created_at: new Date().toISOString().split('T')[0]
         });
 
@@ -1298,13 +1301,8 @@ https://placemaster.co.kr/
           uid: uid
         });
 
-        // 5) 문자 발송 대기열에 추가 (CORS 우회)
-        await db.collection('sms_queue').add({
-          receiver: currentSignup.phone,
-          msg: `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`,
-          status: 'pending',
-          createdAt: new Date().toISOString()
-        });
+        // 5) SMS 발송
+        await sendSMS(currentSignup.phone, `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: 가입 시 설정한 비밀번호\n\n로그인: https://placemaster.co.kr/`);
 
         // SMS 발송
         await sendSMS(currentSignup.phone, `[플레이스마스터PRO]\n\n가입이 승인되었습니다.\n\n아이디: ${currentSignup.email}\n비밀번호: ${tempPw}\n\n로그인 후 사용해주세요.`);
