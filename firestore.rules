@@ -35,6 +35,12 @@ service cloud.firestore {
       allow read: if request.auth != null;
     }
 
+    // 기간연장 신청 - 누구나 쓰기 가능, 인증된 사용자만 읽기
+    match /extensions/{document} {
+      allow write: if true;
+      allow read: if request.auth != null;
+    }
+
     // 앱 메타 - 인증된 사용자만 접근
     match /app_meta/{document} {
       allow read, write: if request.auth != null;
