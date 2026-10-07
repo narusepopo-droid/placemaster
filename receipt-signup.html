@@ -276,6 +276,33 @@ h1 {
     <button class="btn" onclick="login()" id="login-btn">로그인</button>
   </div>
 
+  <!-- 다운로드 섹션 (로그인 후 표시) -->
+  <div class="form-section" id="download-section" style="display:none;">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-size:48px;">✅</div>
+      <h1 style="color:#03C75A;margin-top:12px;">로그인 완료!</h1>
+      <p id="welcome-msg" style="color:#666;margin-top:8px;"></p>
+    </div>
+
+    <div style="background:#f8f9fa;padding:20px;border-radius:12px;margin-bottom:24px;">
+      <h3 style="margin-bottom:12px;">설치 방법</h3>
+      <ol style="padding-left:20px;color:#444;line-height:2;">
+        <li>아래 버튼을 클릭하여 프로그램 다운로드</li>
+        <li>다운로드된 <strong>ReceiptTapSetup.exe</strong> 실행</li>
+        <li>설치 완료 후 자동 실행됨</li>
+        <li>로그인 창이 뜨면 <strong>같은 이메일/비밀번호</strong> 입력</li>
+      </ol>
+    </div>
+
+    <a href="https://review.placemaster.co.kr/download/latest" class="btn" style="display:block;text-align:center;text-decoration:none;">
+      📥 프로그램 다운로드 (v1.0.0)
+    </a>
+
+    <p style="text-align:center;margin-top:16px;font-size:13px;color:#999;">
+      Windows 7 SP1 이상 | .NET Framework 4.6.2 이상
+    </p>
+  </div>
+
   <div class="links">
     <a href="receipt-review.html">← 서비스 소개로 돌아가기</a>
   </div>
@@ -400,8 +427,10 @@ async function login() {
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('store_name', data.store_name);
 
-      // 다운로드 페이지로 이동
-      window.location.href = 'receipt-review.html#download';
+      // 다운로드 섹션 표시
+      document.getElementById('login-form').style.display = 'none';
+      document.querySelector('.tabs').style.display = 'none';
+      showDownloadSection(data.store_name);
     } else {
       showError(data.message || '로그인에 실패했습니다.');
       btn.disabled = false;
@@ -425,6 +454,23 @@ document.addEventListener('keydown', (e) => {
     }
   }
 });
+
+function showDownloadSection(storeName) {
+  document.getElementById('download-section').style.display = 'block';
+  document.getElementById('welcome-msg').textContent = `${storeName}님, 환영합니다!`;
+}
+
+// 페이지 로드 시 로그인 상태 확인
+window.onload = function() {
+  const token = localStorage.getItem('auth_token');
+  const storeName = localStorage.getItem('store_name');
+  if (token && storeName) {
+    document.getElementById('signup-form').style.display = 'none';
+    document.getElementById('login-form').style.display = 'none';
+    document.querySelector('.tabs').style.display = 'none';
+    showDownloadSection(storeName);
+  }
+};
 </script>
 
 </body>
