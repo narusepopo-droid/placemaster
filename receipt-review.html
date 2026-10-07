@@ -516,6 +516,13 @@ section {
   justify-content: center;
   font-weight: 700;
 }
+.download-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
 .btn-download {
   background: var(--primary);
   color: white;
@@ -531,15 +538,15 @@ section {
 }
 
 .contact-info {
-  margin-top: 40px;
-  padding: 24px;
-  background: rgba(255,255,255,0.1);
+  padding: 20px 24px;
+  background: var(--primary-light);
   border-radius: 12px;
-  display: inline-block;
+  text-align: left;
 }
 .contact-info p {
   margin: 0;
   font-size: 0.95rem;
+  color: var(--text);
 }
 
 footer {
@@ -608,7 +615,9 @@ footer a {
   .download-section h2 { font-size: 1.3rem; }
   .download-section p { font-size: 0.9rem; }
   .download-steps { flex-direction: column; gap: 16px; }
+  .download-action { flex-direction: column; gap: 20px; }
   .btn-download { width: 100%; padding: 14px 24px; }
+  .contact-info { text-align: center; }
 
   .contact-section { padding: 40px 20px; }
   .contact-info { padding: 20px; }
@@ -883,11 +892,12 @@ footer a {
       <span>로그인</span>
     </div>
   </div>
-  <a href="https://review.placemaster.co.kr/download/latest" class="btn btn-download">↓ Windows 설치 파일 다운로드</a>
-
-  <div class="contact-info" id="contact">
-    <p>가입문의는 담당자에게 문의해주세요</p>
-    <p style="margin-top:8px"><strong>문의:</strong> 010-7541-0805</p>
+  <div class="download-action">
+    <a href="https://review.placemaster.co.kr/download/latest" class="btn btn-download">↓ Windows 설치 파일 다운로드</a>
+    <div class="contact-info" id="contact">
+      <p>가입문의는 담당자에게 문의해주세요</p>
+      <p style="margin-top:8px"><strong>문의:</strong> 010-7541-0805</p>
+    </div>
   </div>
 </section>
 
