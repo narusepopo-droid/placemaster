@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>영수증리뷰 - 네이버 영수증 리뷰 자동화 솔루션 | 플레이스 마스터</title>
+<meta name="description" content="손님 휴대폰으로 영수증 자동 전송, 리뷰 문구 자동 생성. 영수증 찾을 필요 없이 리뷰 수집. 고객 DB 자동 적립. 매장 리뷰 마케팅 필수 툴.">
+<meta name="keywords" content="영수증 리뷰, 네이버 리뷰, 리뷰 자동화, 매장 리뷰, 플레이스 리뷰, 고객 DB, 리뷰 마케팅, 영수증 리뷰 프로그램">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/x-icon" href="icon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<style>
+:root {
+  --primary: #2563EB;
+  --primary-dark: #1d4ed8;
+  --primary-light: #eff6ff;
+  --bg: #ffffff;
+  --bg-gray: #f8f9fa;
+  --text: #1a1a1a;
+  --text-light: #5a5a5a;
+  --text-muted: #8a8a8a;
+  --border: #eaeaea;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+  --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
+  --accent: #03C75A;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  padding: 0 40px;
+}
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+.logo-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+}
+nav { display: flex; gap: 36px; }
+nav a {
+  color: var(--text-light);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+nav a:hover { color: var(--primary); }
+nav a.active { color: var(--primary); font-weight: 600; }
+.header-btns { display: flex; gap: 12px; }
+.btn {
+  padding: 11px 22px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1.5px solid var(--primary);
+}
+.btn-outline:hover { background: var(--primary-light); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  box-shadow: 0 4px 14px rgba(37,99,235,0.35);
+}
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+}
+
+.hero {
+  padding: 100px 40px 80px;
+  background: linear-gradient(180deg, #ffffff 0%, var(--bg-gray) 100%);
+}
+.hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+}
+.hero-content { flex: 1; }
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--primary-light);
+  color: var(--primary);
+  padding: 8px 16px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+.hero h1 {
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+  margin-bottom: 24px;
+}
+.hero h1 span { color: var(--primary); }
+.hero p {
+  font-size: 1.15rem;
+  color: var(--text-light);
+  margin-bottom: 36px;
+  max-width: 500px;
+}
+.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+.btn-hero {
+  padding: 16px 32px;
+  font-size: 1.05rem;
+}
+.hero-visual {
+  flex: 1;
+  max-width: 500px;
+}
+.hero-mockup {
+  background: white;
+  border-radius: 24px;
+  box-shadow: var(--shadow-lg);
+  padding: 32px;
+  text-align: center;
+}
+.hero-mockup img {
+  max-width: 100%;
+  border-radius: 12px;
+}
+.phone-mockup {
+  width: 280px;
+  height: 560px;
+  background: #1a1a1a;
+  border-radius: 36px;
+  padding: 12px;
+  margin: 0 auto;
+  box-shadow: var(--shadow-lg);
+}
+.phone-screen {
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 28px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.phone-header {
+  background: var(--primary);
+  color: white;
+  padding: 40px 20px 20px;
+  text-align: center;
+}
+.phone-header h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.phone-header p { font-size: 0.8rem; opacity: 0.9; }
+.phone-content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.phone-receipt {
+  background: #f5f5f5;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: monospace;
+  font-size: 0.7rem;
+  text-align: center;
+  border: 1px dashed #ddd;
+}
+.phone-btn {
+  background: var(--primary);
+  color: white;
+  padding: 14px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+section {
+  padding: 100px 40px;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+.section-header h2 {
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.02em;
+}
+.section-header p {
+  font-size: 1.1rem;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.how-section { background: var(--bg-gray); }
+.how-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.how-step {
+  background: white;
+  border-radius: 16px;
+  padding: 28px 20px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.how-step::after {
+  content: '→';
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+.how-step:last-child::after { display: none; }
+.how-num {
+  width: 40px;
+  height: 40px;
+  background: var(--primary);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0 auto 16px;
+}
+.how-step h4 {
+  font-size: 0.95rem;
+  margin-bottom: 8px;
+}
+.how-step p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.features-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+}
+.feature-card {
+  background: white;
+  border-radius: 20px;
+  padding: 36px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--primary-light);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+.feature-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+.feature-card p {
+  font-size: 0.95rem;
+  color: var(--text-light);
+  line-height: 1.7;
+}
+
+.download-section {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+  color: white;
+  text-align: center;
+}
+.download-section h2 {
+  font-size: 2.4rem;
+  margin-bottom: 16px;
+}
+.download-section p {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 40px;
+}
+.download-steps {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+.download-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1rem;
+}
+.download-step-num {
+  width: 32px;
+  height: 32px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+.btn-download {
+  background: white;
+  color: var(--primary);
+  padding: 18px 48px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.btn-download:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.25);
+}
+
+.contact-info {
+  margin-top: 40px;
+  padding: 24px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  display: inline-block;
+}
+.contact-info p {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+footer {
+  background: #1a1a1a;
+  color: #999;
+  padding: 40px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+footer a {
+  color: #ccc;
+  text-decoration: none;
+}
+
+@media (max-width: 1024px) {
+  .hero-inner { flex-direction: column; text-align: center; }
+  .hero p { margin: 0 auto 36px; }
+  .hero-btns { justify-content: center; }
+  .hero-visual { max-width: 350px; }
+  .how-grid { grid-template-columns: repeat(3, 1fr); }
+  .how-step:nth-child(3)::after { display: none; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  header { padding: 0 20px; }
+  nav { display: none; }
+  section { padding: 60px 20px; }
+  .hero { padding: 60px 20px; }
+  .hero h1 { font-size: 2.2rem; }
+  .how-grid { grid-template-columns: 1fr; }
+  .how-step::after { display: none; }
+  .features-grid { grid-template-columns: 1fr; }
+  .download-steps { flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="index.html" class="logo">
+      <img src="favicon-180.png" alt="로고" class="logo-img">
+      플레이스 마스터
+    </a>
+    <nav>
+      <a href="index.html">PRO</a>
+      <a href="receipt-review.html" class="active">영수증리뷰</a>
+    </nav>
+    <div class="header-btns">
+      <a href="#contact" class="btn btn-outline">문의하기</a>
+      <a href="#download" class="btn btn-primary">다운로드</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-content">
+      <span class="badge">NEW 신규 서비스</span>
+      <h1>영수증 리뷰<br><span>자동화 솔루션</span></h1>
+      <p>손님 휴대폰으로 영수증이 자동 전송되고, 리뷰 문구까지 자동 생성. 더 이상 영수증 찾아드릴 필요 없이 리뷰를 수집하세요.</p>
+      <div class="hero-btns">
+        <a href="#download" class="btn btn-primary btn-hero">↓ 무료 다운로드</a>
+        <a href="#how" class="btn btn-outline btn-hero">이용 방법</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-header">
+            <h3>다산식육식당</h3>
+            <p>리뷰 작성 시 음료 1잔 서비스</p>
+          </div>
+          <div class="phone-content">
+            <div class="phone-receipt">
+              ┌──────────────────┐<br>
+              │ &nbsp;&nbsp;&nbsp;&nbsp;[ 영 수 증 ]&nbsp;&nbsp;&nbsp;&nbsp; │<br>
+              │ 다산식육식당&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │<br>
+              │ ────────────────── │<br>
+              │ 모듬6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;60,000 │<br>
+              │ 모듬3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30,000 │<br>
+              │ ────────────────── │<br>
+              │ 합계&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;90,000 │<br>
+              └──────────────────┘
+            </div>
+            <div class="phone-btn">영수증 저장 + 네이버로 이동</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how-section" id="how">
+  <div class="section-header">
+    <h2>어떻게 작동하나요?</h2>
+    <p>손님은 QR만 찍으면 됩니다. 나머지는 자동!</p>
+  </div>
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <h4>QR 스캔</h4>
+      <p>테이블 QR을<br>스캔합니다</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <h4>번호 입력</h4>
+      <p>휴대폰 번호를<br>입력합니다</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <h4>영수증 저장</h4>
+      <p>영수증이 자동으로<br>폰에 저장됩니다</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">4</div>
+      <h4>리뷰 작성</h4>
+      <p>네이버에서<br>붙여넣기만!</p>
+    </div>
+    <div class="how-step">
+      <div class="how-num">5</div>
+      <h4>혜택 받기</h4>
+      <p>직원에게 보여주고<br>혜택을 받습니다</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-header">
+    <h2>왜 영수증리뷰인가요?</h2>
+    <p>매장 운영의 고민을 해결해드립니다</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🧾</div>
+      <h3>영수증 자동 전송</h3>
+      <p>포스에서 결제하면 영수증이 자동으로 캡처되어 손님 폰으로 전송됩니다. 영수증 찾아드릴 필요 없어요.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✍️</div>
+      <h3>리뷰 문구 자동 생성</h3>
+      <p>매장에 맞는 리뷰 문구가 자동으로 생성되어 클립보드에 복사됩니다. 손님은 붙여넣기만 하면 끝.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>앱 설치 불필요</h3>
+      <p>손님은 앱 설치 없이 QR만 찍으면 됩니다. 웹 브라우저에서 바로 진행되어 진입 장벽이 없어요.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>고객 DB 자동 적립</h3>
+      <p>참여한 손님의 휴대폰 번호가 자동으로 DB에 쌓입니다. 나중에 홍보 문자 발송에 활용하세요.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>실시간 대시보드</h3>
+      <p>오늘 참여 수, 리뷰 완료 수, 단계별 이탈률을 실시간으로 확인하세요. 에이전트 상태도 모니터링.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>출력 영향 없음</h3>
+      <p>에이전트가 프린터 통신을 옆에서 읽기만 합니다. 에이전트가 꺼져도 영수증 출력은 정상 작동.</p>
+    </div>
+  </div>
+</section>
+
+<section class="download-section" id="download">
+  <h2>지금 시작하세요</h2>
+  <p>매장 포스에 설치하고, 활성화 코드만 입력하면 끝!</p>
+  <div class="download-steps">
+    <div class="download-step">
+      <div class="download-step-num">1</div>
+      <span>다운로드</span>
+    </div>
+    <div class="download-step">
+      <div class="download-step-num">2</div>
+      <span>설치 실행</span>
+    </div>
+    <div class="download-step">
+      <div class="download-step-num">3</div>
+      <span>활성화 코드 입력</span>
+    </div>
+  </div>
+  <a href="https://review.placemaster.co.kr/download/latest" class="btn btn-download">↓ Windows 설치 파일 다운로드</a>
+
+  <div class="contact-info" id="contact">
+    <p>활성화 코드는 광고토대왕 담당자에게 문의해주세요</p>
+    <p style="margin-top:8px"><strong>문의:</strong> 010-XXXX-XXXX</p>
+  </div>
+</section>
+
+<footer>
+  <p>&copy; 2026 플레이스 마스터. All rights reserved. | <a href="index.html">PRO 바로가기</a></p>
+</footer>
+
+</body>
+</html>
