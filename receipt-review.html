@@ -555,24 +555,65 @@ footer a {
 }
 
 @media (max-width: 1024px) {
-  .hero-inner { flex-direction: column; text-align: center; }
-  .hero p { margin: 0 auto 36px; }
+  .hero-inner { flex-direction: column; text-align: center; gap: 40px; }
+  .hero p { max-width: 100%; margin: 0 auto 36px; }
   .hero-btns { justify-content: center; }
   .hero-visual { max-width: 350px; }
+  .review-scroll-bg { display: none; }
   .how-grid { grid-template-columns: repeat(3, 1fr); }
   .how-step:nth-child(3)::after { display: none; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
+  .screenshot-frame { max-width: 100%; overflow-x: auto; }
 }
 @media (max-width: 768px) {
-  header { padding: 0 20px; }
+  header { padding: 0 16px; }
+  .header-inner { height: 60px; }
   nav { display: none; }
-  section { padding: 60px 20px; }
-  .hero { padding: 60px 20px; }
-  .hero h1 { font-size: 2.2rem; }
-  .how-grid { grid-template-columns: 1fr; }
+  .header-btns .btn-outline { display: none; }
+  .logo { font-size: 0.9rem; gap: 6px; }
+  .logo-img { width: 28px; height: 28px; }
+  .header-btns .btn-primary { padding: 8px 14px; font-size: 0.85rem; }
+
+  section { padding: 40px 20px; }
+  .section-header h2 { font-size: 1.3rem; }
+  .section-header p { font-size: 0.9rem; }
+
+  .hero { padding: 50px 24px 40px; }
+  .hero-content { text-align: center; }
+  .hero h1 { font-size: 1.6rem; line-height: 1.3; margin-bottom: 16px; }
+  .hero p { font-size: 0.95rem; line-height: 1.75; margin-bottom: 24px; max-width: 100%; }
+  .badge { display: flex; justify-content: center; margin-bottom: 16px; font-size: 0.8rem; }
+  .hero-btns { flex-direction: column; gap: 12px; }
+  .btn-hero { width: 100%; justify-content: center; padding: 14px 24px; font-size: 0.95rem; }
+  .hero-visual { max-width: 280px; }
+  .hero-phone-3d { max-width: 100%; }
+
+  .how-grid { grid-template-columns: 1fr; gap: 24px; }
+  .how-step { padding: 20px; }
   .how-step::after { display: none; }
-  .features-grid { grid-template-columns: 1fr; }
+  .how-num { width: 36px; height: 36px; font-size: 1rem; }
+  .how-step h4 { font-size: 1rem; }
+  .how-step p { font-size: 0.85rem; }
+
+  .screenshot-frame { flex-direction: column; gap: 24px; padding: 20px; }
+  .screenshot-item { width: 100%; max-width: 200px; margin: 0 auto; }
+  .screenshot-item img { max-width: 100%; }
+
+  .features-grid { grid-template-columns: 1fr; gap: 16px; }
+  .feature-card { padding: 20px; }
+  .feature-icon { width: 40px; height: 40px; font-size: 20px; }
+  .feature-card h3 { font-size: 1rem; }
+  .feature-card p { font-size: 0.85rem; }
+
+  .download-section h2 { font-size: 1.3rem; }
+  .download-section p { font-size: 0.9rem; }
   .download-steps { flex-direction: column; gap: 16px; }
+  .btn-download { width: 100%; padding: 14px 24px; }
+
+  .contact-section { padding: 40px 20px; }
+  .contact-info { padding: 20px; }
+
+  footer { padding: 20px 24px; font-size: 0.75rem; }
 }
 </style>
 </head>
