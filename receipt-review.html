@@ -12,9 +12,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
 <style>
 :root {
-  --primary: #2563EB;
-  --primary-dark: #1d4ed8;
-  --primary-light: #eff6ff;
+  --primary: #03C75A;
+  --primary-dark: #02a54b;
+  --primary-light: #e8f8ef;
   --bg: #ffffff;
   --bg-gray: #f8f9fa;
   --text: #1a1a1a;
@@ -24,7 +24,6 @@
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
   --shadow-md: 0 8px 30px rgba(0,0,0,0.08);
   --shadow-lg: 0 20px 60px rgba(0,0,0,0.12);
-  --accent: #03C75A;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
@@ -304,18 +303,17 @@ section {
 .screenshot-item::after {
   content: '→';
   position: absolute;
-  right: -15px;
-  top: 50%;
+  right: -20px;
+  top: 45%;
   transform: translateY(-50%);
   color: var(--primary);
-  font-size: 1.5rem;
+  font-size: 1.8rem;
   font-weight: bold;
+  opacity: 0.8;
 }
 .screenshot-item:last-child::after { display: none; }
 .screenshot-frame {
-  background: #1a1a1a;
-  border-radius: 20px;
-  padding: 8px;
+  background: transparent;
   margin-bottom: 12px;
   box-shadow: var(--shadow-md);
 }
