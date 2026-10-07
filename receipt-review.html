@@ -107,7 +107,7 @@ nav a.active { color: var(--primary); font-weight: 600; }
 }
 
 .hero {
-  padding: 100px 40px 80px;
+  padding: 80px 40px 60px;
   background: linear-gradient(180deg, #ffffff 0%, var(--bg-gray) 100%);
 }
 .hero-inner {
@@ -125,30 +125,37 @@ nav a.active { color: var(--primary); font-weight: 600; }
   gap: 8px;
   background: var(--primary-light);
   color: var(--primary);
-  padding: 8px 16px;
+  padding: 10px 20px;
   border-radius: 50px;
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 .hero h1 {
-  font-size: 3.2rem;
+  font-size: 4rem;
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: -0.03em;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
-.hero h1 span { color: var(--primary); }
+.hero h1 span {
+  color: var(--primary);
+  background: linear-gradient(135deg, var(--primary) 0%, #00d68f 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 .hero p {
   font-size: 1.15rem;
   color: var(--text-light);
   margin-bottom: 36px;
-  max-width: 500px;
+  max-width: 480px;
+  line-height: 1.8;
 }
-.hero-btns { display: flex; gap: 16px; flex-wrap: wrap; }
+.hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
 .btn-hero {
-  padding: 16px 32px;
-  font-size: 1.05rem;
+  padding: 18px 36px;
+  font-size: 1.1rem;
 }
 .hero-visual {
   flex: 1;
