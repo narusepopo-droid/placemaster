@@ -286,6 +286,72 @@ section {
   color: var(--text-muted);
 }
 
+.screenshots-section {
+  background: white;
+  padding: 80px 40px;
+}
+.screenshots-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.screenshot-item {
+  text-align: center;
+  position: relative;
+}
+.screenshot-item::after {
+  content: '→';
+  position: absolute;
+  right: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--primary);
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.screenshot-item:last-child::after { display: none; }
+.screenshot-frame {
+  background: #1a1a1a;
+  border-radius: 20px;
+  padding: 8px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-md);
+}
+.screenshot-frame img {
+  width: 100%;
+  border-radius: 14px;
+  display: block;
+}
+.screenshot-placeholder {
+  background: linear-gradient(135deg, var(--primary-light) 0%, #e0e7ff 100%);
+  border-radius: 14px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+}
+.screenshot-item h4 {
+  font-size: 0.9rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.screenshot-item p {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+@media (max-width: 1024px) {
+  .screenshots-grid { grid-template-columns: repeat(3, 1fr); }
+  .screenshot-item:nth-child(3)::after { display: none; }
+}
+@media (max-width: 768px) {
+  .screenshots-grid { grid-template-columns: 1fr; }
+  .screenshot-item::after { display: none; }
+  .screenshot-placeholder { height: 200px; }
+}
+
 .features-grid {
   max-width: 1200px;
   margin: 0 auto;
@@ -431,7 +497,7 @@ footer a {
       플레이스 마스터
     </a>
     <nav>
-      <a href="index.html">PRO</a>
+      <a href="index.html">플레이스 순위추적</a>
       <a href="receipt-review.html" class="active">영수증리뷰</a>
     </nav>
     <div class="header-btns">
@@ -445,7 +511,7 @@ footer a {
   <div class="hero-inner">
     <div class="hero-content">
       <span class="badge">NEW 신규 서비스</span>
-      <h1>영수증 리뷰<br><span>자동화 솔루션</span></h1>
+      <h1>네이버 영수증 리뷰<br><span>자동화 솔루션</span></h1>
       <p>손님 휴대폰으로 영수증이 자동 전송되고, 리뷰 문구까지 자동 생성. 더 이상 영수증 찾아드릴 필요 없이 리뷰를 수집하세요.</p>
       <div class="hero-btns">
         <a href="#download" class="btn btn-primary btn-hero">↓ 무료 다운로드</a>
@@ -456,21 +522,11 @@ footer a {
       <div class="phone-mockup">
         <div class="phone-screen">
           <div class="phone-header">
-            <h3>다산식육식당</h3>
+            <h3>모아정육식당</h3>
             <p>리뷰 작성 시 음료 1잔 서비스</p>
           </div>
           <div class="phone-content">
-            <div class="phone-receipt">
-              ┌──────────────────┐<br>
-              │ &nbsp;&nbsp;&nbsp;&nbsp;[ 영 수 증 ]&nbsp;&nbsp;&nbsp;&nbsp; │<br>
-              │ 다산식육식당&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │<br>
-              │ ────────────────── │<br>
-              │ 모듬6&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;60,000 │<br>
-              │ 모듬3&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;30,000 │<br>
-              │ ────────────────── │<br>
-              │ 합계&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;90,000 │<br>
-              └──────────────────┘
-            </div>
+            <img src="receipt-sample.png" alt="영수증 이미지" style="width:100%; border-radius:8px; border:1px solid #eee;">
             <div class="phone-btn">영수증 저장 + 네이버로 이동</div>
           </div>
         </div>
@@ -513,10 +569,54 @@ footer a {
   </div>
 </section>
 
+<section class="screenshots-section">
+  <div class="section-header">
+    <h2>실제 이용 화면</h2>
+    <p>손님이 보는 화면을 순서대로 확인하세요</p>
+  </div>
+  <div class="screenshots-grid">
+    <div class="screenshot-item">
+      <div class="screenshot-frame">
+        <div class="screenshot-placeholder">📱</div>
+      </div>
+      <h4>1. QR 스캔</h4>
+      <p>테이블 QR코드 스캔</p>
+    </div>
+    <div class="screenshot-item">
+      <div class="screenshot-frame">
+        <div class="screenshot-placeholder">📝</div>
+      </div>
+      <h4>2. 번호 입력</h4>
+      <p>휴대폰 번호 입력</p>
+    </div>
+    <div class="screenshot-item">
+      <div class="screenshot-frame">
+        <div class="screenshot-placeholder">🧾</div>
+      </div>
+      <h4>3. 영수증 확인</h4>
+      <p>영수증 + 문구 확인</p>
+    </div>
+    <div class="screenshot-item">
+      <div class="screenshot-frame">
+        <div class="screenshot-placeholder">⭐</div>
+      </div>
+      <h4>4. 네이버 리뷰</h4>
+      <p>붙여넣기 후 등록</p>
+    </div>
+    <div class="screenshot-item">
+      <div class="screenshot-frame">
+        <div class="screenshot-placeholder">✅</div>
+      </div>
+      <h4>5. 완료</h4>
+      <p>직원에게 보여주기</p>
+    </div>
+  </div>
+</section>
+
 <section id="features">
   <div class="section-header">
-    <h2>왜 영수증리뷰인가요?</h2>
-    <p>매장 운영의 고민을 해결해드립니다</p>
+    <h2>핵심기능</h2>
+    <p>매장 리뷰 수집의 모든 것을 자동화합니다</p>
   </div>
   <div class="features-grid">
     <div class="feature-card">
