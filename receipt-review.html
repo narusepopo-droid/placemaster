@@ -173,7 +173,69 @@ nav a.active { color: var(--primary); font-weight: 600; }
   max-width: 480px;
   width: 100%;
   filter: drop-shadow(0 30px 60px rgba(0,0,0,0.25));
+  position: relative;
+  z-index: 10;
 }
+
+/* 리뷰 스크롤 배경 애니메이션 */
+.review-scroll-bg {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 320px;
+  height: 500px;
+  overflow: hidden;
+  opacity: 0.4;
+  z-index: 1;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+}
+.review-scroll-track {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: scrollUp 20s linear infinite;
+}
+@keyframes scrollUp {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-50%); }
+}
+.review-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border: 1px solid #eee;
+}
+.review-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.review-stars {
+  color: #FFD700;
+  font-size: 0.9rem;
+}
+.review-date {
+  color: #999;
+  font-size: 0.75rem;
+}
+.review-card p {
+  font-size: 0.85rem;
+  color: #333;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+}
+.review-photos {
+  font-size: 0.8rem;
+  color: #888;
+}
+.hero-visual {
+  position: relative;
+}
+
 .phone-mockup {
   width: 280px;
   height: 560px;
@@ -526,6 +588,58 @@ footer a {
       </div>
     </div>
     <div class="hero-visual">
+      <div class="review-scroll-bg">
+        <div class="review-scroll-track">
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">방금 전</span>
+            </div>
+            <p>모듬 정말 맛있었어요! 친절하고 분위기도 좋아서 또 방문할게요~</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">1분 전</span>
+            </div>
+            <p>가성비 최고! 양도 많고 직원분들 친절해요. 강추합니다!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">3분 전</span>
+            </div>
+            <p>깔끔하고 맛있어요~ 다음에 또 올게요!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">5분 전</span>
+            </div>
+            <p>분위기 좋고 음식도 맛있어요. 데이트하기 좋아요!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">8분 전</span>
+            </div>
+            <p>역시 여기가 맛집이에요! 항상 만족합니다~</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">10분 전</span>
+            </div>
+            <p>친구들이랑 왔는데 다들 맛있다고 난리! 또 올게요!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+        </div>
+      </div>
       <img src="hero-phone.png" alt="영수증리뷰 화면" class="hero-phone-3d">
     </div>
   </div>
