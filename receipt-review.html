@@ -178,57 +178,69 @@ nav a.active { color: var(--primary); font-weight: 600; }
 /* 리뷰 스크롤 배경 애니메이션 */
 .review-scroll-bg {
   position: absolute;
-  right: -60px;
   top: 50%;
   transform: translateY(-50%);
-  width: 320px;
-  height: 500px;
+  width: 280px;
+  height: 520px;
   overflow: hidden;
-  opacity: 0.4;
+  opacity: 0.7;
   z-index: 1;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%);
+}
+.review-scroll-left {
+  left: -80px;
+}
+.review-scroll-right {
+  right: -80px;
 }
 .review-scroll-track {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  animation: scrollUp 20s linear infinite;
+  gap: 14px;
+  animation: scrollUp 18s linear infinite;
+}
+.review-scroll-down {
+  animation: scrollDown 22s linear infinite;
 }
 @keyframes scrollUp {
   0% { transform: translateY(0); }
   100% { transform: translateY(-50%); }
 }
+@keyframes scrollDown {
+  0% { transform: translateY(-50%); }
+  100% { transform: translateY(0); }
+}
 .review-card {
   background: white;
-  border-radius: 16px;
-  padding: 18px 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  border: 1px solid #e8e8e8;
 }
 .review-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .review-stars {
   color: #FFD700;
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .review-date {
-  color: #999;
-  font-size: 0.75rem;
+  color: #888;
+  font-size: 0.8rem;
 }
 .review-card p {
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   color: #333;
   line-height: 1.5;
-  margin: 0 0 8px 0;
+  margin: 0 0 6px 0;
 }
 .review-photos {
-  font-size: 0.8rem;
-  color: #888;
+  font-size: 0.85rem;
+  color: #777;
 }
 .hero-visual {
   position: relative;
@@ -586,7 +598,51 @@ footer a {
       </div>
     </div>
     <div class="hero-visual">
-      <div class="review-scroll-bg">
+      <div class="review-scroll-bg review-scroll-left">
+        <div class="review-scroll-track review-scroll-down">
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">2분 전</span>
+            </div>
+            <p>여기 진짜 맛집이에요! 고기 퀄리티가 남달라요</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">7분 전</span>
+            </div>
+            <p>사장님이 너무 친절하세요~ 반찬도 맛있고 최고!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">12분 전</span>
+            </div>
+            <p>회식 장소로 딱이에요. 단체석도 넓고 좋아요</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">15분 전</span>
+            </div>
+            <p>점심 특선 가성비 최고! 매일 오고 싶어요</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+          <div class="review-card">
+            <div class="review-card-header">
+              <span class="review-stars">★★★★★</span>
+              <span class="review-date">20분 전</span>
+            </div>
+            <p>주차장도 넓고 접근성 좋아요. 강추합니다!</p>
+            <div class="review-photos">📷 📷</div>
+          </div>
+        </div>
+      </div>
+      <div class="review-scroll-bg review-scroll-right">
         <div class="review-scroll-track">
           <div class="review-card">
             <div class="review-card-header">
