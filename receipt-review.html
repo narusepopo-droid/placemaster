@@ -625,6 +625,7 @@ footer a {
   footer { padding: 20px 24px; font-size: 0.75rem; }
 }
 </style>
+<link rel="stylesheet" href="common.css?v=1">
 </head>
 <body>
 
@@ -635,8 +636,9 @@ footer a {
       플레이스 마스터
     </a>
     <nav>
-      <a href="index.html">플레이스 순위추적</a>
+      <a href="plma.html">플레이스 순위추적</a>
       <a href="receipt-review.html" class="active">영수증리뷰</a>
+      <a href="#pricing">함께 쓰기·요금제</a>
     </nav>
     <div class="header-btns">
       <a href="#contact" class="btn btn-outline">문의하기</a>
@@ -644,6 +646,11 @@ footer a {
     </div>
   </div>
 </header>
+<div class="pm-switch">
+  <a href="plma.html">플레이스 순위추적</a>
+  <a href="receipt-review.html" class="active">영수증리뷰</a>
+  <a href="#pricing">함께 쓰기·요금제</a>
+</div>
 
 <section class="hero">
   <div class="hero-inner">
@@ -875,6 +882,8 @@ footer a {
   </div>
 </section>
 
+<div id="pm-together" data-product="receipt_review"></div>
+
 <section class="download-section" id="download">
   <h2>지금 시작하세요</h2>
   <p>매장 포스에 설치하고, 로그인만 하면 자동화세팅 끝!</p>
@@ -893,17 +902,18 @@ footer a {
     </div>
   </div>
   <div class="download-action">
-    <a href="receipt-signup.html" class="btn btn-download">가입하고 시작하기</a>
+    <a href="https://review.placemaster.co.kr/account/signup?product=receipt_review" class="btn btn-download">가입하고 시작하기</a>
     <div class="contact-info" id="contact">
-      <p>가입 후 결제하면 바로 사용 가능!</p>
+      <p>가입 후 승인되면 마이페이지에서 바로 다운로드! · <a href="https://review.placemaster.co.kr/account/login" style="color:inherit;font-weight:700">이미 가입했어요 (로그인)</a></p>
       <p style="margin-top:8px"><strong>문의:</strong> 010-7541-0805</p>
     </div>
   </div>
 </section>
 
 <footer>
-  <p>&copy; 2026 플레이스 마스터. All rights reserved. | <a href="index.html">PRO 바로가기</a></p>
+  <p>&copy; 2026 플레이스 마스터. All rights reserved. | <a href="plma.html">플레이스 마스터 PRO</a> · <a href="index.html">홈</a></p>
 </footer>
 
+<script src="common.js?v=1"></script>
 </body>
 </html>
