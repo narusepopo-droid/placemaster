@@ -30,7 +30,10 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap">
 <script>
   // 예전 첫 화면 주소(placemaster.co.kr/#download 등)는 플마 페이지 같은 위치로
-  (function () { var h = location.hash; if (/^#(download|intro|howto|features)$/.test(h)) location.replace('plma.html' + h); })();
+  (function () {
+    function go() { var h = location.hash; if (/^#(download|intro|howto|features)$/.test(h)) location.replace('plma.html' + h); }
+    go(); window.addEventListener('hashchange', go);
+  })();
 </script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
