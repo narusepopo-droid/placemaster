@@ -602,7 +602,6 @@
           <span class="badge" id="pendingCount" style="display:none;">0</span>
         </button>
         <button class="tab" data-tab="users">회원 관리</button>
-        <button class="tab" data-tab="admins">관리자 목록</button>
         <button class="tab" data-tab="inquiries">
           문의 관리
           <span class="badge" id="inquiryCount" style="display:none;">0</span>
@@ -729,7 +728,6 @@
           <div id="userActionBar" style="display:none;padding:12px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;">
             <span id="selectedCount" style="color:var(--text-muted);font-size:0.9rem;">0명 선택</span>
             <button class="btn btn-sm" onclick="moveSelectedToSignups()" style="background:#8b5cf6;">가입신청으로</button>
-            <button class="btn btn-sm" onclick="moveSelectedToAdmin()" style="background:var(--warning);">관리자로 이동</button>
             <button class="btn btn-sm btn-danger" onclick="deleteSelectedUsers()">선택 삭제</button>
             <button class="btn btn-sm" onclick="clearUserSelection()" style="background:var(--surface);">선택 취소</button>
           </div>
@@ -745,54 +743,14 @@
                   <th>연락처</th>
                   <th>가입일</th>
                   <th>만료일</th>
+                  <th>등급</th>
                   <th>상태</th>
                   <th>관리</th>
                 </tr>
               </thead>
               <tbody id="usersTable">
                 <tr>
-                  <td colspan="10" class="loading">
-                    <div class="spinner"></div>
-                    로딩 중...
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <!-- 관리자 목록 탭 -->
-      <div class="tab-content" id="tab-admins">
-        <div class="card">
-          <div class="card-header">
-            <h2 class="card-title">관리자 목록</h2>
-            <button class="btn btn-sm btn-primary" onclick="loadAdmins()">새로고침</button>
-          </div>
-          <!-- 선택 액션 바 -->
-          <div id="adminActionBar" style="display:none;padding:12px 20px;background:var(--surface-2);border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;">
-            <span id="selectedAdminCount" style="color:var(--text-muted);font-size:0.9rem;">0명 선택</span>
-            <button class="btn btn-sm" onclick="moveSelectedToMember()" style="background:var(--warning);">회원으로 이동</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteSelectedAdmins()">선택 삭제</button>
-            <button class="btn btn-sm" onclick="clearAdminSelection()" style="background:var(--surface);">선택 취소</button>
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:40px;"><input type="checkbox" id="selectAllAdmins" onchange="toggleSelectAllAdmins(this)"></th>
-                  <th>이메일</th>
-                  <th>비밀번호</th>
-                  <th>이름</th>
-                  <th>연락처</th>
-                  <th>매장명</th>
-                  <th>가입일</th>
-                  <th>관리</th>
-                </tr>
-              </thead>
-              <tbody id="adminsTable">
-                <tr>
-                  <td colspan="8" class="loading">
+                  <td colspan="11" class="loading">
                     <div class="spinner"></div>
                     로딩 중...
                   </td>
@@ -981,10 +939,8 @@
         </div>
         <div class="form-group">
           <label>등급</label>
-          <select id="editUserRole" style="width:100%;padding:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:1rem;">
-            <option value="member">회원 (매장 3개 제한)</option>
-            <option value="admin">관리자 (무제한)</option>
-          </select>
+          <input type="text" value="일반회원" disabled>
+          <input type="hidden" id="editUserRole" value="member">
         </div>
       </div>
       <div class="modal-footer">
@@ -1014,6 +970,9 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
+    // 마스터(광고토대왕) 계정 — 관리 권한은 이 계정 하나뿐
+    const MASTER_UID = '104K4S7E4bNm9Cl4dQsg7Sz18Zf1';
+    const SUPER_ADMIN_EMAIL = 'narusepopo@gmail.com';
 
     // 알리고 API 설정
     const ALIGO = {
@@ -1036,24 +995,11 @@
         errorEl.textContent = '로그인 중...';
         const userCred = await auth.signInWithEmailAndPassword(email, password);
 
-        // 최고 관리자 이메일 (항상 접근 가능)
-        const SUPER_ADMIN_EMAIL = 'narusepopo@gmail.com';
-
-        // Firestore에서 role 확인 (최고 관리자는 패스)
-        if (email !== SUPER_ADMIN_EMAIL) {
-          const userDoc = await db.collection('users').doc(userCred.user.uid).get();
-          if (!userDoc.exists) {
-            errorEl.textContent = '등록되지 않은 계정입니다.';
-            await auth.signOut();
-            return;
-          }
-
-          const userData = userDoc.data();
-          if (userData.role !== 'admin') {
-            errorEl.textContent = '관리자 권한이 없습니다.';
-            await auth.signOut();
-            return;
-          }
+        // 마스터 계정만 접속 (관리자 등급 없음)
+        if (userCred.user.uid !== MASTER_UID) {
+          errorEl.textContent = '마스터 계정만 접속할 수 있습니다.';
+          await auth.signOut();
+          return;
         }
 
         currentUserEmail = email;
@@ -1086,7 +1032,6 @@
         if (tab.dataset.tab === 'dashboard') loadDashboardData();
         else if (tab.dataset.tab === 'signups') loadSignups();
         else if (tab.dataset.tab === 'users') loadUsers();
-        else if (tab.dataset.tab === 'admins') loadAdmins();
         else if (tab.dataset.tab === 'inquiries') loadInquiries();
         else if (tab.dataset.tab === 'extensions') loadExtensions();
         else if (tab.dataset.tab === 'deploy') loadDeployInfo();
@@ -1545,7 +1490,7 @@ https://placemaster.co.kr/
         let activeCount = 0, suspendedCount = 0;
         snapshot.forEach(doc => {
           const d = doc.data();
-          if (d.role === 'admin') return;
+          if (doc.id === MASTER_UID || d.email === SUPER_ADMIN_EMAIL) return;
 
           const isSuspended = d.status === 'suspended';
           if (isSuspended) suspendedCount++; else activeCount++;
@@ -1567,6 +1512,7 @@ https://placemaster.co.kr/
               <td>${d.phone || '-'}</td>
               <td>${d.created_at || '-'}</td>
               <td>${d.expires_at || '무제한'}</td>
+              <td><span class="status-badge" style="background:var(--surface-2);color:var(--text-muted);">일반회원</span></td>
               <td>${statusBadge}</td>
               <td class="actions">
                 ${isSuspended ? `
@@ -1583,7 +1529,7 @@ https://placemaster.co.kr/
         });
 
         if (!html) {
-          tbody.innerHTML = `<tr><td colspan="10" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="11" class="empty-state">${showSuspended ? '권한상실된 회원이 없습니다.' : '활성 회원이 없습니다.'}</td></tr>`;
         } else {
           tbody.innerHTML = html;
         }
@@ -1592,7 +1538,7 @@ https://placemaster.co.kr/
         document.getElementById('filterBtnSuspended').textContent = `권한상실 (${suspendedCount})`;
         updateUserActionBar();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="10" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="11" style="color:var(--danger);">오류: ${err.message}</td></tr>`;
       }
     }
 
@@ -1711,6 +1657,7 @@ https://placemaster.co.kr/
     // 관리자 목록 로드
     async function loadAdmins() {
       const tbody = document.getElementById('adminsTable');
+      if (!tbody) return;   // 관리자 등급 없음 (마스터만 관리)
       tbody.innerHTML = '<tr><td colspan="8" class="loading"><div class="spinner"></div>로딩 중...</td></tr>';
 
       try {
@@ -1918,7 +1865,6 @@ https://placemaster.co.kr/
       document.getElementById('editUserPhone').value = phone;
       document.getElementById('editUserCompany').value = company;
       document.getElementById('editUserExpires').value = expires;
-      document.getElementById('editUserRole').value = role || 'member';
       document.getElementById('editUserModal').classList.add('active');
     }
 
@@ -1929,8 +1875,7 @@ https://placemaster.co.kr/
           name: document.getElementById('editUserName').value,
           phone: document.getElementById('editUserPhone').value,
           company: document.getElementById('editUserCompany').value,
-          expires_at: document.getElementById('editUserExpires').value,
-          role: document.getElementById('editUserRole').value
+          expires_at: document.getElementById('editUserExpires').value
         });
         showToast('저장되었습니다.', 'success');
         closeModal('editUserModal');
@@ -2345,25 +2290,11 @@ https://placemaster.co.kr/
     }
 
     // 자동 로그인 체크 (페이지 로드 시)
-    const SUPER_ADMIN_EMAIL = 'narusepopo@gmail.com';
     auth.onAuthStateChanged(async user => {
-      if (user) {
-        // 최고 관리자는 바로 통과
-        if (user.email === SUPER_ADMIN_EMAIL) {
-          currentUserEmail = user.email;
-          showDashboard();
-          return;
-        }
-        // 일반 관리자는 Firestore 체크
-        try {
-          const userDoc = await db.collection('users').doc(user.uid).get();
-          if (userDoc.exists && userDoc.data().role === 'admin') {
-            currentUserEmail = user.email;
-            showDashboard();
-          }
-        } catch (err) {
-          console.log('Auto login check failed:', err);
-        }
+      // 마스터 계정만 바로 통과
+      if (user && user.uid === MASTER_UID) {
+        currentUserEmail = user.email;
+        showDashboard();
       }
     });
   </script>

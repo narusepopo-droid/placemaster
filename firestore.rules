@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 마스터(광고토대왕) 계정만 관리 권한. role 값으로는 관리자가 될 수 없음
+    // 마스터(광고토대왕) 계정만 관리 권한. 나머지는 모두 일반회원 (role 값으로 관리자 불가)
     function isMaster() {
       return request.auth != null && request.auth.uid == '104K4S7E4bNm9Cl4dQsg7Sz18Zf1';
     }
@@ -12,6 +12,9 @@ service cloud.firestore {
     function changed() {
       return request.resource.data.diff(resource.data).affectedKeys();
     }
+    function edited(k, n) {
+      return !(k in changed()) || (request.resource.data[k] is string && request.resource.data[k].size() <= n);
+    }
     function str(k, n) {
       return !(k in request.resource.data) || (request.resource.data[k] is string && request.resource.data[k].size() <= n);
     }
@@ -20,9 +23,12 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isMaster() || isOwner(userId);
       allow create, delete: if isMaster();
-      // 본인은 프로그램이 쓰는 칸만: 매장 목록, 만료 시 정지(false만), PC 등록(비어 있을 때 한 번)
+      // 본인(마이페이지·프로그램)은 필요한 칸만: 이름·연락처·매장명, 비밀번호 변경 기록,
+      // 매장 목록, 만료 시 정지(false만), PC 등록(비어 있을 때 한 번).
+      // 등급·이용기간·정지 해제·PC 변경·이메일은 마스터만
       allow update: if isMaster() || (isOwner(userId)
-        && changed().hasOnly(['stores_json', 'active', 'device_id'])
+        && changed().hasOnly(['name', 'phone', 'company', 'initial_password', 'stores_json', 'active', 'device_id'])
+        && edited('name', 50) && edited('phone', 30) && edited('company', 100) && edited('initial_password', 100)
         && (!('active' in changed()) || request.resource.data.active == false)
         && (!('device_id' in changed()) || resource.data.get('device_id', '') == ''));
 
