@@ -160,6 +160,15 @@
     .hint { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
     .btns { display: flex; gap: 8px; flex-wrap: wrap; }
 
+    /* 안에서 여는 운영 화면 */
+    .embed-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+    .embed-bar h1 { font-size: 20px; font-weight: 800; }
+    .embed-bar .desc { color: var(--muted); font-size: 13px; margin-top: 2px; }
+    .embed { width: 100%; height: calc(100vh - 120px); min-height: 520px; border: 1px solid var(--line); border-radius: 16px; background: #fff; display: block; }
+    .embed-wait { height: calc(100vh - 120px); min-height: 520px; display: grid; place-items: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 16px; }
+    .mini { display: flex; flex-direction: column; gap: 4px; }
+    .mini .ln { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 13px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
     .toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(20px); background: var(--text); color: #fff; padding: 12px 18px; border-radius: 12px; font-weight: 600; opacity: 0; transition: all .25s; z-index: 99; pointer-events: none; max-width: calc(100vw - 32px); }
     .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.bad { background: var(--bad); }
@@ -178,6 +187,7 @@
       .mtabs .nav { width: auto; white-space: nowrap; padding: 8px 12px; font-size: 14px; }
       .mtabs .nav .ic { display: none; }
       .main { padding: 18px 16px 50px; }
+      .embed, .embed-wait { height: calc(100vh - 150px); border-radius: 12px; }
       .grid2, .jump { grid-template-columns: 1fr; }
       .toolbar .inp { max-width: none; flex: 1 1 100%; }
       /* 표를 카드로 */
@@ -238,6 +248,17 @@
       </div>
     </section>
 
+    <!-- 전체 회원 (플마 + 영수증리뷰 + 이용권·결제) -->
+    <section class="page" id="p-members">
+      <div class="top"><div><h1>전체 회원</h1><div class="desc">플마·영수증 자동리뷰 이용자와 결제 현황을 한 줄로 봅니다. 같은 이메일은 한 사람으로 합쳐요.</div></div><button class="btn" data-act="reload-members">새로고침</button></div>
+      <div class="card">
+        <div class="toolbar"><input class="inp" id="mSearch" placeholder="매장명·이름·이메일·연락처 검색"><div class="chips" id="mChips"></div></div>
+        <div class="hint" id="mNote" style="margin:-4px 0 10px"></div>
+        <div class="tbl-wrap"><table class="cards"><thead><tr><th>회원</th><th>아이디</th><th>연락처</th><th>플마</th><th>영수증 자동리뷰</th><th>이용권·결제</th><th></th></tr></thead>
+          <tbody id="mBody"><tr><td colspan="7" class="loading">불러오는 중...</td></tr></tbody></table></div>
+      </div>
+    </section>
+
     <!-- 플마 회원 -->
     <section class="page" id="p-users">
       <div class="top"><div><h1>플마 회원</h1><div class="desc">마스터를 뺀 모든 회원은 일반회원입니다. 이름을 누르면 기간·정지·PC·비밀번호·삭제를 관리할 수 있어요.</div></div><button class="btn" data-act="reload-users">새로고침</button></div>
@@ -271,18 +292,20 @@
         <tbody id="iBody"><tr><td colspan="5" class="loading">불러오는 중...</td></tr></tbody></table></div></div>
     </section>
 
-    <!-- 영수증리뷰·결제 -->
-    <section class="page" id="p-rr">
-      <div class="top"><div><h1>영수증 자동리뷰 · 이용권 · 결제</h1><div class="desc">버튼을 누르면 따로 로그인하지 않고 바로 열립니다 (새 창).</div></div></div>
-      <div class="jump">
-        <div class="card"><h2><span class="tag">통합 계정</span>이용권·결제·요금제</h2>
-          <ul><li>회원(점주) 목록·검색, 매장 추가</li><li>이용권 승인·지급·연장·만료일·정지·해지, PC 해제</li><li>요금제·가격·할인 한도·프로모션(쿠폰·묶음)</li><li>결제 내역, 입금 확인·환불</li><li>만료 안내 문자 기록</li></ul>
-          <button class="btn pri block" data-act="open-account">이용권·결제 관리 열기</button></div>
-        <div class="card"><h2><span class="tag rr">영수증</span>매장·포스·영수증</h2>
-          <ul><li>매장 등록·수정·일시정지</li><li>포스 프로그램 연결 상태(끊김 경고)</li><li>판별 못 한 영수증 분류</li><li>매장별 참여 통계</li><li>설치 파일 버전 관리</li></ul>
-          <button class="btn pri block" data-act="open-review">매장·포스 관리 열기</button></div>
-      </div>
-      <div class="card"><h2>현황</h2><div class="stats" id="stRr2"></div></div>
+    <!-- 이용권·결제 (통합 계정 운영 화면을 이 안에서) -->
+    <section class="page" id="p-acct">
+      <div class="embed-bar"><div><h1>이용권 · 결제</h1><div class="desc">회원·이용권 승인/연장, 결제·입금 확인, 상품·요금제, 할인·프로모션, 만료 알림</div></div>
+        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="acct">처음 화면</button><button class="btn sm" data-act="frame-pop" data-f="acct">새 창으로</button></div></div>
+      <div class="embed-wait" id="w-acct">불러오는 중...</div>
+      <iframe class="embed" id="f-acct" title="이용권·결제" style="display:none"></iframe>
+    </section>
+
+    <!-- 매장·포스 (영수증리뷰 운영 화면을 이 안에서) -->
+    <section class="page" id="p-rops">
+      <div class="embed-bar"><div><h1>매장 · 포스</h1><div class="desc">매장 등록·수정, 포스 연결 상태, 미분류 영수증, 매장별 통계, 설치 파일</div></div>
+        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="rops">처음 화면</button><button class="btn sm" data-act="frame-pop" data-f="rops">새 창으로</button></div></div>
+      <div class="embed-wait" id="w-rops">불러오는 중...</div>
+      <iframe class="embed" id="f-rops" title="매장·포스" style="display:none"></iframe>
     </section>
 
     <!-- 프로그램 배포 -->
@@ -374,11 +397,13 @@ const SMS_SENDER = '01075410805';
 
 const PAGES = [
   { id: 'home', label: '홈', ic: '🏠', grp: '' },
+  { id: 'members', label: '전체 회원', ic: '🗂️', grp: '' },
   { id: 'users', label: '플마 회원', ic: '👥', grp: '플레이스 마스터 PRO' },
   { id: 'signups', label: '가입 신청', ic: '📝', grp: '플레이스 마스터 PRO', cnt: 'signups' },
   { id: 'ext', label: '기간 연장', ic: '⏳', grp: '플레이스 마스터 PRO', cnt: 'ext' },
   { id: 'deploy', label: '프로그램 배포', ic: '🚀', grp: '플레이스 마스터 PRO' },
-  { id: 'rr', label: '영수증·이용권·결제', ic: '🧾', grp: '영수증 자동리뷰 · 결제', cnt: 'rr' },
+  { id: 'acct', label: '이용권·결제', ic: '💳', grp: '영수증 자동리뷰 · 결제', cnt: 'rr' },
+  { id: 'rops', label: '매장·포스', ic: '🧾', grp: '영수증 자동리뷰 · 결제' },
   { id: 'inq', label: '문의', ic: '💬', grp: '공통', cnt: 'inq' },
 ];
 let USERS = [], SIGNUPS = [], EXTS = [], INQS = [], SUMMARY = null;
@@ -455,12 +480,14 @@ function buildNav() {
   $('navList').innerHTML = html;
   $('navListM').innerHTML = PAGES.map(p => `<button class="nav" data-page="${p.id}">${esc(p.label)}<span class="cnt" data-cnt="${p.cnt || ''}"></span></button>`).join('');
 }
-function go(id) {
+function go(id, noFrame) {
   document.querySelectorAll('.page').forEach(s => s.classList.toggle('on', s.id === 'p-' + id));
   document.querySelectorAll('.nav[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === id));
   window.scrollTo(0, 0);
   try { history.replaceState(null, '', '#' + id); } catch (e) {}
   if (id === 'deploy') loadDeploy();
+  if (id === 'members' && !MEMBERS) loadMembers();
+  if ((id === 'acct' || id === 'rops') && !noFrame) loadFrame(id);
 }
 function setCount(key, n) {
   document.querySelectorAll(`[data-cnt="${key}"]`).forEach(el => { el.textContent = n; el.classList.toggle('on', n > 0); });
@@ -476,7 +503,7 @@ function start() {
 }
 async function refreshAll() {
   $('homeTime').textContent = nowStr() + ' 기준';
-  await Promise.all([loadUsers(), loadSignups(), loadExts(), loadInqs(), loadSummary(), loadVisits()]);
+  await Promise.all([loadUsers(), loadSignups(), loadExts(), loadInqs(), loadSummary(), loadVisits(), MEMBERS ? loadMembers() : null]);
   renderHome();
 }
 
@@ -511,7 +538,6 @@ function renderHome() {
   $('stRr').innerHTML = rv ? [
     ['운영 매장', rv.active_stores, '곳'], ['오늘 참여', rv.today_sessions, '명'], ['오늘 리뷰 완료', rv.today_completed, '건'], ['포스 연결 끊김', (rv.offline_stores || []).length, '곳']
   ].map(([k, v, u]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></div>`).join('') : '<div class="hint">현황을 불러오지 못했어요.</div>';
-  $('stRr2').innerHTML = $('stRr').innerHTML;
   const rrLic = lic.receipt_review || {};
   $('stAcct').innerHTML = SUMMARY ? [
     ['통합 계정 회원', SUMMARY.accounts, '명'], ['이번 주 새 회원', SUMMARY.new_week, '명'], ['영수증 이용 매장', rrLic.active || 0, '곳'],
@@ -784,12 +810,68 @@ async function finishInq(withSms) {
   catch (e) { toast(e.message, 1); }
 }
 
-// ───────── 운영 화면 바로 열기 ─────────
-async function openOps(which) {
+// ───────── 운영 화면 (이 안에서 열기) ─────────
+const FRAMES = { acct: { key: 'account_ops', next: 'account_next', loaded: false }, rops: { key: 'review_ops', next: 'review_next', loaded: false } };
+async function loadFrame(id, next) {
+  const f = FRAMES[id]; const fr = $('f-' + id), w = $('w-' + id);
+  if (f.loaded && !next) return;
+  w.style.display = ''; w.textContent = '불러오는 중...'; fr.style.display = 'none';
+  try {
+    const body = {}; if (next) body[f.next] = next;
+    const j = await masterApi('/sso', body);
+    fr.onload = () => { w.style.display = 'none'; fr.style.display = 'block'; };
+    fr.src = j[f.key]; f.loaded = true;
+  } catch (e) { w.textContent = '열지 못했어요: ' + e.message; }
+}
+function openOps(which, next) {
+  const id = which === 'account' ? 'acct' : 'rops';
+  go(id, true); loadFrame(id, next || '');
+}
+async function popFrame(id) {
   const w = window.open('about:blank', '_blank');
-  try { const j = await masterApi('/sso', {}); const u = which === 'account' ? j.account_ops : j.review_ops;
-    if (w) w.location = u; else location.href = u; }
+  try { const j = await masterApi('/sso', {}); if (w) w.location = j[FRAMES[id].key]; }
   catch (e) { if (w) w.close(); toast('열지 못했어요: ' + e.message, 1); }
+}
+
+// ───────── 전체 회원 ─────────
+let MEMBERS = null, mFilter = 'all';
+async function loadMembers() {
+  $('mBody').innerHTML = '<tr><td colspan="7" class="loading">불러오는 중...</td></tr>';
+  try { const j = await masterApi('/customers'); MEMBERS = j.rows || [];
+    const miss = []; if (!j.plma_ok) miss.push('플마'); if (!j.review_ok) miss.push('영수증 자동리뷰');
+    $('mNote').textContent = miss.length ? miss.join('·') + ' 정보를 불러오지 못했어요. 새로고침해 주세요.' : '';
+  } catch (e) { MEMBERS = []; $('mNote').textContent = '불러오지 못했어요: ' + e.message; }
+  renderMembers();
+}
+const RR_STATE = { active: ['b-ok', '사용 중'], grace: ['b-warn', '유예'], pending: ['b-blue', '승인 대기'], expired: ['b-gray', '만료'], suspended: ['b-bad', '정지'], cancelled: ['b-gray', '해지'] };
+const PL_STATE = { ok: ['b-ok', '사용 중'], soon: ['b-warn', '만료 임박'], exp: ['b-gray', '만료'], stop: ['b-bad', '정지'] };
+function isPaid(m) { return (m.paid_total || 0) > 0 || (m.plans || []).length > 0; }
+function renderMembers() {
+  if (!MEMBERS) return;
+  const q = $('mSearch').value.trim().toLowerCase();
+  const has = { plma: m => !!(m.plma || m.plma_license), rr: m => m.rr.length > 0 };
+  const F = { all: () => true, plma: m => has.plma(m) && !has.rr(m), rr: m => has.rr(m) && !has.plma(m), both: m => has.plma(m) && has.rr(m), paid: isPaid, free: m => !isPaid(m) };
+  const CH = [['all', '전체'], ['plma', '플마만'], ['rr', '영수증만'], ['both', '둘 다'], ['paid', '유료'], ['free', '무료']];
+  $('mChips').innerHTML = CH.map(([k, t]) => `<button class="chip${mFilter === k ? ' on' : ''}" data-mf="${k}">${t}<b>${MEMBERS.filter(F[k]).length}</b></button>`).join('');
+  const rows = MEMBERS.filter(m => F[mFilter](m) && (!q || [m.company, m.name, m.email, m.phone].concat(m.rr.map(x => x.store)).some(v => String(v || '').toLowerCase().includes(q))));
+  $('mBody').innerHTML = rows.length ? rows.map(m => {
+    let pl = '<span style="color:var(--muted)">-</span>';
+    if (m.plma) { const b = PL_STATE[m.plma.state] || ['b-gray', m.plma.state];
+      pl = `<span class="badge ${b[0]}">${b[1]}</span><span class="s">${m.plma.expires_at ? esc(m.plma.expires_at) + '까지' : '무제한'}</span>`; }
+    else if (m.plma_license) { const b = RR_STATE[m.plma_license.state] || ['b-gray', m.plma_license.state]; pl = `<span class="badge ${b[0]}">${b[1]}</span>`; }
+    const rr = m.rr.length ? '<div class="mini">' + m.rr.map(x => { const b = RR_STATE[x.state] || ['b-gray', x.state];
+      const pos = x.pos ? `<span class="dot" title="포스 ${x.pos === 'offline' ? '끊김' : '연결'}" style="background:${x.pos === 'offline' ? 'var(--bad)' : x.pos === 'warning' ? 'var(--warn)' : 'var(--g)'}"></span>` : '';
+      return `<div class="ln">${pos}<b>${esc(x.store || '매장')}</b><span class="badge ${b[0]}">${b[1]}</span>${x.source === 'legacy' ? '<span class="badge b-gray" title="첫 로그인 때 통합 계정으로 자동 이전">예전 계정</span>' : ''}</div>`; }).join('') + '</div>'
+      : '<span style="color:var(--muted)">-</span>';
+    const pay = isPaid(m) ? `<span class="badge b-blue">유료</span><span class="s">${esc((m.plans || []).join(', '))}${m.paid_total ? ' · 총 ' + Number(m.paid_total).toLocaleString('ko-KR') + '원' : ''}</span>` : '<span class="badge b-gray">무료</span>';
+    const btn = [];
+    if (m.plma) btn.push(`<button class="btn sm" data-user="${esc(m.plma.uid)}">플마</button>`);
+    if (m.account_id) btn.push(`<button class="btn sm" data-goacct="${m.account_id}">이용권</button>`);
+    const rs = m.rr.find(x => x.review_store_id); if (rs) btn.push(`<button class="btn sm" data-gostore="${rs.review_store_id}">매장</button>`);
+    return `<tr><td data-l="회원"><b>${esc(m.company || m.name || '(이름 없음)')}</b><span class="s">${esc(m.company ? m.name : '')}</span></td>
+      <td data-l="아이디">${esc(m.email || (m.rr[0] && m.rr[0].login) || '-')}</td><td data-l="연락처">${esc(m.phone || '-')}</td>
+      <td data-l="플마">${pl}</td><td data-l="영수증">${rr}</td><td data-l="결제">${pay}</td><td class="act">${btn.join(' ')}</td></tr>`;
+  }).join('') : '<tr><td colspan="7" class="none">해당하는 회원이 없어요.</td></tr>';
 }
 
 // ───────── 프로그램 배포 ─────────
@@ -819,10 +901,13 @@ async function deploy() {
 
 // ───────── 클릭 처리 (한 곳에서) ─────────
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
+  const t = e.target.closest('[data-mf],[data-goacct],[data-gostore],[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
   if (!t) { if (e.target.classList.contains('modal')) closeModals(); return; }
   const d = t.dataset;
   if (d.page) return go(d.page);
+  if (d.mf) { mFilter = d.mf; return renderMembers(); }
+  if (d.goacct) return openOps('account', '/ops/accounts/' + d.goacct);
+  if (d.gostore) return openOps('review', '/ops/stores/' + d.gostore);
   if (d.copy !== undefined) { navigator.clipboard && navigator.clipboard.writeText(d.copy).then(() => toast('복사했어요')); return; }
   if (d.user) { e.preventDefault(); return openUser(d.user); }
   if (d.uf) { uFilter = d.uf; return renderUsers(); }
@@ -865,8 +950,9 @@ document.addEventListener('click', e => {
       return deleteUsers(ids);
     }
     case 'bulk-clear': document.querySelectorAll('.uck').forEach(c => c.checked = false); return updateSel();
-    case 'open-account': return openOps('account');
-    case 'open-review': return openOps('review');
+    case 'reload-members': return loadMembers();
+    case 'frame-home': FRAMES[d.f].loaded = false; return loadFrame(d.f);
+    case 'frame-pop': return popFrame(d.f);
     case 'ext-approve': return approveExt();
     case 'inq-send': return finishInq(true);
     case 'inq-done': return finishInq(false);
@@ -879,6 +965,7 @@ document.addEventListener('change', e => {
   if (e.target.id === 'muExp') return expHint();
 });
 $('uSearch').addEventListener('input', renderUsers);
+$('mSearch').addEventListener('input', renderMembers);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
 </script>
 </body>
