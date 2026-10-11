@@ -189,14 +189,59 @@
   @media (max-width: 520px) {
     .h-act .h-btn { height: 38px; padding: 0 12px; font-size: 13px; }
     .h-logo { font-size: 16px; }
+    .h-top .inner { gap: 10px; padding: 0 16px; }
+    .h-logo, .h-act .h-btn { white-space: nowrap; }
+    .h-act { gap: 6px; }
     .s-cta .h-btn { flex: 1; justify-content: center; }
   }
+  @media (max-width: 370px) { #startBtn { display: none; } }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0s !important; transition-duration: .01ms !important; }
   }
+/* ===== 색: 화이트 클린 (흰 배경 + 초록) ===== */
+body.light { background: #fff; }
+body.light .hero { color: #111827; }
+body.light .h-logo { color: #111827; }
+body.light .h-nav a { color: #4b5563; }
+body.light .h-nav a:hover { color: #111827; background: rgba(0,0,0,.05); }
+body.light .h-btn { color: #111827; border-color: #d1d5db; }
+body.light .h-btn:hover { background: rgba(0,0,0,.04); }
+body.light .h-btn.solid { color: #fff; border-color: var(--g); }
+body.light .h-btn.white { background: #111827; color: #fff; border-color: #111827; }
+body.light .s-sub { color: #4b5563; }
+body.light .s-chips { color: #6b7280; }
+body.light .s-chips b { color: #111827; }
+body.light .grid-lines { background-image: linear-gradient(rgba(0,0,0,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.035) 1px, transparent 1px); }
+body.light .s-title em { background: linear-gradient(90deg, var(--g), var(--g3)); -webkit-background-clip: text; background-clip: text; }
+body.light .s-rr .s-title em { background: linear-gradient(90deg, var(--gold), var(--gold2)); -webkit-background-clip: text; background-clip: text; }
+body.light .eyebrow { color: var(--g3); background: color-mix(in srgb, var(--g) 12%, #fff); border-color: color-mix(in srgb, var(--g) 35%, #fff); }
+body.light .s-rr .eyebrow { color: var(--gold2); background: color-mix(in srgb, var(--gold) 12%, #fff); border-color: color-mix(in srgb, var(--gold) 35%, #fff); }
+body.light .board { background: #fff; border-color: #e5e7eb; box-shadow: 0 30px 80px rgba(17,24,39,.12); color: #111827; }
+body.light .live { color: var(--g3); }
+body.light .rk { background: #f6f7f8; }
+body.light .rk.up { background: color-mix(in srgb, var(--g) 12%, #fff); }
+body.light .rk .no { background: #e5e7eb; color: #111827; }
+body.light .rk.top .no { background: var(--g); color: #fff; }
+body.light .rk .kw small { color: #6b7280; }
+body.light .chg.u { color: #059669; } body.light .chg.d { color: #dc2626; }
+body.light .phone { box-shadow: 0 40px 90px rgba(17,24,39,.28), inset 0 0 0 7px #1d1d1d; }
+body.light .receipt { box-shadow: 0 30px 60px rgba(17,24,39,.22); }
+body.light .qr-chip { background: #fff; border-color: #e5e7eb; color: #111827; box-shadow: 0 12px 30px rgba(17,24,39,.1); }
+body.light .qr-chip div div { color: #6b7280 !important; }
+body.light .tab-h { color: #9ca3af; }
+body.light .tab-h.on { color: #111827; }
+body.light .tab-h::before { background: #e5e7eb; }
+body.light .arrows button { border-color: #d1d5db; background: #fff; color: #111827; }
+body.light .h-foot { background: #f8f9fa; color: #6b7280; }
+body.light .h-foot a { color: #374151; }
+
+/* 1. 화이트 클린 */
+body.t1 { --g: #03C75A; --g2: #02a54b; --g3: #00a148; --gold: #f59e0b; --gold2: #d97706; }
+body.t1 .s-plma .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(3,199,90,.10), transparent 60%), linear-gradient(180deg, #ffffff, #f6faf8); }
+body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245,158,11,.10), transparent 60%), linear-gradient(180deg, #ffffff, #fbf8f2); }
 </style>
 </head>
-<body>
+<body class="light t1">
 <header class="h-top"><div class="inner">
   <a class="h-logo" href="index.html"><img src="favicon-180.png" alt="플레이스 마스터" class="mk-img">플레이스 마스터</a>
   <nav class="h-nav">
