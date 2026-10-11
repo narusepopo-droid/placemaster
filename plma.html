@@ -770,6 +770,8 @@ h1, h2, h3, p { word-break: keep-all; }
   .header-btns .btn-primary { padding: 8px 14px; font-size: 0.85rem; }
   .header-btns .btn-outline.btn-my { display: inline-flex; padding: 8px 12px; font-size: 0.85rem; margin-right: 0 !important; white-space: nowrap; }
   .header-btns { gap: 6px; }
+  .header-btns.has-admin #download-btn { display: none; }
+  .header-btns .btn { white-space: nowrap; }
 
   .hero { padding: 50px 24px 40px; }
   .hero-content { text-align: center; }
@@ -1248,13 +1250,14 @@ firebase.auth().onAuthStateChanged(function(user) {
 
   if (user) {
     // 관리자인 경우 관리자 버튼 추가
-    if (user.uid === ADMIN_UID || user.email === ADMIN_EMAIL) {
+    if (user.uid === ADMIN_UID) {
       const adminBtn = document.createElement('a');
       adminBtn.href = 'admin.html';
-      adminBtn.className = 'btn btn-outline';
-      adminBtn.textContent = '관리자';
+      adminBtn.className = 'btn btn-outline btn-my';
+      adminBtn.textContent = '마스터 관리';
       adminBtn.style.marginRight = '8px';
       headerBtns.insertBefore(adminBtn, authBtn);
+      headerBtns.classList.add('has-admin');
     }
 
     // 내 정보(마이페이지) 버튼 추가
