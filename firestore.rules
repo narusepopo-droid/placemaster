@@ -1,49 +1,82 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // 가입 신청 - 누구나 쓰기 가능, 인증된 사용자만 읽기
-    match /signups/{document} {
-      allow write: if true;
-      allow read: if request.auth != null;
+
+    // 마스터(광고토대왕) 계정만 관리 권한. role 값으로는 관리자가 될 수 없음
+    function isMaster() {
+      return request.auth != null && request.auth.uid == '104K4S7E4bNm9Cl4dQsg7Sz18Zf1';
+    }
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+    function changed() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+    function str(k, n) {
+      return !(k in request.resource.data) || (request.resource.data[k] is string && request.resource.data[k].size() <= n);
     }
 
-    // 사용자 정보 - 인증된 사용자만 접근
+    // 사용자 정보 - 본인은 자기 문서만 읽기, 마스터는 전체 관리
     match /users/{userId} {
-      allow read, write: if request.auth != null;
+      allow read: if isMaster() || isOwner(userId);
+      allow create, delete: if isMaster();
+      // 본인은 프로그램이 쓰는 칸만: 매장 목록, 만료 시 정지(false만), PC 등록(비어 있을 때 한 번)
+      allow update: if isMaster() || (isOwner(userId)
+        && changed().hasOnly(['stores_json', 'active', 'device_id'])
+        && (!('active' in changed()) || request.resource.data.active == false)
+        && (!('device_id' in changed()) || resource.data.get('device_id', '') == ''));
+
+      // 본인 분석 기록
+      match /hist/{docId} {
+        allow read, write: if isMaster() || isOwner(userId);
+      }
     }
 
-    // SMS 대기열 - 누구나 쓰기 가능, 인증된 사용자만 읽기
-    match /sms_queue/{document} {
-      allow write: if true;
+    // 가입 신청 - 누구나 '대기' 상태로 신청만, 읽기·처리는 마스터
+    match /signups/{docId} {
+      allow create: if (request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['company', 'name', 'phone', 'email', 'password', 'status', 'createdAt'])
+        && str('company', 100) && str('name', 50) && str('phone', 30) && str('email', 100) && str('password', 100) && str('createdAt', 40))
+        || isMaster();
+      allow read, update, delete: if isMaster();
+    }
+
+    // 기간 연장 신청 - 누구나 신청만, 처리는 마스터
+    match /extensions/{docId} {
+      allow create: if (request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['email', 'status', 'expiredAt', 'createdAt'])
+        && str('email', 100) && str('expiredAt', 40) && str('createdAt', 40))
+        || isMaster();
+      allow read, update, delete: if isMaster();
+    }
+
+    // 문의 - 누구나 작성만, 처리는 마스터
+    match /inquiries/{docId} {
+      allow create: if (request.resource.data.status == 'pending'
+        && request.resource.data.keys().hasOnly(['name', 'phone', 'message', 'status', 'createdAt'])
+        && str('name', 50) && str('phone', 30) && str('message', 2000) && str('createdAt', 40))
+        || isMaster();
+      allow read, update, delete: if isMaster();
+    }
+
+    // 방문 통계 - 누구나 카운트 증가만(삭제 불가), 보기는 마스터
+    match /visits/{day} {
+      allow create, update: if day.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$') && request.resource.data.keys().size() <= 200;
+      allow read, delete: if isMaster();
+    }
+
+    // 프로그램 최신 버전 정보 - 로그인 회원은 읽기, 변경은 마스터
+    match /app_meta/{docId} {
       allow read: if request.auth != null;
+      allow write: if isMaster();
     }
 
-    // 방문 통계 - 누구나 쓰기 가능, 인증된 사용자만 읽기
-    match /visits/{document} {
-      allow write: if true;
-      allow read: if request.auth != null;
+    // 마스터 전용
+    match /deploy_history/{docId} {
+      allow read, write: if isMaster();
     }
-
-    // 배포 히스토리 - 인증된 사용자만 접근
-    match /deploy_history/{document} {
-      allow read, write: if request.auth != null;
-    }
-
-    // 문의 - 누구나 쓰기 가능, 인증된 사용자만 읽기
-    match /inquiries/{document} {
-      allow write: if true;
-      allow read: if request.auth != null;
-    }
-
-    // 기간연장 신청 - 누구나 쓰기 가능, 인증된 사용자만 읽기
-    match /extensions/{document} {
-      allow write: if true;
-      allow read: if request.auth != null;
-    }
-
-    // 앱 메타 - 인증된 사용자만 접근
-    match /app_meta/{document} {
-      allow read, write: if request.auth != null;
+    match /sms_queue/{docId} {
+      allow read, write: if isMaster();
     }
   }
 }
