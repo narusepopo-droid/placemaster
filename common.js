@@ -1,7 +1,7 @@
 /* 플마·영수증리뷰 공통: 함께 쓰기 + 요금제 (가격은 계정 서버에서, 유료화 전에는 '무료' 표시) */
 (function () {
   var ACCOUNT = 'https://review.placemaster.co.kr/account';
-  var PLMA_SIGNUP = 'signup.html';
+  var PLMA_SIGNUP = ACCOUNT + '/signup?product=plma';
   var el = document.getElementById('pm-together');
   if (!el) return;
   var here = el.getAttribute('data-product');   // plma | receipt_review
