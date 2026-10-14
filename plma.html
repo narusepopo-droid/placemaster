@@ -1274,8 +1274,20 @@ firebase.auth().onAuthStateChanged(function(user) {
       e.preventDefault();
       firebase.auth().signOut().then(() => location.reload());
     };
-    downloadBtn.href = 'https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip';
-    downloadBtn.setAttribute('download', '');
+    // 로그인했으면 페이지의 모든 '다운로드' 버튼(상단·첫 화면·아래 시작하기)을 실제 파일로
+    // (예전엔 상단 버튼만 바뀌어서 아래 버튼을 누르면 계속 가입/로그인 화면으로 갔음)
+    const DL_URL = 'https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip';
+    document.querySelectorAll('a[href="signup.html"]').forEach(function(a) {
+      if (a.id !== 'download-btn' && a.textContent.indexOf('다운로드') < 0 && a.textContent.indexOf('시작') < 0) return;
+      a.href = DL_URL;
+      a.setAttribute('download', '');
+      a.addEventListener('click', function(e) {
+        if (/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+          e.preventDefault();
+          alert('플레이스 마스터 PRO는 Windows PC 전용 프로그램입니다. PC에서 placemaster.co.kr 접속 후 다운로드해주세요.');
+        }
+      });
+    });
   }
 });
 
