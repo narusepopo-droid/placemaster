@@ -1243,53 +1243,8 @@ const db = firebase.firestore();
 const ADMIN_UID = "104K4S7E4bNm9Cl4dQsg7Sz18Zf1";
 const ADMIN_EMAIL = "narusepopo@gmail.com";
 
-firebase.auth().onAuthStateChanged(function(user) {
-  const authBtn = document.getElementById('auth-btn');
-  const downloadBtn = document.getElementById('download-btn');
-  const headerBtns = document.querySelector('.header-btns');
-
-  if (user) {
-    // 관리자인 경우 관리자 버튼 추가
-    if (user.uid === ADMIN_UID) {
-      const adminBtn = document.createElement('a');
-      adminBtn.href = 'admin.html';
-      adminBtn.className = 'btn btn-outline btn-my';
-      adminBtn.textContent = '마스터 관리';
-      adminBtn.style.marginRight = '8px';
-      headerBtns.insertBefore(adminBtn, authBtn);
-      headerBtns.classList.add('has-admin');
-    }
-
-    // 내 정보(마이페이지) 버튼 추가
-    const myBtn = document.createElement('button');
-    myBtn.className = 'btn btn-outline btn-my';
-    myBtn.textContent = '내 정보';
-    myBtn.style.marginRight = '8px';
-    myBtn.onclick = function() { openMyInfo(); };
-    headerBtns.insertBefore(myBtn, authBtn);
-
-    authBtn.textContent = '로그아웃';
-    authBtn.href = '#';
-    authBtn.onclick = function(e) {
-      e.preventDefault();
-      firebase.auth().signOut().then(() => location.reload());
-    };
-    // 로그인했으면 페이지의 모든 '다운로드' 버튼(상단·첫 화면·아래 시작하기)을 실제 파일로
-    // (예전엔 상단 버튼만 바뀌어서 아래 버튼을 누르면 계속 가입/로그인 화면으로 갔음)
-    const DL_URL = 'https://review.placemaster.co.kr/static/downloads/plma/PlaceMasterPRO_v8.46-standalone.zip';
-    document.querySelectorAll('a[href="signup.html"]').forEach(function(a) {
-      if (a.id !== 'download-btn' && a.textContent.indexOf('다운로드') < 0 && a.textContent.indexOf('시작') < 0) return;
-      a.href = DL_URL;
-      a.setAttribute('download', '');
-      a.addEventListener('click', function(e) {
-        if (/Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-          e.preventDefault();
-          alert('플레이스 마스터 PRO는 Windows PC 전용 프로그램입니다. PC에서 placemaster.co.kr 접속 후 다운로드해주세요.');
-        }
-      });
-    });
-  }
-});
+// 로그인은 통합 계정 하나로 (2026-10-14): 상단 메뉴·다운로드 버튼은 auth-state.js 가 통합 계정 로그인 상태로 바꿈.
+// (예전 이 페이지 자체 로그인 표시는 통합 계정과 따로 놀아 헷갈려서 뺌. '내 정보'는 마이페이지 → 내 정보)
 
 function showPasswordModal() {
   document.getElementById('pwModal').style.display = 'flex';
@@ -1535,4 +1490,4 @@ async function submitContact() {
   </div>
 </div>
 <script src="common.js?v=2"></script>
-<script src="auth-state.js?v=1"></script>
+<script src="auth-state.js?v=2"></script>
