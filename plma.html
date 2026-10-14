@@ -1141,11 +1141,11 @@ h1, h2, h3, p { word-break: keep-all; }
     <h2>지금 바로 시작하세요</h2>
     <p>설치 후 로그인하면 바로 사용 가능합니다.<br>업데이트는 자동으로 진행됩니다.</p>
     <a href="signup.html" class="btn btn-cta">↓ 지금 무료 다운로드</a>
-    <div class="cta-sub">Windows 10 이상 지원 · 설치 용량 약 200MB · Python 자동 설치</div>
+    <div class="cta-sub">Windows 10 이상 지원 · 다운로드 약 190MB · Python 등 따로 설치할 것 없음</div>
     <div class="cta-steps">
       <div class="cta-step"><span class="cta-step-num">1</span> ZIP 다운로드 후 압축 해제</div>
-      <div class="cta-step"><span class="cta-step-num">2</span> 설치.exe 실행</div>
-      <div class="cta-step"><span class="cta-step-num">3</span> 플레이스마스터 실행 후 로그인</div>
+      <div class="cta-step"><span class="cta-step-num">2</span> '플레이스마스터 PRO' 실행</div>
+      <div class="cta-step"><span class="cta-step-num">3</span> 가입한 계정으로 로그인</div>
     </div>
   </div>
 </section>
@@ -1276,7 +1276,7 @@ firebase.auth().onAuthStateChanged(function(user) {
     };
     // 로그인했으면 페이지의 모든 '다운로드' 버튼(상단·첫 화면·아래 시작하기)을 실제 파일로
     // (예전엔 상단 버튼만 바뀌어서 아래 버튼을 누르면 계속 가입/로그인 화면으로 갔음)
-    const DL_URL = 'https://github.com/narusepopo-droid/placemaster/releases/download/v8.46/PlaceMasterPRO.zip';
+    const DL_URL = 'https://review.placemaster.co.kr/static/downloads/plma/PlaceMasterPRO_v8.46-standalone.zip';
     document.querySelectorAll('a[href="signup.html"]').forEach(function(a) {
       if (a.id !== 'download-btn' && a.textContent.indexOf('다운로드') < 0 && a.textContent.indexOf('시작') < 0) return;
       a.href = DL_URL;
