@@ -173,6 +173,53 @@
     .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.bad { background: var(--bad); }
 
+    /* 매장 목록 */
+    .live { position: relative; width: 10px; height: 10px; border-radius: 50%; background: #c4cad2; flex: none; display: inline-block; }
+    .live.on { background: var(--g); }
+    .live.on::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--g); opacity: .6; animation: pulse 1.6s ease-out infinite; }
+    .live.idle { background: var(--warn); }
+    .live.off { background: #c4cad2; }
+    @keyframes pulse { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(1.6); opacity: 0; } }
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+    .st-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; cursor: pointer; text-align: left; width: 100%; transition: border-color .15s, box-shadow .15s; }
+    .st-card:hover { border-color: #cfd5dc; box-shadow: 0 6px 20px rgba(0,0,0,.05); }
+    .st-card.is-live { border-color: #bfe9d0; }
+    .st-head { display: flex; align-items: center; gap: 10px; }
+    .st-name { font-weight: 800; font-size: 16px; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .st-state { font-size: 12px; font-weight: 700; color: var(--muted); white-space: nowrap; }
+    .st-state.on { color: var(--g2); }
+    .st-state.idle { color: #b86e00; }
+    .st-owner { font-size: 13px; color: var(--muted); margin: 4px 0 12px 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .st-nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; background: var(--bg); border-radius: 12px; padding: 10px 6px; }
+    .st-nums div { text-align: center; }
+    .st-nums b { display: block; font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .st-nums span { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .st-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+    .st-foot .grow { flex: 1; }
+    .sheet.wide { max-width: 780px; }
+    .sd-live { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--bg); }
+    .sd-live.on { background: var(--g-bg); }
+    .sd-live .t { font-weight: 800; font-size: 16px; }
+    .sd-live .t small { display: block; font-weight: 500; font-size: 12px; color: var(--sub); margin-top: 2px; }
+    .sd-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .sd-stats .stat { padding: 11px 12px; }
+    .sd-stats .stat .v { font-size: 19px; }
+    .tabs3 { display: inline-flex; background: var(--bg); border-radius: 10px; padding: 3px; gap: 2px; margin-bottom: 10px; }
+    .tabs3 button { border: 0; background: none; padding: 6px 12px; border-radius: 8px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; }
+    .tabs3 button.on { background: #fff; color: var(--text); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+    .fn { display: flex; flex-direction: column; gap: 7px; }
+    .fn .r { display: grid; grid-template-columns: 84px 1fr 70px; align-items: center; gap: 10px; font-size: 13px; }
+    .fn .bg { height: 10px; background: var(--line2); border-radius: 99px; overflow: hidden; }
+    .fn .bg i { display: block; height: 100%; background: var(--g); border-radius: 99px; }
+    .fn .n { text-align: right; font-variant-numeric: tabular-nums; color: var(--sub); }
+    .mini-tbl td, .mini-tbl th { padding: 7px 8px; font-size: 13px; }
+    .sd-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 20px; }
+    @media (max-width: 900px) {
+      .sd-stats { grid-template-columns: repeat(2, 1fr); }
+      .sd-grid { grid-template-columns: 1fr; }
+      .st-grid { grid-template-columns: 1fr; }
+    }
+
     /* 휴대폰 */
     .mtop { display: none; }
     @media (max-width: 900px) {
@@ -257,6 +304,14 @@
         <div class="tbl-wrap"><table class="cards"><thead><tr><th>회원</th><th>아이디</th><th>연락처</th><th>플마</th><th>영수증 자동리뷰</th><th>이용권·결제</th><th></th></tr></thead>
           <tbody id="mBody"><tr><td colspan="7" class="loading">불러오는 중...</td></tr></tbody></table></div>
       </div>
+    </section>
+
+    <!-- 매장 목록 (포스 프로그램 실시간 사용 여부 + 매장별 핵심 데이터) -->
+    <section class="page" id="p-stores">
+      <div class="top"><div><h1>매장 목록</h1><div class="desc" id="stDesc">영수증 자동리뷰 매장의 포스 프로그램이 지금 켜져 있는지 봅니다. 매장을 누르면 핵심 데이터를 한 번에 볼 수 있어요.</div></div><button class="btn" data-act="reload-stores">새로고침</button></div>
+      <div class="toolbar"><input class="inp" id="stSearch" placeholder="매장명·점주·이메일 검색"><div class="chips" id="stChips"></div></div>
+      <div class="hint" id="stNote" style="margin:-4px 0 12px"></div>
+      <div class="st-grid" id="stGrid"><div class="card loading">불러오는 중...</div></div>
     </section>
 
     <!-- 플마 회원 -->
@@ -379,6 +434,12 @@
   </div>
 </div></div>
 
+<!-- 매장 요약 창 -->
+<div class="modal" id="mStore"><div class="sheet wide">
+  <div class="sheet-h"><h3 id="sdTitle">매장</h3><button class="x" data-act="close">&times;</button></div>
+  <div class="sheet-b" id="sdBody"><div class="loading">불러오는 중...</div></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -402,6 +463,7 @@ const PAGES = [
   { id: 'signups', label: '가입 신청', ic: '📝', grp: '플레이스 마스터 PRO', cnt: 'signups' },
   { id: 'ext', label: '기간 연장', ic: '⏳', grp: '플레이스 마스터 PRO', cnt: 'ext' },
   { id: 'deploy', label: '프로그램 배포', ic: '🚀', grp: '플레이스 마스터 PRO' },
+  { id: 'stores', label: '매장 목록', ic: '🟢', grp: '영수증 자동리뷰 · 결제' },
   { id: 'acct', label: '이용권·결제', ic: '💳', grp: '영수증 자동리뷰 · 결제', cnt: 'rr' },
   { id: 'rops', label: '매장·포스', ic: '🧾', grp: '영수증 자동리뷰 · 결제' },
   { id: 'inq', label: '문의', ic: '💬', grp: '공통', cnt: 'inq' },
@@ -487,6 +549,7 @@ function go(id, noFrame) {
   try { history.replaceState(null, '', '#' + id); } catch (e) {}
   if (id === 'deploy') loadDeploy();
   if (id === 'members' && !MEMBERS) loadMembers();
+  if (id === 'stores') { loadStores(); startStoreTimer(); }
   if ((id === 'acct' || id === 'rops') && !noFrame) loadFrame(id);
 }
 function setCount(key, n) {
@@ -503,7 +566,7 @@ function start() {
 }
 async function refreshAll() {
   $('homeTime').textContent = nowStr() + ' 기준';
-  await Promise.all([loadUsers(), loadSignups(), loadExts(), loadInqs(), loadSummary(), loadVisits(), MEMBERS ? loadMembers() : null]);
+  await Promise.all([loadUsers(), loadSignups(), loadExts(), loadInqs(), loadSummary(), loadVisits(), MEMBERS ? loadMembers() : null, loadStores(true)]);
   renderHome();
 }
 
@@ -524,7 +587,7 @@ function renderHome() {
   if (rrPend) items.push({ n: rrPend, t: '이용권 승인 대기 (통합 계정)', s: '이용권·결제 관리에서 승인', open: 'account' });
   if (SUMMARY && SUMMARY.unpaid_orders) items.push({ n: SUMMARY.unpaid_orders, t: '입금 확인 대기 주문', s: '이용권·결제 관리 > 결제', open: 'account' });
   if (soon) items.push({ n: soon, t: '7일 안에 끝나는 플마 회원', s: '필요하면 기간을 늘려 주세요', go: 'users', f: 'soon', w: 1 });
-  if (rv && rv.offline_stores && rv.offline_stores.length) items.push({ n: rv.offline_stores.length, t: '포스 연결이 끊긴 매장', s: rv.offline_stores.join(', '), open: 'review', w: 1 });
+  if (rv && rv.offline_stores && rv.offline_stores.length) items.push({ n: rv.offline_stores.length, t: '포스 연결이 끊긴 매장', s: rv.offline_stores.join(', '), go: 'stores', w: 1 });
   $('todo').innerHTML = items.length ? items.map((it, i) =>
     `<button class="todo-item" data-todo="${i}"><span class="n${it.w ? ' w' : ''}">${it.n}</span><span class="t">${esc(it.t)}<small>${esc(it.s)}</small></span><span class="arr">›</span></button>`).join('')
     : '<div class="empty-todo">처리할 일이 없어요 👍</div>';
@@ -536,8 +599,8 @@ function renderHome() {
     ['전체 회원', users.length, '명', 'all'], ['사용 중', c('ok') + c('soon'), '명', 'ok'], ['7일 안에 만료', soon, '명', 'soon'], ['만료·정지', c('exp') + c('stop'), '명', 'stop']
   ].map(([k, v, u, f]) => `<div class="stat click" data-ufilter="${f}"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></div>`).join('');
   $('stRr').innerHTML = rv ? [
-    ['운영 매장', rv.active_stores, '곳'], ['오늘 참여', rv.today_sessions, '명'], ['오늘 리뷰 완료', rv.today_completed, '건'], ['포스 연결 끊김', (rv.offline_stores || []).length, '곳']
-  ].map(([k, v, u]) => `<div class="stat"><div class="k">${k}</div><div class="v">${v}<small>${u}</small></div></div>`).join('') : '<div class="hint">현황을 불러오지 못했어요.</div>';
+    ['지금 사용 중', STORES ? STORES.filter(s => s.agent && s.agent.live === 'live').length : '-', '곳', 1], ['운영 매장', rv.active_stores, '곳', 1], ['오늘 참여', rv.today_sessions, '명'], ['오늘 리뷰 완료', rv.today_completed, '건'], ['포스 연결 끊김', (rv.offline_stores || []).length, '곳', 1]
+  ].map(([k, v, u, go]) => `<div class="stat${go ? ' click' : ''}"${go ? ' data-page="stores"' : ''}><div class="k">${k === '지금 사용 중' ? '<span class="live on" style="width:8px;height:8px;margin-right:6px"></span>' : ''}${k}</div><div class="v">${v}<small>${u}</small></div></div>`).join('') : '<div class="hint">현황을 불러오지 못했어요.</div>';
   const rrLic = lic.receipt_review || {};
   $('stAcct').innerHTML = SUMMARY ? [
     ['통합 계정 회원', SUMMARY.accounts, '명'], ['이번 주 새 회원', SUMMARY.new_week, '명'], ['영수증 이용 매장', rrLic.active || 0, '곳'],
@@ -874,6 +937,133 @@ function renderMembers() {
   }).join('') : '<tr><td colspan="7" class="none">해당하는 회원이 없어요.</td></tr>';
 }
 
+// ───────── 매장 목록 (포스 프로그램 실시간 사용 여부 + 매장별 핵심 데이터) ─────────
+let STORES = null, stFilter = 'all', stTimer = null, curStore = null, sdPeriod = 'today', SD = null;
+const CAP = { serial: '시리얼(COM) 프린터', spooler: '윈도우 인쇄 대기열', spmc: '시리얼(COM) 프린터' };
+const RC_ST = { available: ['b-ok', '사용 가능'], assigned: ['b-blue', '손님에게 배정'], disposed: ['b-gray', '폐기'] };
+const won = n => Number(n || 0).toLocaleString('ko-KR');
+function ago(iso) {
+  if (!iso) return '';
+  const m = Math.max(0, Math.round((Date.now() - Date.parse(iso)) / 60000));
+  if (m < 1) return '방금';
+  if (m < 60) return m + '분 전';
+  if (m < 1440) return Math.floor(m / 60) + '시간 전';
+  return Math.floor(m / 1440) + '일 전';
+}
+const hm = iso => iso ? iso.slice(5, 10).replace('-', '/') + ' ' + iso.slice(11, 16) : '-';
+function liveOf(a) {
+  a = a || {};
+  if (a.live === 'live') return { k: 'live', dot: 'on', t: '사용 중', c: 'on' };
+  if (a.live === 'idle') return { k: 'off', dot: 'idle', t: '신호 끊김 · ' + ago(a.last_heartbeat_at), c: 'idle' };
+  if (a.live === 'off') return { k: 'off', dot: 'off', t: '꺼짐 · ' + ago(a.last_heartbeat_at), c: '' };
+  return { k: 'never', dot: 'off', t: '설치 전', c: '' };
+}
+function licBadge(o) {
+  const l = o && o.license;
+  if (!l) return o ? '<span class="badge b-gray">이용권 없음</span>' : '<span class="badge b-gray" title="통합 계정으로 아직 안 옮긴 예전 매장 계정">예전 계정</span>';
+  const b = RR_STATE[l.state] || ['b-gray', l.state];
+  const dd = l.expires_at && l.days_left != null && l.days_left <= 7 && l.state === 'active' ? ` · ${l.days_left}일 남음` : '';
+  return `<span class="badge ${b[0]}">${b[1]}${dd}</span>`;
+}
+async function loadStores(quiet) {
+  if (!quiet && !STORES) $('stGrid').innerHTML = '<div class="card loading">불러오는 중...</div>';
+  try { const j = await masterApi('/stores'); STORES = j.stores || []; $('stNote').textContent = ''; }
+  catch (e) { if (!STORES) STORES = []; $('stNote').textContent = '불러오지 못했어요: ' + e.message; }
+  renderStores(); renderHome();
+}
+function renderStores() {
+  if (!STORES) return;
+  const q = $('stSearch').value.trim().toLowerCase();
+  const k = s => liveOf(s.agent).k;
+  const CH = [['all', '전체'], ['live', '사용 중'], ['off', '꺼짐'], ['never', '설치 전']];
+  $('stChips').innerHTML = CH.map(([f, t]) => `<button class="chip${stFilter === f ? ' on' : ''}" data-stf="${f}">${f === 'live' ? '<span class="live on" style="margin-right:6px;width:8px;height:8px"></span>' : ''}${t}<b>${f === 'all' ? STORES.length : STORES.filter(s => k(s) === f).length}</b></button>`).join('');
+  const rank = s => ({ live: 0, off: 1, never: 2 })[k(s)];
+  const rows = STORES.filter(s => (stFilter === 'all' || k(s) === stFilter) &&
+    (!q || [s.name, s.login, s.owner && s.owner.name, s.owner && s.owner.email].some(v => String(v || '').toLowerCase().includes(q))))
+    .sort((a, b) => rank(a) - rank(b) || (b.today.sessions - a.today.sessions) || String(a.name).localeCompare(String(b.name), 'ko'));
+  $('stGrid').innerHTML = rows.length ? rows.map(s => {
+    const L = liveOf(s.agent), o = s.owner;
+    const who = o ? [o.name, o.email].filter(Boolean).join(' · ') : (s.login ? '예전 계정 · ' + s.login : '점주 정보 없음');
+    return `<button class="st-card${L.k === 'live' ? ' is-live' : ''}" data-store="${s.id}">
+      <div class="st-head"><span class="live ${L.dot}"></span><span class="st-name">${esc(s.name)}</span><span class="st-state ${L.c}">${esc(L.t)}</span></div>
+      <div class="st-owner">${esc(who)}</div>
+      <div class="st-nums"><div><b>${s.today.receipts}</b><span>오늘 영수증</span></div><div><b>${s.today.sessions}</b><span>오늘 참여</span></div><div><b>${s.today.completed}</b><span>리뷰 완료</span></div><div><b style="color:${s.available < 5 ? 'var(--bad)' : 'inherit'}">${s.available}</b><span>남은 영수증</span></div></div>
+      <div class="st-foot">${licBadge(o)}${s.active ? '' : '<span class="badge b-bad">매장 정지</span>'}<span class="grow"></span>${s.last_receipt_at ? '마지막 영수증 ' + esc(ago(s.last_receipt_at)) : '영수증 기록 없음'}</div>
+    </button>`;
+  }).join('') : '<div class="card none">해당하는 매장이 없어요.</div>';
+}
+function startStoreTimer() {
+  clearInterval(stTimer);
+  stTimer = setInterval(() => {
+    if (document.hidden || !$('p-stores').classList.contains('on')) return;
+    loadStores(true);
+    if (curStore && $('mStore').classList.contains('on')) loadStore(curStore, true);
+  }, 30000);
+}
+async function loadStore(id, quiet) {
+  curStore = id;
+  if (!quiet) { const s = (STORES || []).find(x => x.id === id); $('sdTitle').textContent = s ? s.name : '매장'; $('sdBody').innerHTML = '<div class="loading">불러오는 중...</div>'; openModal('mStore'); }
+  try { SD = await masterApi('/stores/' + id); renderStore(); }
+  catch (e) { if (!quiet) $('sdBody').innerHTML = `<div class="none">불러오지 못했어요: ${esc(e.message)}</div>`; }
+}
+function renderStore() {
+  const d = SD, a = d.agent || {}, o = d.owner, st = d.store, L = liveOf(a), set = d.settings || {}, cu = d.customers || {};
+  $('sdTitle').textContent = st.name;
+  const P = { today: '오늘', d7: '최근 7일', d30: '최근 30일' }, rc = d.receipts[sdPeriod], fn = d.funnel[sdPeriod];
+  const pct = (n, base) => base ? Math.round(n / base * 100) + '%' : '-';
+  const liveTxt = L.k === 'live' ? '지금 사용 중' : L.k === 'never' ? '포스 프로그램 설치 전' : '포스 프로그램 꺼짐 (로그아웃 또는 PC 꺼짐)';
+  const sub = a.last_heartbeat_at ? `마지막 신호 ${hm(a.last_heartbeat_at)} (${ago(a.last_heartbeat_at)})${a.version ? ' · v' + esc(a.version) : ''}${a.capture_mode ? ' · ' + esc(CAP[a.capture_mode] || a.capture_mode) : ''}` : '아직 이 매장에서 프로그램이 로그인한 적이 없어요.';
+  const warn = [a.warning, a.queue_length > 0 ? `서버 전송 대기 ${a.queue_length}건` : ''].filter(Boolean).join(' · ');
+  const days = d.days || [], mx = Math.max(1, ...days.map(x => Math.max(x.receipts, x.sessions)));
+  const lic = o && o.license;
+  const yes = v => v ? '<span class="badge b-ok">켬</span>' : '<span class="badge b-gray">끔</span>';
+  const qr = `https://review.placemaster.co.kr/t/${encodeURIComponent(st.store_code)}/0`;
+  $('sdBody').innerHTML = `
+    <div class="sd-live${L.k === 'live' ? ' on' : ''}"><span class="live ${L.dot}" style="width:12px;height:12px"></span><div class="t">${liveTxt}<small>${sub}</small></div></div>
+    ${warn ? `<div class="hint" style="color:#b86e00;margin-top:8px">⚠ ${esc(warn)}</div>` : ''}
+    <div class="sec"><div class="tabs3">${Object.entries(P).map(([k, t]) => `<button class="${sdPeriod === k ? 'on' : ''}" data-sdp="${k}">${t}</button>`).join('')}</div>
+      <div class="sd-stats">
+        <div class="stat"><div class="k">받은 영수증</div><div class="v">${won(rc.count)}<small>장</small></div></div>
+        <div class="stat"><div class="k">영수증 결제 금액</div><div class="v">${won(rc.amount)}<small>원</small></div></div>
+        <div class="stat"><div class="k">손님 참여</div><div class="v">${won(fn.started)}<small>명</small></div></div>
+        <div class="stat"><div class="k">리뷰 완료</div><div class="v">${won(fn.completed)}<small>건 · ${pct(fn.completed, fn.started)}</small></div></div>
+      </div>
+      <h4 style="margin:16px 0 8px">단계별 진행 (${P[sdPeriod]})</h4>
+      <div class="fn">${[['번호 입력', fn.started], ['영수증 받음', fn.assigned], ['영수증 저장', fn.downloaded], ['네이버 이동', fn.redirected], ['리뷰 완료', fn.completed]].concat(set.pin_required ? [['혜택 지급', fn.benefit]] : [])
+        .map(([t, n]) => `<div class="r"><span>${t}</span><span class="bg"><i style="width:${fn.started ? Math.round(n / fn.started * 100) : 0}%"></i></span><span class="n">${n}명 · ${pct(n, fn.started)}</span></div>`).join('')}</div>
+      <div class="hint">지금 남은 영수증 <b>${d.receipts.available}</b>장${d.receipts.unclassified ? ` · 판별 불가 ${d.receipts.unclassified}장` : ''}${d.receipts.available < 5 ? ' — 포스에서 고객용 영수증이 항상 출력되는지 확인해 주세요' : ''}</div>
+    </div>
+    <div class="sec"><h4>최근 7일 (회색 = 받은 영수증, 초록 = 손님 참여)</h4>
+      <div class="chart" style="height:120px">${days.map((x, i) => `<div class="col" title="${x.date} 영수증 ${x.receipts} · 참여 ${x.sessions} · 완료 ${x.completed}"><div class="num">${x.receipts}/${x.sessions}</div><div style="display:flex;gap:3px;width:100%;align-items:flex-end;height:90px"><div class="bar" style="background:#dfe3e8;height:${Math.max(3, x.receipts / mx * 90)}px"></div><div class="bar${i === days.length - 1 ? ' today' : ''}" style="height:${Math.max(3, x.sessions / mx * 90)}px"></div></div></div>`).join('')}</div>
+      <div class="chart-lb">${days.map(x => `<div>${x.date.slice(5).replace('-', '/')}</div>`).join('')}</div>
+    </div>
+    <div class="sd-grid">
+      <div class="sec"><h4>점주 · 이용권</h4><div class="kv">
+        <div class="k">점주</div><div class="v">${o ? esc(o.name || '-') : '예전 계정' + (st.login ? ' (' + esc(st.login) + ')' : '')}</div>
+        ${o ? `<div class="k">이메일</div><div class="v">${esc(o.email)}</div><div class="k">연락처</div><div class="v">${esc(o.phone || '-')}</div>
+        <div class="k">마이페이지</div><div class="v">${o.last_login_at ? '마지막 로그인 ' + esc(hm(o.last_login_at)) : '-'}</div>` : ''}
+        <div class="k">이용권</div><div class="v">${licBadge(o)} ${lic ? `<span class="s" style="display:inline">${esc(lic.plan || '')}${lic.expires_at ? ' · ' + esc(lic.expires_at) + '까지' : ' · 기간 제한 없음'}${lic.autopay ? ' · 자동결제' : ''}</span>` : ''}</div>
+        ${lic && lic.device_name ? `<div class="k">등록 PC</div><div class="v">${esc(lic.device_name)}</div>` : ''}
+        <div class="k">매장 코드</div><div class="v">${esc(st.store_code)}${st.active ? '' : ' <span class="badge b-bad">정지</span>'}</div>
+        <div class="k">손님 QR</div><div class="v"><a href="${qr}" target="_blank" rel="noopener">${esc(qr.replace('https://', ''))}</a></div>
+        ${o && o.address ? `<div class="k">주소</div><div class="v">${esc(o.address)}</div>` : ''}
+      </div></div>
+      <div class="sec"><h4>고객 · 설정</h4><div class="kv">
+        <div class="k">고객</div><div class="v">${won(cu.total)}명 <span class="s" style="display:inline">· 30일 신규 ${won(cu.new_30d)} · 재방문 ${won(cu.returning)}</span></div>
+        <div class="k">문자 동의</div><div class="v">${won(cu.opt_in)}명 <span class="s" style="display:inline">· 문자 잔액 ${won(set.sms_balance)}원</span></div>
+        <div class="k">혜택</div><div class="v">${esc(set.benefit_text || '-')}</div>
+        <div class="k">키워드</div><div class="v">${set.keywords}개${(set.signature_menus || []).length ? ' · 대표메뉴 ' + esc(set.signature_menus.join(', ')) : ''}</div>
+        <div class="k">PIN 지급</div><div class="v">${yes(set.pin_required)}</div>
+        <div class="k">휴대폰 인증</div><div class="v">${yes(set.phone_verify)}</div>
+        <div class="k">리뷰 확인</div><div class="v">${yes(set.review_check)}${set.review_check ? ` <span class="s" style="display:inline">· 확인된 리뷰 ${d.reviews_verified}건</span>` : ''}</div>
+      </div></div>
+    </div>
+    <div class="sec"><h4>최근 손님 참여</h4>${d.recent_sessions.length ? `<div class="tbl-wrap"><table class="mini-tbl"><thead><tr><th>시각</th><th>번호</th><th>테이블</th><th>진행</th></tr></thead><tbody>${d.recent_sessions.map(x => `<tr><td>${esc(hm(x.at))}</td><td>${esc(x.phone)}</td><td>${esc(x.table || '-')}</td><td><span class="badge ${x.completed ? 'b-ok' : 'b-gray'}">${esc(x.status)}</span></td></tr>`).join('')}</tbody></table></div>` : '<div class="hint">아직 참여한 손님이 없어요.</div>'}</div>
+    <div class="sec"><h4>최근 받은 영수증</h4>${d.recent_receipts.length ? `<div class="tbl-wrap"><table class="mini-tbl"><thead><tr><th>받은 시각</th><th>결제 시각</th><th>금액</th><th>상태</th></tr></thead><tbody>${d.recent_receipts.map(x => { const b = x.unclassified ? ['b-warn', '판별 불가'] : RC_ST[x.status] || ['b-gray', x.status]; return `<tr><td>${esc(hm(x.at))}</td><td>${esc(hm(x.paid_at))}</td><td>${x.amount != null ? won(x.amount) + '원' : '-'}${x.card ? `<span class="s">${esc(x.card)}</span>` : ''}</td><td><span class="badge ${b[0]}">${b[1]}</span></td></tr>`; }).join('')}</tbody></table></div>` : '<div class="hint">아직 받은 영수증이 없어요.</div>'}</div>
+    <div class="btns" style="margin-top:6px"><button class="btn pri" data-gostore="${st.id}">매장 설정·수정</button>${o && o.account_id ? `<button class="btn" data-goacct="${o.account_id}">이용권 관리</button>` : ''}<button class="btn ghost" data-act="store-refresh">새로고침</button></div>
+    <div class="hint">포스 프로그램은 켜져 있고 로그인돼 있으면 1분마다 신호를 보냅니다. ${d.live_minutes || 3}분 안에 신호가 오면 '사용 중'으로 보여요. 이 창은 30초마다 새로 고쳐집니다.</div>`;
+}
+
 // ───────── 프로그램 배포 ─────────
 async function loadDeploy() {
   try {
@@ -901,13 +1091,16 @@ async function deploy() {
 
 // ───────── 클릭 처리 (한 곳에서) ─────────
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-mf],[data-goacct],[data-gostore],[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
+  const t = e.target.closest('[data-store],[data-stf],[data-sdp],[data-mf],[data-goacct],[data-gostore],[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
   if (!t) { if (e.target.classList.contains('modal')) closeModals(); return; }
   const d = t.dataset;
   if (d.page) return go(d.page);
+  if (d.store) return loadStore(+d.store);
+  if (d.stf) { stFilter = d.stf; return renderStores(); }
+  if (d.sdp) { sdPeriod = d.sdp; return renderStore(); }
   if (d.mf) { mFilter = d.mf; return renderMembers(); }
-  if (d.goacct) return openOps('account', '/ops/accounts/' + d.goacct);
-  if (d.gostore) return openOps('review', '/ops/stores/' + d.gostore);
+  if (d.goacct) { closeModals(); return openOps('account', '/ops/accounts/' + d.goacct); }
+  if (d.gostore) { closeModals(); return openOps('review', '/ops/stores/' + d.gostore); }
   if (d.copy !== undefined) { navigator.clipboard && navigator.clipboard.writeText(d.copy).then(() => toast('복사했어요')); return; }
   if (d.user) { e.preventDefault(); return openUser(d.user); }
   if (d.uf) { uFilter = d.uf; return renderUsers(); }
@@ -951,6 +1144,8 @@ document.addEventListener('click', e => {
     }
     case 'bulk-clear': document.querySelectorAll('.uck').forEach(c => c.checked = false); return updateSel();
     case 'reload-members': return loadMembers();
+    case 'reload-stores': return loadStores().then(() => toast('새로 불러왔어요'));
+    case 'store-refresh': return curStore && loadStore(curStore, true);
     case 'frame-home': FRAMES[d.f].loaded = false; return loadFrame(d.f);
     case 'frame-pop': return popFrame(d.f);
     case 'ext-approve': return approveExt();
@@ -966,6 +1161,7 @@ document.addEventListener('change', e => {
 });
 $('uSearch').addEventListener('input', renderUsers);
 $('mSearch').addEventListener('input', renderMembers);
+$('stSearch').addEventListener('input', renderStores);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModals(); });
 </script>
 </body>
