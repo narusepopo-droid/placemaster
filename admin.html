@@ -95,6 +95,15 @@
     .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
     .toolbar .inp { max-width: 280px; padding: 9px 12px; }
     .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .st-tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+    .st-tbl th { text-align: left; font-size: 12px; color: var(--muted); font-weight: 700; padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; background: #fafbfc; }
+    .st-tbl td { padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; vertical-align: middle; }
+    .st-tbl th.r, .st-tbl td.r { text-align: right; font-variant-numeric: tabular-nums; }
+    .st-tbl tr.st-row { cursor: pointer; } .st-tbl tr.st-row:hover td { background: #f1faf5; }
+    .st-tbl .nm { font-weight: 700; max-width: 220px; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle; }
+    .st-tbl .sub { color: var(--muted); font-size: 12px; max-width: 220px; overflow: hidden; text-overflow: ellipsis; display: inline-block; vertical-align: middle; }
+    .ptag { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: 12px; font-weight: 700; background: #eef2ff; color: #3730a3; }
+    .ptag.direct { background: #f1f5f9; color: #475569; }
     .chip { border: 1px solid var(--line); background: #fff; border-radius: 99px; padding: 7px 13px; font-size: 13px; font-weight: 600; color: var(--sub); cursor: pointer; }
     .chip.on { background: var(--text); color: #fff; border-color: var(--text); }
     .chip b { margin-left: 4px; font-weight: 800; }
@@ -309,9 +318,11 @@
     <!-- 매장 목록 (포스 프로그램 실시간 사용 여부 + 매장별 핵심 데이터) -->
     <section class="page" id="p-stores">
       <div class="top"><div><h1>매장 목록</h1><div class="desc" id="stDesc">영수증 자동리뷰 매장의 포스 프로그램이 지금 켜져 있는지 봅니다. 매장을 누르면 핵심 데이터를 한 번에 볼 수 있어요.</div></div><button class="btn" data-act="reload-stores">새로고침</button></div>
-      <div class="toolbar"><input class="inp" id="stSearch" placeholder="매장명·점주·이메일 검색"><div class="chips" id="stChips"></div></div>
+      <div class="toolbar"><input class="inp" id="stSearch" placeholder="매장명 · 담당자 · 아이디 · 점주 · 이메일 검색"><div class="chips" id="stChips"></div></div>
+      <div class="toolbar" style="margin-top:-6px"><div class="chips" id="stPChips"></div></div>
       <div class="hint" id="stNote" style="margin:-4px 0 12px"></div>
-      <div class="st-grid" id="stGrid"><div class="card loading">불러오는 중...</div></div>
+      <div class="card"><div class="tbl-wrap"><table class="st-tbl"><thead><tr><th>매장</th><th>소속</th><th>담당자</th><th>점주 · 아이디</th><th>포스 프로그램</th><th class="r">오늘 영수증</th><th class="r">참여·완료</th><th class="r">남은 영수증</th><th>이용권</th><th>마지막 영수증</th></tr></thead>
+        <tbody id="stGrid"><tr><td colspan="10" class="loading">불러오는 중...</td></tr></tbody></table></div></div>
     </section>
 
     <!-- 플마 회원 -->
@@ -349,16 +360,16 @@
 
     <!-- 이용권·결제 (통합 계정 운영 화면을 이 안에서) -->
     <section class="page" id="p-acct">
-      <div class="embed-bar"><div><h1>이용권 · 결제</h1><div class="desc">회원·이용권 승인/연장, 결제·입금 확인, 상품·요금제, 할인·프로모션, 만료 알림</div></div>
-        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="acct">처음 화면</button><button class="btn sm" data-act="frame-pop" data-f="acct">새 창으로</button></div></div>
+      <div class="embed-bar"><div><h1 id="eb-acct-t">이용권 · 결제</h1><div class="desc" id="eb-acct-d"></div></div>
+        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="acct">새로고침</button><button class="btn sm" data-act="frame-pop" data-f="acct">새 창으로</button></div></div>
       <div class="embed-wait" id="w-acct">불러오는 중...</div>
       <iframe class="embed" id="f-acct" title="이용권·결제" style="display:none"></iframe>
     </section>
 
     <!-- 매장·포스 (영수증리뷰 운영 화면을 이 안에서) -->
     <section class="page" id="p-rops">
-      <div class="embed-bar"><div><h1>매장 · 포스</h1><div class="desc">매장 등록·수정, 포스 연결 상태, 미분류 영수증, 매장별 통계, 설치 파일</div></div>
-        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="rops">처음 화면</button><button class="btn sm" data-act="frame-pop" data-f="rops">새 창으로</button></div></div>
+      <div class="embed-bar"><div><h1 id="eb-rops-t">매장 · 포스</h1><div class="desc" id="eb-rops-d"></div></div>
+        <div class="btns"><button class="btn sm" data-act="frame-home" data-f="rops">새로고침</button><button class="btn sm" data-act="frame-pop" data-f="rops">새 창으로</button></div></div>
       <div class="embed-wait" id="w-rops">불러오는 중...</div>
       <iframe class="embed" id="f-rops" title="매장·포스" style="display:none"></iframe>
     </section>
@@ -456,18 +467,27 @@ const API_KEY = "AIzaSyDUVSMYnDOJN21iI2WireY_OUlVkbRAsOo";
 const DOWNLOAD_URL = 'https://drive.google.com/file/d/1hTZehHzev07v6VmR0FkmCpilkaDh9_Cr/view?usp=sharing';
 const SMS_SENDER = '01075410805';
 
+// 메뉴 하나로: frame 이 있는 메뉴는 운영 화면(계정 서버 acct / 영수증 서버 rops)의 그 페이지를 이 안에서 바로 엶
 const PAGES = [
   { id: 'home', label: '홈', ic: '🏠', grp: '' },
   { id: 'members', label: '전체 회원', ic: '🗂️', grp: '' },
+  { id: 'inq', label: '문의', ic: '💬', grp: '', cnt: 'inq' },
+  { id: 'stores', label: '매장 목록', ic: '🟢', grp: '영수증 자동리뷰' },
+  { id: 'partners', label: '판매처 (카솔 등)', ic: '🏢', grp: '영수증 자동리뷰', frame: 'acct', next: '/ops/partners', desc: '판매처 등록·설정·관리자 계정, 판매처 관리자 화면 보기' },
+  { id: 'pos', label: '포스 연결 상태', ic: '🖥️', grp: '영수증 자동리뷰', frame: 'rops', next: '/ops/agents', desc: '매장별 포스 프로그램 연결·버전·경고' },
+  { id: 'rstats', label: '매장별 통계', ic: '📊', grp: '영수증 자동리뷰', frame: 'rops', next: '/ops/stats', desc: '매장별 참여·완료·시간대' },
+  { id: 'installer', label: '설치 파일', ic: '📦', grp: '영수증 자동리뷰', frame: 'rops', next: '/ops/installer', desc: '포스 프로그램 새 버전 올리기' },
+  { id: 'licenses', label: '회원·이용권', ic: '🎫', grp: '이용권 · 결제', cnt: 'rr', frame: 'acct', next: '/ops/accounts', desc: '이용권 승인·연장·만료일·정지·PC 해제' },
+  { id: 'orders', label: '결제·입금 확인', ic: '💳', grp: '이용권 · 결제', frame: 'acct', next: '/ops/orders', desc: '결제 내역, 입금 확인, 환불' },
+  { id: 'products', label: '상품·요금제', ic: '🏷️', grp: '이용권 · 결제', frame: 'acct', next: '/ops/products', desc: '가입 방식(승인·무료 체험·결제), 가격, 요금제' },
+  { id: 'promos', label: '할인·프로모션', ic: '🎁', grp: '이용권 · 결제', frame: 'acct', next: '/ops/promotions', desc: '쿠폰·묶음 할인' },
+  { id: 'notify', label: '만료 알림 기록', ic: '🔔', grp: '이용권 · 결제', frame: 'acct', next: '/ops/notifications', desc: '만료 7·3·1일 전 문자 기록' },
   { id: 'users', label: '플마 회원', ic: '👥', grp: '플레이스 마스터 PRO' },
   { id: 'signups', label: '가입 신청', ic: '📝', grp: '플레이스 마스터 PRO', cnt: 'signups' },
   { id: 'ext', label: '기간 연장', ic: '⏳', grp: '플레이스 마스터 PRO', cnt: 'ext' },
   { id: 'deploy', label: '프로그램 배포', ic: '🚀', grp: '플레이스 마스터 PRO' },
-  { id: 'stores', label: '매장 목록', ic: '🟢', grp: '영수증 자동리뷰 · 결제' },
-  { id: 'acct', label: '이용권·결제', ic: '💳', grp: '영수증 자동리뷰 · 결제', cnt: 'rr' },
-  { id: 'rops', label: '매장·포스', ic: '🧾', grp: '영수증 자동리뷰 · 결제' },
-  { id: 'inq', label: '문의', ic: '💬', grp: '공통', cnt: 'inq' },
 ];
+const OLD_IDS = { acct: 'licenses', rops: 'pos' };   // 예전 주소(#acct, #rops)
 let USERS = [], SIGNUPS = [], EXTS = [], INQS = [], SUMMARY = null;
 let uFilter = 'all', sFilter = 'pending', curUser = null, curExt = null, curInq = null;
 
@@ -543,14 +563,21 @@ function buildNav() {
   $('navListM').innerHTML = PAGES.map(p => `<button class="nav" data-page="${p.id}">${esc(p.label)}<span class="cnt" data-cnt="${p.cnt || ''}"></span></button>`).join('');
 }
 function go(id, noFrame) {
-  document.querySelectorAll('.page').forEach(s => s.classList.toggle('on', s.id === 'p-' + id));
+  id = OLD_IDS[id] || id;
+  const pg = PAGES.find(p => p.id === id) || {};
+  const sec = pg.frame || id;
+  document.querySelectorAll('.page').forEach(s => s.classList.toggle('on', s.id === 'p-' + sec));
   document.querySelectorAll('.nav[data-page]').forEach(b => b.classList.toggle('on', b.dataset.page === id));
+  if (pg.frame) {
+    $('eb-' + pg.frame + '-t').textContent = pg.label; $('eb-' + pg.frame + '-d').textContent = pg.desc || '';
+    FRAMES[pg.frame].page = id;
+    if (!noFrame) loadFrame(pg.frame, pg.next);
+  }
   window.scrollTo(0, 0);
   try { history.replaceState(null, '', '#' + id); } catch (e) {}
   if (id === 'deploy') loadDeploy();
   if (id === 'members' && !MEMBERS) loadMembers();
   if (id === 'stores') { loadStores(); startStoreTimer(); }
-  if ((id === 'acct' || id === 'rops') && !noFrame) loadFrame(id);
 }
 function setCount(key, n) {
   document.querySelectorAll(`[data-cnt="${key}"]`).forEach(el => { el.textContent = n; el.classList.toggle('on', n > 0); });
@@ -561,7 +588,7 @@ function start() {
   if (started) return; started = true;
   buildNav();
   const h = (location.hash || '').slice(1);
-  go(PAGES.some(p => p.id === h) ? h : 'home');
+  go(PAGES.some(p => p.id === (OLD_IDS[h] || h)) ? h : 'home');
   refreshAll();
 }
 async function refreshAll() {
@@ -584,8 +611,8 @@ function renderHome() {
   if (pend) items.push({ n: pend, t: '플마 가입 신청', s: '승인하면 계정이 만들어지고 문자가 나가요', go: 'signups' });
   if (extP) items.push({ n: extP, t: '플마 기간 연장 신청', s: '새 만료일을 정해 승인해 주세요', go: 'ext' });
   if (inqP) items.push({ n: inqP, t: '답변 안 한 문의', s: '문자로 답변을 보낼 수 있어요', go: 'inq' });
-  if (rrPend) items.push({ n: rrPend, t: '이용권 승인 대기 (통합 계정)', s: '이용권·결제 관리에서 승인', open: 'account' });
-  if (SUMMARY && SUMMARY.unpaid_orders) items.push({ n: SUMMARY.unpaid_orders, t: '입금 확인 대기 주문', s: '이용권·결제 관리 > 결제', open: 'account' });
+  if (rrPend) items.push({ n: rrPend, t: '이용권 승인 대기', s: '회원·이용권에서 승인', open: 'account', next: '/ops/accounts' });
+  if (SUMMARY && SUMMARY.unpaid_orders) items.push({ n: SUMMARY.unpaid_orders, t: '입금 확인 대기 주문', s: '결제·입금 확인', open: 'account', next: '/ops/orders' });
   if (soon) items.push({ n: soon, t: '7일 안에 끝나는 플마 회원', s: '필요하면 기간을 늘려 주세요', go: 'users', f: 'soon', w: 1 });
   if (rv && rv.offline_stores && rv.offline_stores.length) items.push({ n: rv.offline_stores.length, t: '포스 연결이 끊긴 매장', s: rv.offline_stores.join(', '), go: 'stores', w: 1 });
   $('todo').innerHTML = items.length ? items.map((it, i) =>
@@ -875,9 +902,10 @@ async function finishInq(withSms) {
 
 // ───────── 운영 화면 (이 안에서 열기) ─────────
 const FRAMES = { acct: { key: 'account_ops', next: 'account_next', loaded: false }, rops: { key: 'review_ops', next: 'review_next', loaded: false } };
-async function loadFrame(id, next) {
+async function loadFrame(id, next, force) {
   const f = FRAMES[id]; const fr = $('f-' + id), w = $('w-' + id);
-  if (f.loaded && !next) return;
+  if (f.loaded && f.cur === (next || '') && !force) return;
+  f.cur = next || '';
   w.style.display = ''; w.textContent = '불러오는 중...'; fr.style.display = 'none';
   try {
     const body = {}; if (next) body[f.next] = next;
@@ -887,8 +915,11 @@ async function loadFrame(id, next) {
   } catch (e) { w.textContent = '열지 못했어요: ' + e.message; }
 }
 function openOps(which, next) {
-  const id = which === 'account' ? 'acct' : 'rops';
-  go(id, true); loadFrame(id, next || '');
+  const fid = which === 'account' ? 'acct' : 'rops';
+  next = next || (fid === 'acct' ? '/ops/accounts' : '/ops/agents');
+  // 그 주소에 맞는 메뉴를 켜고 (없으면 같은 서버 첫 메뉴) 그 페이지를 엶
+  const pg = PAGES.filter(p => p.frame === fid).find(p => next.startsWith(p.next)) || PAGES.find(p => p.frame === fid);
+  go(pg.id, true); loadFrame(fid, next, true);
 }
 async function popFrame(id) {
   const w = window.open('about:blank', '_blank');
@@ -971,26 +1002,38 @@ async function loadStores(quiet) {
   catch (e) { if (!STORES) STORES = []; $('stNote').textContent = '불러오지 못했어요: ' + e.message; }
   renderStores(); renderHome();
 }
+let stPartner = 'all';
+const partnerOf = s => (s.owner && s.owner.partner) || '';
 function renderStores() {
   if (!STORES) return;
-  const q = $('stSearch').value.trim().toLowerCase();
+  const q = $('stSearch').value.trim().toLowerCase().replace(/\s/g, '');
   const k = s => liveOf(s.agent).k;
   const CH = [['all', '전체'], ['live', '사용 중'], ['off', '꺼짐'], ['never', '설치 전']];
   $('stChips').innerHTML = CH.map(([f, t]) => `<button class="chip${stFilter === f ? ' on' : ''}" data-stf="${f}">${f === 'live' ? '<span class="live on" style="margin-right:6px;width:8px;height:8px"></span>' : ''}${t}<b>${f === 'all' ? STORES.length : STORES.filter(s => k(s) === f).length}</b></button>`).join('');
+  // 소속: 직접(광고토대왕) + 판매처별
+  const parts = [...new Set(STORES.map(partnerOf).filter(Boolean))].sort();
+  const PC = [['all', '전체 소속'], ['', '직접 (광고토대왕)']].concat(parts.map(p => [p, p]));
+  $('stPChips').innerHTML = PC.map(([f, t]) => `<button class="chip${stPartner === f ? ' on' : ''}" data-stp="${esc(f)}">${esc(t)}<b>${f === 'all' ? STORES.length : STORES.filter(s => partnerOf(s) === f).length}</b></button>`).join('');
   const rank = s => ({ live: 0, off: 1, never: 2 })[k(s)];
-  const rows = STORES.filter(s => (stFilter === 'all' || k(s) === stFilter) &&
-    (!q || [s.name, s.login, s.owner && s.owner.name, s.owner && s.owner.email].some(v => String(v || '').toLowerCase().includes(q))))
+  const hay = s => [s.name, s.login, s.owner && s.owner.name, s.owner && s.owner.email, s.owner && s.owner.manager, s.owner && s.owner.partner_login_id, s.owner && s.owner.phone];
+  const rows = STORES.filter(s => (stFilter === 'all' || k(s) === stFilter) && (stPartner === 'all' || partnerOf(s) === stPartner) &&
+    (!q || hay(s).some(v => String(v || '').toLowerCase().replace(/\s/g, '').includes(q))))
     .sort((a, b) => rank(a) - rank(b) || (b.today.sessions - a.today.sessions) || String(a.name).localeCompare(String(b.name), 'ko'));
   $('stGrid').innerHTML = rows.length ? rows.map(s => {
-    const L = liveOf(s.agent), o = s.owner;
-    const who = o ? [o.name, o.email].filter(Boolean).join(' · ') : (s.login ? '예전 계정 · ' + s.login : '점주 정보 없음');
-    return `<button class="st-card${L.k === 'live' ? ' is-live' : ''}" data-store="${s.id}">
-      <div class="st-head"><span class="live ${L.dot}"></span><span class="st-name">${esc(s.name)}</span><span class="st-state ${L.c}">${esc(L.t)}</span></div>
-      <div class="st-owner">${esc(who)}</div>
-      <div class="st-nums"><div><b>${s.today.receipts}</b><span>오늘 영수증</span></div><div><b>${s.today.sessions}</b><span>오늘 참여</span></div><div><b>${s.today.completed}</b><span>리뷰 완료</span></div><div><b style="color:${s.available < 5 ? 'var(--bad)' : 'inherit'}">${s.available}</b><span>남은 영수증</span></div></div>
-      <div class="st-foot">${licBadge(o)}${s.active ? '' : '<span class="badge b-bad">매장 정지</span>'}<span class="grow"></span>${s.last_receipt_at ? '마지막 영수증 ' + esc(ago(s.last_receipt_at)) : '영수증 기록 없음'}</div>
-    </button>`;
-  }).join('') : '<div class="card none">해당하는 매장이 없어요.</div>';
+    const L = liveOf(s.agent), o = s.owner || {};
+    const pt = partnerOf(s);
+    const who = o.partner_login_id ? o.partner_login_id + (o.name ? ' · ' + o.name : '') : (o.name || o.email ? [o.name, o.email].filter(Boolean).join(' · ') : (s.login ? '예전 계정 · ' + s.login : '-'));
+    return `<tr class="st-row" data-store="${s.id}">
+      <td><span class="nm" title="${esc(s.name)}">${esc(s.name)}</span>${s.active ? '' : ' <span class="badge b-bad">정지</span>'}</td>
+      <td>${pt ? `<span class="ptag">${esc(pt)}</span>` : '<span class="ptag direct">직접</span>'}</td>
+      <td>${o.manager ? esc(o.manager) : '<span class="hint">-</span>'}</td>
+      <td><span class="sub" title="${esc(who)}">${esc(who)}</span></td>
+      <td><span class="live ${L.dot}"></span> ${esc(L.t)}</td>
+      <td class="r">${s.today.receipts}</td><td class="r">${s.today.sessions} · ${s.today.completed}</td>
+      <td class="r" style="color:${s.available < 5 ? 'var(--bad)' : 'inherit'}">${s.available}</td>
+      <td>${licBadge(s.owner)}</td>
+      <td class="hint">${s.last_receipt_at ? esc(ago(s.last_receipt_at)) : '-'}</td></tr>`;
+  }).join('') : '<tr><td colspan="10" class="none">해당하는 매장이 없어요.</td></tr>';
 }
 function startStoreTimer() {
   clearInterval(stTimer);
@@ -1092,12 +1135,13 @@ async function deploy() {
 
 // ───────── 클릭 처리 (한 곳에서) ─────────
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-store],[data-stf],[data-sdp],[data-mf],[data-goacct],[data-gostore],[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
+  const t = e.target.closest('[data-store],[data-stf],[data-stp],[data-sdp],[data-mf],[data-goacct],[data-gostore],[data-page],[data-act],[data-user],[data-copy],[data-uf],[data-ufilter],[data-sf],[data-approve],[data-reject],[data-sdel],[data-ext],[data-extno],[data-inq],[data-todo],[data-add],[data-eadd]');
   if (!t) { if (e.target.classList.contains('modal')) closeModals(); return; }
   const d = t.dataset;
   if (d.page) return go(d.page);
   if (d.store) return loadStore(+d.store);
   if (d.stf) { stFilter = d.stf; return renderStores(); }
+  if (d.stp !== undefined) { stPartner = d.stp; return renderStores(); }
   if (d.sdp) { sdPeriod = d.sdp; return renderStore(); }
   if (d.mf) { mFilter = d.mf; return renderMembers(); }
   if (d.goacct) { closeModals(); return openOps('account', '/ops/accounts/' + d.goacct); }
@@ -1115,7 +1159,7 @@ document.addEventListener('click', e => {
   if (d.inq) return openInq(d.inq);
   if (d.add) { $('muExp').value = addMonths($('muExp').value, +d.add); return expHint(); }
   if (d.eadd) { const u = USERS.find(v => curExt && v.email === curExt.email); $('meDate').value = addMonths(u && u.expires_at, +d.eadd); return; }
-  if (d.todo !== undefined) { const it = $('todo')._items[+d.todo]; if (it.f) uFilter = it.f, renderUsers(); return it.open ? openOps(it.open) : go(it.go); }
+  if (d.todo !== undefined) { const it = $('todo')._items[+d.todo]; if (it.f) uFilter = it.f, renderUsers(); return it.open ? openOps(it.open, it.next) : go(it.go); }
   switch (d.act) {
     case 'logout': return auth.signOut().then(() => location.replace(location.pathname));
     case 'refresh': return refreshAll().then(() => toast('새로 불러왔어요'));
@@ -1147,7 +1191,7 @@ document.addEventListener('click', e => {
     case 'reload-members': return loadMembers();
     case 'reload-stores': return loadStores().then(() => toast('새로 불러왔어요'));
     case 'store-refresh': return curStore && loadStore(curStore, true);
-    case 'frame-home': FRAMES[d.f].loaded = false; return loadFrame(d.f);
+    case 'frame-home': { const pg = PAGES.find(p => p.id === FRAMES[d.f].page) || {}; return loadFrame(d.f, pg.next, true); }
     case 'frame-pop': return popFrame(d.f);
     case 'ext-approve': return approveExt();
     case 'inq-send': return finishInq(true);
