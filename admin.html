@@ -513,7 +513,9 @@ function openModal(id) { $(id).classList.add('on'); }
 function closeModals() { document.querySelectorAll('.modal').forEach(m => m.classList.remove('on')); }
 async function sendSMS(receiver, msg) {
   try {
-    const r = await fetch('https://placeranking.com/api/sms/send', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+    // ★ 2026-10-23 보안 — 관리자 문자는 마스터 로그인 표를 같이 보낸다(플랭 서버가 Google 에 물어 확인)
+    const tok = auth.currentUser ? await auth.currentUser.getIdToken() : '';
+    const r = await fetch('https://placeranking.com/api/sms/send', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
       body: JSON.stringify({ receiver: String(receiver).replace(/[^0-9]/g, ''), msg, sender: SMS_SENDER }) });
     const j = await r.json(); return !!j.success;
   } catch (e) { return false; }
