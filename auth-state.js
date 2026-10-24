@@ -42,7 +42,7 @@
     var adm = document.getElementById('pm-admin-link');
     if (on && me.operator && hb && !adm) {
       adm = document.createElement('a');
-      adm.id = 'pm-admin-link'; adm.href = 'admin.html'; adm.textContent = '마스터 관리';
+      adm.id = 'pm-admin-link'; adm.href = 'https://review.placemaster.co.kr/account/master'; adm.textContent = '마스터 관리';
       adm.className = (document.querySelector('header .btn-outline, header .h-btn') || {}).className || 'btn';
       adm.style.marginRight = '8px';
       var first = hb.querySelector('a[href*="/account/"]');
