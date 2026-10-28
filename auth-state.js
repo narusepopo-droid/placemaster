@@ -58,7 +58,7 @@
       who.style.cssText = 'display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#4b5563;margin-right:10px;white-space:nowrap';
       var nm = document.createElement('b');
       nm.style.cssText = 'color:#111827;max-width:160px;overflow:hidden;text-overflow:ellipsis';
-      nm.textContent = me.operator ? '마스터' : ((me.name || '사장님') + '님');
+      nm.textContent = me.operator ? '마스터' : (me.store || ((me.name || '사장님') + '님'));
       nm.title = '지금 로그인된 계정';
       var lo = document.createElement('a');
       lo.href = ACCOUNT + '/logout'; lo.textContent = '로그아웃';
