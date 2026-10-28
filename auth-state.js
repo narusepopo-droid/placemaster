@@ -50,6 +50,25 @@
     } else if (!on && adm) {
       adm.remove();
     }
+    // 누가 로그인돼 있는지 + 로그아웃 (2026-10-28 요청자: 다른 매장으로 로그인돼 있으면 마스터로 바꿀 방법이 없음)
+    var who = document.getElementById('pm-who');
+    if (on && hb && !who) {
+      who = document.createElement('span');
+      who.id = 'pm-who';
+      who.style.cssText = 'display:inline-flex;align-items:center;gap:8px;font-size:14px;color:#4b5563;margin-right:10px;white-space:nowrap';
+      var nm = document.createElement('b');
+      nm.style.cssText = 'color:#111827;max-width:160px;overflow:hidden;text-overflow:ellipsis';
+      nm.textContent = me.operator ? '마스터' : ((me.name || '사장님') + '님');
+      nm.title = '지금 로그인된 계정';
+      var lo = document.createElement('a');
+      lo.href = ACCOUNT + '/logout'; lo.textContent = '로그아웃';
+      lo.style.cssText = 'color:#6b7280;text-decoration:underline;font-size:13.5px';
+      who.appendChild(nm); who.appendChild(lo);
+      var f = hb.querySelector('#pm-admin-link') || hb.querySelector('a[href*="/account/"]');
+      if (f) f.parentNode.insertBefore(who, f); else hb.appendChild(who);
+    } else if (!on && who) {
+      who.remove();
+    }
     document.documentElement.classList.toggle('pm-logged-in', on);
   }
 
