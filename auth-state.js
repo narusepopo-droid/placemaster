@@ -20,8 +20,8 @@
       if (h.indexOf(ACCOUNT + '/login') === 0) {
         a.setAttribute('href', ACCOUNT + '/my'); a.textContent = '마이페이지'; a.dataset.pmAuth = '1';
       } else if (h.indexOf(ACCOUNT + '/signup') === 0 || h === 'signup.html') {
-        a.setAttribute('href', ACCOUNT + '/my');
-        a.textContent = /다운로드/.test(o.text) ? '↓ 마이페이지에서 다운로드' : '내 상품 · 다운로드';
+        a.setAttribute('href', ACCOUNT + '/my/install');            // 로그인하면 바로 설치 (2026-10-29 요청자: 설치 안내 문자가 이 사이트로 안내)
+        a.textContent = '프로그램 설치하기';
         a.dataset.pmAuth = '1';
       }
     });
@@ -29,12 +29,12 @@
     var sb = document.getElementById('startBtn');
     if (sb) {
       if (!orig.has(sb)) orig.set(sb, { href: sb.getAttribute('href'), text: sb.textContent });
-      sb.textContent = on ? '내 상품 · 다운로드' : orig.get(sb).text;
+      sb.textContent = on ? '프로그램 설치하기' : orig.get(sb).text;
       sb.dataset.pmMy = on ? '1' : '';
       if (!sb.dataset.pmHooked) {
         sb.dataset.pmHooked = '1';
         sb.addEventListener('click', function (e) {
-          if (sb.dataset.pmMy) { e.preventDefault(); e.stopImmediatePropagation(); location.href = ACCOUNT + '/my'; }
+          if (sb.dataset.pmMy) { e.preventDefault(); e.stopImmediatePropagation(); location.href = ACCOUNT + '/my/install'; }
         }, true);
       }
     }
