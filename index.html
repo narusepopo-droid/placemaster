@@ -2,6 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<!-- 2026-10-29 요청자: 사이트 하나로 — 영수증리뷰 사이트로 이동 (예전 화면은 아래 그대로, ?stay=1 이면 볼 수 있음) -->
+<script>if (!/[?&]stay=1/.test(location.search)) location.replace('https://review.placemaster.co.kr/' + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=https://review.placemaster.co.kr/"></noscript>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>플레이스 마스터 - 네이버 플레이스 순위 추적 · 영수증 리뷰 자동화</title>
 <meta name="description" content="우리 매장 네이버 플레이스 순위를 매일 자동으로 확인하는 플레이스 마스터 PRO, QR 한 번으로 네이버 영수증 리뷰를 받는 영수증리뷰. 사장님을 위한 매장 마케팅 도구.">
