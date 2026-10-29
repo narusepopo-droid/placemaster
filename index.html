@@ -157,7 +157,7 @@
   .tab-h::before, .tab-h i { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; border-radius: 3px; }
   .tab-h::before { right: 0; background: rgba(255,255,255,.15); }
   .tab-h i { width: 0; background: var(--g); }
-  .tab-h[data-i="1"] i { background: var(--gold); }
+  .tab-h[data-i="0"] i { background: var(--gold); }
   .tab-h.on i { animation: fill var(--dur, 7s) linear forwards; }
   @keyframes fill { to { width: 100%; } }
   .arrows { margin-left: auto; display: flex; gap: 8px; }
@@ -248,8 +248,8 @@ body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245
 <header class="h-top"><div class="inner">
   <a class="h-logo" href="index.html"><img src="favicon-180.png" alt="플레이스 마스터" class="mk-img">플레이스 마스터</a>
   <nav class="h-nav">
-    <a href="plma.html">플레이스 순위추적</a>
     <a href="receipt-review.html">영수증 자동리뷰</a>
+    <a href="plma.html">플레이스 순위추적</a>
     <a href="plma.html#pricing">함께 쓰기·요금제</a>
   </nav>
   <div class="h-act">
@@ -259,35 +259,8 @@ body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245
 </div></header>
 
 <section class="hero" id="hero" aria-roledescription="carousel">
-  <!-- 슬라이드 1: 플레이스 마스터 PRO -->
-  <article class="slide s-plma on" data-i="0" aria-label="플레이스 마스터 PRO">
-    <div class="bg"></div><div class="grid-lines"></div>
-    <div class="s-wrap">
-      <div>
-        <span class="eyebrow rise d1"><i></i>플레이스 마스터 PRO · 네이버 플레이스 순위 추적</span>
-        <h1 class="s-title rise d2">우리 매장 순위,<br><em>자동으로</em> 매일 확인.</h1>
-        <p class="s-sub rise d3">키워드 100개의 플레이스·블로그 순위를 한 번에 분석하고, 오르내린 순위를 카톡 보고서로 바로 정리해 드려요.</p>
-        <div class="s-cta rise d4">
-          <a class="h-btn lg solid" href="plma.html">자세히 보기 <span class="arr">→</span></a>
-          <a class="h-btn lg" href="https://review.placemaster.co.kr/account/signup?product=plma">무료로 시작하기</a>
-        </div>
-        <div class="s-chips rise d5"><span><b>100+</b>키워드 동시 분석</span><span><b>~2분</b>평균 분석 시간</span><span><b>50+</b>지원 업종</span></div>
-      </div>
-      <div class="vis">
-        <div class="board">
-          <div class="board-h"><span>📍 우리 매장 키워드 순위</span><span class="live"><i></i>실시간</span></div>
-          <div class="rows" id="rows"></div>
-          <svg class="spark" viewBox="0 0 400 70" preserveAspectRatio="none" width="100%">
-            <defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#03C75A" stop-opacity=".3"/><stop offset="1" stop-color="#7cf5b9"/></linearGradient></defs>
-            <path d="M0 60 C40 58 60 50 90 52 S150 40 180 42 S240 26 270 30 S330 12 360 14 S390 6 400 4" fill="none" stroke="url(#sg)" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- 슬라이드 2: 영수증리뷰 -->
-  <article class="slide s-rr" data-i="1" aria-label="영수증리뷰">
+  <!-- 슬라이드 1: 영수증리뷰 (2026-10-29 요청자: 영수증리뷰 먼저) -->
+  <article class="slide s-rr on" data-i="0" aria-label="영수증리뷰">
     <div class="bg"></div><div class="grid-lines"></div>
     <div class="s-wrap">
       <div>
@@ -325,9 +298,36 @@ body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245
     </div>
   </article>
 
+  <!-- 슬라이드 2: 플레이스 마스터 PRO -->
+  <article class="slide s-plma" data-i="1" aria-label="플레이스 마스터 PRO">
+    <div class="bg"></div><div class="grid-lines"></div>
+    <div class="s-wrap">
+      <div>
+        <span class="eyebrow rise d1"><i></i>플레이스 마스터 PRO · 네이버 플레이스 순위 추적</span>
+        <h1 class="s-title rise d2">우리 매장 순위,<br><em>자동으로</em> 매일 확인.</h1>
+        <p class="s-sub rise d3">키워드 100개의 플레이스·블로그 순위를 한 번에 분석하고, 오르내린 순위를 카톡 보고서로 바로 정리해 드려요.</p>
+        <div class="s-cta rise d4">
+          <a class="h-btn lg solid" href="plma.html">자세히 보기 <span class="arr">→</span></a>
+          <a class="h-btn lg" href="https://review.placemaster.co.kr/account/signup?product=plma">무료로 시작하기</a>
+        </div>
+        <div class="s-chips rise d5"><span><b>100+</b>키워드 동시 분석</span><span><b>~2분</b>평균 분석 시간</span><span><b>50+</b>지원 업종</span></div>
+      </div>
+      <div class="vis">
+        <div class="board">
+          <div class="board-h"><span>📍 우리 매장 키워드 순위</span><span class="live"><i></i>실시간</span></div>
+          <div class="rows" id="rows"></div>
+          <svg class="spark" viewBox="0 0 400 70" preserveAspectRatio="none" width="100%">
+            <defs><linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#03C75A" stop-opacity=".3"/><stop offset="1" stop-color="#7cf5b9"/></linearGradient></defs>
+            <path d="M0 60 C40 58 60 50 90 52 S150 40 180 42 S240 26 270 30 S330 12 360 14 S390 6 400 4" fill="none" stroke="url(#sg)" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </article>
+
   <div class="tabs-h"><div class="inner">
-    <button class="tab-h on" data-i="0" aria-label="플레이스 마스터 PRO 보기">플레이스 마스터 PRO<i></i></button>
-    <button class="tab-h" data-i="1" aria-label="영수증리뷰 보기">영수증리뷰<i></i></button>
+    <button class="tab-h on" data-i="0" aria-label="영수증리뷰 보기">영수증리뷰<i></i></button>
+    <button class="tab-h" data-i="1" aria-label="플레이스 마스터 PRO 보기">플레이스 마스터 PRO<i></i></button>
     <div class="arrows"><button id="prev" aria-label="이전">←</button><button id="next" aria-label="다음">→</button></div>
   </div></div>
 </section>
@@ -351,7 +351,7 @@ body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245
     cur = (i + slides.length) % slides.length;
     slides.forEach((s, k) => { if (k === cur) restart(s); else s.classList.remove('on'); });
     tabs.forEach((t, k) => { if (k === cur) restart(t); else t.classList.remove('on'); });
-    if (cur === 0) startRanks(); else startReview();
+    if (cur === 1) startRanks(); else startReview();
     schedule();
   }
   function schedule() { clearTimeout(timer); if (!paused) timer = setTimeout(() => show(cur + 1), DUR); }
@@ -413,7 +413,7 @@ body.t1 .s-rr .bg { background: radial-gradient(900px 600px at 85% 20%, rgba(245
   window.addEventListener('resize', () => layout());
   document.getElementById('startBtn').addEventListener('click', e => {
     e.preventDefault();
-    location.href = cur === 0 ? 'https://review.placemaster.co.kr/account/signup?product=plma' : 'https://review.placemaster.co.kr/account/signup?product=receipt_review';
+    location.href = cur === 1 ? 'https://review.placemaster.co.kr/account/signup?product=plma' : 'https://review.placemaster.co.kr/account/signup?product=receipt_review';
   });
   show(0);
 })();
